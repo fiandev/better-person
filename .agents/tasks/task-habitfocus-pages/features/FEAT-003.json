@@ -1,0 +1,22 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement the Home/Dashboard page (beranda_habitfocus) and the Work Focus/Timer page (fokus_kerja) as Flutter screens using shared widgets.",
+  "status": "in_progress",
+  "steps": [
+    "Create lib/habit_focus/screens/home_screen.dart - The main dashboard page based on reference/beranda_habitfocus/code.html. Components: (1) Greeting section with 'Good Morning, [Name]' headline and motivational quote, (2) Bento grid with 3 stat cards - overall progress (65% with progress ring and streak text), deep work time (2h 15m with timer icon in secondary color), devotion count (3/5 with icon in tertiary color), (3) Key Habits section with section header and 'View All' button, containing a list of HabitCard widgets (Morning Meditation - completed/Growth/green, Deep Work Session - active/Work/blue, Daily Impact - active/Kindness/ochre). Use the shared HabitFocusAppBar, DailyProgressBar, and HabitFocusBottomNav (index 0).",
+    "Create lib/habit_focus/screens/focus_screen.dart - The Pomodoro timer page based on reference/fokus_kerja/code.html. Components: (1) Context header with 'Work Focus' chip badge and 'Deep Work Session' headline, (2) Large timer display - big circular container with ProgressRing widget (secondary/blue color), centered '25:00' large text with 'Focusing' label below, (3) Two action buttons - 'Start Focus' (filled, secondary color) and 'Break' (outlined), (4) Current Task section - card with left blue border, showing task title 'Draft Q3 Financial Overview Presentation', chips for 'Deep Work' and 'High Priority', unchecked circular checkbox, (5) Up Next section - list of upcoming tasks with checkboxes and drag indicators, plus 'Add Task' dashed-border button. Use shared HabitFocusAppBar and HabitFocusBottomNav (index 1)."
+  ],
+  "acceptance_criteria": [
+    "home_screen.dart compiles without errors",
+    "focus_screen.dart compiles without errors",
+    "Home screen uses the shared ProgressRing, HabitCard, HabitFocusAppBar, HabitFocusBottomNav widgets",
+    "Focus screen displays a large timer ring and task list",
+    "Both screens follow the Mindful Growth design system colors and spacing"
+  ],
+  "verification": [
+    "Run flutter analyze in /projects/sandbox/better-person and confirm no errors in new files"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
