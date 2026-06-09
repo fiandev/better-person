@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/habit_focus_theme.dart';
 import '../widgets/daily_progress_bar.dart';
 import '../widgets/habit_focus_app_bar.dart';
-import '../widgets/habit_focus_bottom_nav.dart';
+import '../../routes/route_shell.dart';
 
 class IbadahScreen extends StatelessWidget {
   const IbadahScreen({super.key});
@@ -61,7 +61,7 @@ class IbadahScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const HabitFocusBottomNav(currentIndex: 2),
+      bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 2),
     );
   }
 }
@@ -297,8 +297,7 @@ class _PrayerCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isChecked ? colorScheme.primary : Colors.transparent,
                 border: Border.all(
-                  color:
-                      isChecked ? colorScheme.primary : colorScheme.outlineVariant,
+                  color: isChecked ? colorScheme.primary : colorScheme.outlineVariant,
                   width: 2,
                 ),
               ),
@@ -360,7 +359,6 @@ class _SunnahDzikirSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: HabitFocusTheme.stackGap),
-        // Dzikir card
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
@@ -403,8 +401,7 @@ class _SunnahDzikirSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: 1.0,
-                  backgroundColor:
-                      colorScheme.surfaceContainer,
+                  backgroundColor: colorScheme.surfaceContainer,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     colorScheme.primary,
                   ),
@@ -433,7 +430,6 @@ class _SunnahDzikirSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: HabitFocusTheme.stackGap),
-        // Quran card
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(

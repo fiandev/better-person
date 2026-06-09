@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
 import '../widgets/habit_focus_app_bar.dart';
-import '../widgets/habit_focus_bottom_nav.dart';
 import '../widgets/progress_ring.dart';
+import '../../routes/route_shell.dart';
 
 class FocusScreen extends StatelessWidget {
   const FocusScreen({super.key});
@@ -18,39 +18,30 @@ class FocusScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
         children: [
-          // Context header
           _ContextHeader(
             colorScheme: colorScheme,
             textTheme: textTheme,
           ),
           const SizedBox(height: HabitFocusTheme.sectionGap),
-
-          // Timer section
           _TimerSection(
             colorScheme: colorScheme,
             textTheme: textTheme,
           ),
           const SizedBox(height: 24),
-
-          // Action buttons
           _ActionButtons(colorScheme: colorScheme),
           const SizedBox(height: HabitFocusTheme.sectionGap),
-
-          // Current Task
           _CurrentTaskCard(
             colorScheme: colorScheme,
             textTheme: textTheme,
           ),
           const SizedBox(height: HabitFocusTheme.sectionGap),
-
-          // Up Next section
           _UpNextSection(
             colorScheme: colorScheme,
             textTheme: textTheme,
           ),
         ],
       ),
-      bottomNavigationBar: const HabitFocusBottomNav(currentIndex: 1),
+      bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 1),
     );
   }
 }

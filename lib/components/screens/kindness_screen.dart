@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
 import '../widgets/habit_focus_app_bar.dart';
-import '../widgets/habit_focus_bottom_nav.dart';
+import '../../routes/route_shell.dart';
 
 class KindnessScreen extends StatefulWidget {
   const KindnessScreen({super.key});
@@ -42,7 +42,7 @@ class _KindnessScreenState extends State<KindnessScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const HabitFocusBottomNav(currentIndex: 3),
+      bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 3),
     );
   }
 }
@@ -320,8 +320,7 @@ class _ImpactCounterCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: 0.75,
                   backgroundColor: Colors.black.withValues(alpha: 0.2),
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   minHeight: 8,
                 ),
               ),
@@ -376,27 +375,20 @@ class _ReflectionCard extends StatelessWidget {
           TextField(
             maxLines: 4,
             decoration: InputDecoration(
-              hintText:
-                  'Describe your act of kindness or how it made you feel...',
+              hintText: 'Describe your act of kindness or how it made you feel...',
               hintStyle: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.outline,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  HabitFocusTheme.defaultRadius,
-                ),
+                borderRadius: BorderRadius.circular(HabitFocusTheme.defaultRadius),
                 borderSide: BorderSide(color: colorScheme.outlineVariant),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  HabitFocusTheme.defaultRadius,
-                ),
+                borderRadius: BorderRadius.circular(HabitFocusTheme.defaultRadius),
                 borderSide: BorderSide(color: colorScheme.outlineVariant),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  HabitFocusTheme.defaultRadius,
-                ),
+                borderRadius: BorderRadius.circular(HabitFocusTheme.defaultRadius),
                 borderSide: BorderSide(color: colorScheme.primary, width: 2),
               ),
               filled: true,

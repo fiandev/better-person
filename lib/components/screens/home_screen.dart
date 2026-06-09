@@ -4,8 +4,8 @@ import '../theme/habit_focus_theme.dart';
 import '../widgets/daily_progress_bar.dart';
 import '../widgets/habit_card.dart';
 import '../widgets/habit_focus_app_bar.dart';
-import '../widgets/habit_focus_bottom_nav.dart';
 import '../widgets/progress_ring.dart';
+import '../../routes/route_shell.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -27,21 +27,16 @@ class HomeScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
               children: [
-                // Greeting section
                 _GreetingSection(
                   textTheme: textTheme,
                   colorScheme: colorScheme,
                 ),
                 const SizedBox(height: HabitFocusTheme.sectionGap),
-
-                // Bento grid
                 _BentoGrid(
                   colorScheme: colorScheme,
                   textTheme: textTheme,
                 ),
                 const SizedBox(height: HabitFocusTheme.sectionGap),
-
-                // Key Habits section
                 _KeyHabitsSection(
                   colorScheme: colorScheme,
                   textTheme: textTheme,
@@ -51,7 +46,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const HabitFocusBottomNav(currentIndex: 0),
+      bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 0),
     );
   }
 }
@@ -115,7 +110,6 @@ class _BentoGrid extends StatelessWidget {
         if (crossAxisCount == 2) {
           return Column(
             children: [
-              // Main card spans 2 columns
               _MainProgressCard(
                 colorScheme: colorScheme,
                 textTheme: textTheme,
