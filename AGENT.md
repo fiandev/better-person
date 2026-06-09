@@ -64,12 +64,10 @@ The app uses **URL query parameters** for routing. There is no Flutter Navigator
 
 ```
 http://localhost:PORT/?path=/habit_focus/home
-http://localhost:PORT/?path=/habit_focus/focus&theme=dark
+http://localhost:PORT/?path=/habit_focus/focus
 ```
 
-The optional `theme=dark` parameter switches to `ThemeData.dark()`.
-
-All routes are wrapped with `Theme(data: HabitFocusTheme.themeData, child: widget)`.
+All routes use `HabitFocusTheme.themeData` applied directly on `MaterialApp`.
 
 ## Pages
 

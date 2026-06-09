@@ -44,12 +44,6 @@ http://localhost:PORT/?path=/habit_focus/home
 http://localhost:PORT/?path=/habit_focus/focus
 ```
 
-The optional `theme=dark` query parameter enables dark mode:
-
-```
-http://localhost:PORT/?path=/habit_focus/home&theme=dark
-```
-
 If no path is provided or the path is not found, the app defaults to the Home screen.
 
 ## Design System
