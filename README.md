@@ -6,14 +6,16 @@ A mindful habit tracking app for building daily habits across three life pillars
 
 HabitFocus provides six screens to help users track and maintain their daily habits:
 
-| Screen | Route | Description |
-|--------|-------|-------------|
-| Home (Beranda) | `/habit_focus/home` | Main dashboard with daily habit overview and progress |
-| Focus (Fokus Kerja) | `/habit_focus/focus` | Work focus timer with circular progress indicator |
-| Ibadah (Rutinitas Ibadah) | `/habit_focus/ibadah` | Religious routine tracker |
-| Spiritual (Rutinitas Spiritual) | `/habit_focus/spiritual` | Spiritual routine tracker |
-| Kindness (Catatan Kebaikan) | `/habit_focus/kindness` | Daily kindness journal and notes |
-| Statistics (Statistik Mingguan) | `/habit_focus/statistics` | Weekly statistics and progress charts |
+| Screen | Description |
+|--------|-------------|
+| Home (Beranda) | Main dashboard with daily habit overview and progress |
+| Focus (Fokus Kerja) | Work focus timer with circular progress indicator |
+| Ibadah (Rutinitas Ibadah) | Religious routine tracker |
+| Spiritual (Rutinitas Spiritual) | Spiritual routine tracker |
+| Kindness (Catatan Kebaikan) | Daily kindness journal and notes |
+| Statistics (Statistik Mingguan) | Weekly statistics and progress charts |
+
+Navigation between screens is handled by the bottom navigation bar within the app.
 
 ## Tech Stack
 
@@ -35,17 +37,6 @@ flutter run -d chrome
 flutter analyze
 ```
 
-## URL Routing
-
-The app uses URL query parameters for navigation instead of Flutter Navigator:
-
-```
-http://localhost:PORT/?path=/habit_focus/home
-http://localhost:PORT/?path=/habit_focus/focus
-```
-
-If no path is provided or the path is not found, the app defaults to the Home screen.
-
 ## Design System
 
 HabitFocus uses the "Mindful Growth" design system:
@@ -62,7 +53,7 @@ HabitFocus uses the "Mindful Growth" design system:
 
 ```
 lib/
-├── main.dart              # App entry point with route map
+├── main.dart              # App entry point (renders HomeScreen directly)
 └── habit_focus/
     ├── theme/             # Mindful Growth theme data
     ├── widgets/           # Shared reusable widgets
