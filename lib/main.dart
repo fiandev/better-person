@@ -168,6 +168,7 @@ import 'habit_focus/screens/ibadah_screen.dart';
 import 'habit_focus/screens/spiritual_screen.dart';
 import 'habit_focus/screens/kindness_screen.dart';
 import 'habit_focus/screens/statistics_screen.dart';
+import 'habit_focus/theme/habit_focus_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -375,8 +376,14 @@ class _MyAppState extends State<MyApp> {
       home: Builder(
         builder: (context) {
           final builder = routes[queryParams["path"]];
-          return builder?.call() ??
+          final widget = builder?.call() ??
               Scaffold(body: Center(child: Text("No page found")));
+          final path = queryParams["path"] ?? "";
+          if (path.startsWith("/habit_focus/")) {
+            return Theme(
+                data: HabitFocusTheme.themeData, child: widget);
+          }
+          return widget;
         },
       ),
     );

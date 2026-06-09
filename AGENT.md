@@ -116,12 +116,12 @@ HabitFocus is a mindful habit tracking application being built inside this widge
 
 | Page | Reference Folder | Route Path | Description |
 |------|-----------------|------------|-------------|
-| Beranda (Home) | `reference/beranda_habitfocus/` | `/habit_focus/beranda` | Main dashboard with daily habit overview |
-| Fokus Kerja | `reference/fokus_kerja/` | `/habit_focus/fokus_kerja` | Work focus timer with circular progress |
-| Rutinitas Ibadah | `reference/rutinitas_ibadah/` | `/habit_focus/rutinitas_ibadah` | Religious routine tracker |
-| Rutinitas Spiritual | `reference/rutinitas_spiritual/` | `/habit_focus/rutinitas_spiritual` | Spiritual routine tracker |
-| Catatan Kebaikan | `reference/catatan_kebaikan/` | `/habit_focus/catatan_kebaikan` | Daily kindness journal/notes |
-| Statistik Mingguan | `reference/statistik_mingguan/` | `/habit_focus/statistik_mingguan` | Weekly statistics and progress |
+| Home (Beranda) | `reference/beranda_habitfocus/` | `/habit_focus/home` | Main dashboard with daily habit overview |
+| Focus (Fokus Kerja) | `reference/fokus_kerja/` | `/habit_focus/focus` | Work focus timer with circular progress |
+| Ibadah (Rutinitas Ibadah) | `reference/rutinitas_ibadah/` | `/habit_focus/ibadah` | Religious routine tracker |
+| Spiritual (Rutinitas Spiritual) | `reference/rutinitas_spiritual/` | `/habit_focus/spiritual` | Spiritual routine tracker |
+| Kindness (Catatan Kebaikan) | `reference/catatan_kebaikan/` | `/habit_focus/kindness` | Daily kindness journal/notes |
+| Statistics (Statistik Mingguan) | `reference/statistik_mingguan/` | `/habit_focus/statistics` | Weekly statistics and progress |
 
 ### Design System: Mindful Growth
 
@@ -157,15 +157,16 @@ lib/habit_focus/
 │   ├── habit_card.dart              # Reusable habit card with category color indicator
 │   ├── progress_ring.dart           # Circular progress indicator
 │   ├── daily_progress_bar.dart      # Top-of-screen daily completion bar
-│   ├── category_chip.dart           # Mood/category tag chips
-│   └── section_header.dart          # Section title with consistent styling
+│   ├── habit_focus_app_bar.dart     # Shared app bar with avatar and brand text
+│   ├── habit_focus_bottom_nav.dart  # Custom 5-item bottom navigation
+│   └── section_card.dart            # Generic container card with optional border
 └── screens/
-    ├── beranda_screen.dart          # Home/dashboard
-    ├── fokus_kerja_screen.dart      # Work focus timer
-    ├── rutinitas_ibadah_screen.dart  # Religious routines
-    ├── rutinitas_spiritual_screen.dart # Spiritual routines
-    ├── catatan_kebaikan_screen.dart  # Kindness journal
-    └── statistik_mingguan_screen.dart # Weekly stats
+    ├── home_screen.dart             # Home/dashboard
+    ├── focus_screen.dart            # Work focus timer
+    ├── ibadah_screen.dart           # Religious routines
+    ├── spiritual_screen.dart        # Spiritual routines
+    ├── kindness_screen.dart         # Kindness journal
+    └── statistics_screen.dart       # Weekly stats
 ```
 
 ### Component Breakdown
@@ -175,9 +176,9 @@ Each page is composed of shared widgets:
 - **Habit Card** - White container with category-colored left border, checkbox, title, and streak info
 - **Progress Ring** - Thin circular ring (secondary color) showing time/completion
 - **Daily Progress Bar** - Persistent thin bar at screen top showing daily habit score
-- **Category Chip** - Low-opacity pill with category color fill and matching text
-- **Section Header** - Consistent heading style for grouping habits by pillar
-- **Interactive Checkbox** - Large circle that fills with primary color on selection
+- **Section Card** - Generic container card with ambient shadow and optional left border color
+- **HabitFocus App Bar** - Shared top bar with user avatar, 'HabitFocus' title, settings icon
+- **HabitFocus Bottom Nav** - 5-item bottom navigation (Home, Focus, Ibadah, Kindness, Profile)
 
 ## Dependencies
 
