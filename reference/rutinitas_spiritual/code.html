@@ -1,0 +1,383 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>HabitFocus - Daily Devotion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#707973",
+                        "on-secondary-fixed": "#001e2e",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2d6a4f",
+                        "surface-tint": "#2c694e",
+                        "secondary-fixed-dim": "#97cdf3",
+                        "on-background": "#191c1d",
+                        "outline-variant": "#bfc9c1",
+                        "surface-container": "#edeeef",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#95d4b3",
+                        "on-secondary-container": "#245f80",
+                        "on-tertiary-fixed": "#2c1600",
+                        "tertiary-container": "#7e572e",
+                        "on-surface": "#191c1d",
+                        "on-secondary-fixed-variant": "#034c6c",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#a2d8ff",
+                        "on-tertiary-container": "#ffd1a7",
+                        "inverse-surface": "#2e3132",
+                        "background": "#f8f9fa",
+                        "secondary-fixed": "#c7e7ff",
+                        "primary": "#0f5238",
+                        "surface": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary-fixed": "#002114",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#95d4b3",
+                        "tertiary-fixed": "#ffdcbd",
+                        "secondary": "#2a6485",
+                        "surface-bright": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-highest": "#e1e3e4",
+                        "tertiary-fixed-dim": "#f0bd8b",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#404943",
+                        "primary-fixed": "#b1f0ce",
+                        "on-primary-container": "#a8e7c5",
+                        "tertiary": "#634019",
+                        "on-tertiary-fixed-variant": "#623f18"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "1rem",
+                        "container-padding-mobile": "1.25rem",
+                        "container-padding-desktop": "2.5rem",
+                        "section-gap": "2.5rem",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "body-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["26px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Checkbox Styles */
+        .ibadah-checkbox {
+            appearance: none;
+            width: 32px;
+            height: 32px;
+            border: 2px solid theme('colors.outline-variant');
+            border-radius: theme('borderRadius.full');
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: grid;
+            place-content: center;
+        }
+        .ibadah-checkbox::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em theme('colors.on-primary');
+            background-color: theme('colors.on-primary');
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .ibadah-checkbox:checked {
+            background-color: theme('colors.primary');
+            border-color: theme('colors.primary');
+        }
+        .ibadah-checkbox:checked::before {
+            transform: scale(1);
+        }
+        .card-checked {
+            box-shadow: none !important;
+            background-color: theme('colors.surface-container-highest') !important;
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        /* Tonal shadow for cards */
+        .ambient-shadow {
+            box-shadow: 0 8px 40px -12px rgba(15, 82, 56, 0.08); /* Using primary color with low opacity for shadow */
+        }
+        
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen pb-24 md:pb-0 font-body-md text-body-md overflow-x-hidden">
+<!-- TopAppBar (Web & Mobile) -->
+<header class="w-full top-0 sticky z-40 bg-surface dark:bg-surface-dim flat no shadows flex items-center justify-between px-container-padding-mobile py-4 max-w-[1200px] mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOrClx2z7tga3JytBKeDrd1Ye1XQYRjuyuHECjbtmcydRI1rJAtqQ6BBSlsghv_ZEzgI3rheWzWL6TMzhl6Jhfg-cFGo5OFqQ7xl3IgYX0sBZ0Ah5MbN1QMUGi2bmX_q3zUiRigJ-pQnxmBHwWAIoQr-OXh9gnyzYLlL8L6jlIQwHmAqG8plA0BbuUZqQTKkzi6pPiN9yc3ejsSwoZlKYLB-phYzaNv7tRmGSMmNcmWvSVDCiJlrhfRqoPHjeHj4nkJtOSnA1xQeU">
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">HabitFocus</span>
+</div>
+<!-- Desktop Nav Cluster -->
+<nav class="hidden md:flex items-center gap-2">
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant dark:text-outline hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant dark:text-outline hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+<span class="font-label-md text-label-md">Focus</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary-container text-on-primary-container hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] icon-filled">spa</span>
+<span class="font-label-md text-label-md">Devotion</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant dark:text-outline hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">volunteer_activism</span>
+<span class="font-label-md text-label-md">Kindness</span>
+</a>
+<a class="flex items-center gap-2 px-4 py-2 rounded-full text-on-surface-variant dark:text-outline hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-primary dark:text-inverse-primary hover:bg-surface-container-low transition-colors scale-95 active:duration-100">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Daily Progress Bar -->
+<div class="fixed top-0 left-0 w-full h-1 bg-surface-container z-50">
+<div class="h-full bg-tertiary progress-bar-fill w-[45%]"></div>
+</div>
+<!-- Main Canvas -->
+<main class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop pt-8 pb-16">
+<!-- Next Prayer Prominent Display -->
+<section class="mb-section-gap relative rounded-3xl overflow-hidden bg-primary text-on-primary p-8 md:p-12 ambient-shadow">
+<!-- Decorative Islamic Geometric Pattern Overlay (Subtle) -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div>
+<span class="inline-block px-3 py-1 rounded-full bg-on-primary/20 font-label-sm text-label-sm mb-4 backdrop-blur-sm">Next Spiritual Moment</span>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg mb-2">Afternoon Mindfulness</h1>
+<p class="font-body-lg text-body-lg text-on-primary/80">15:30 PM</p>
+</div>
+<div class="flex items-center gap-4 bg-on-primary/10 p-6 rounded-2xl backdrop-blur-md border border-on-primary/20">
+<span class="material-symbols-outlined text-[48px] font-light">schedule</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-primary/80 uppercase tracking-widest">Time Remaining</p>
+<p class="font-headline-md text-headline-md tracking-tight">01:42:15</p>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Shalat Checklist -->
+<div class="lg:col-span-8 flex flex-col gap-stack-gap">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Spiritual Moments</h2>
+<span class="font-label-md text-label-md text-on-surface-variant bg-surface-container-high px-3 py-1 rounded-full">2/5 Completed</span>
+</div>
+<!-- Prayer Cards -->
+<label class="block cursor-pointer">
+<div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow border-l-4 border-l-outline-variant flex items-center justify-between transition-all duration-300 card-checked" id="card-fajr">
+<div class="flex items-center gap-4">
+<input checked="" class="ibadah-checkbox" onchange="toggleCard(this, 'card-fajr')" type="checkbox">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface" style="font-size: 20px;">Morning Devotion</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">04:45 AM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">done_all</span>
+</div>
+</label>
+<label class="block cursor-pointer">
+<div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow border-l-4 border-l-outline-variant flex items-center justify-between transition-all duration-300 card-checked" id="card-dhuhr">
+<div class="flex items-center gap-4">
+<input checked="" class="ibadah-checkbox" onchange="toggleCard(this, 'card-dhuhr')" type="checkbox">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface" style="font-size: 20px;">Mid-day Reflection</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">12:15 PM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">done_all</span>
+</div>
+</label>
+<label class="block cursor-pointer">
+<div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow border-l-4 border-l-primary flex items-center justify-between transition-all duration-300" id="card-asr">
+<div class="flex items-center gap-4">
+<input class="ibadah-checkbox" onchange="toggleCard(this, 'card-asr')" type="checkbox">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface" style="font-size: 20px;">Afternoon Mindfulness</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">03:30 PM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-50">schedule</span>
+</div>
+</label>
+<label class="block cursor-pointer">
+<div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow border-l-4 border-l-tertiary flex items-center justify-between transition-all duration-300" id="card-maghrib">
+<div class="flex items-center gap-4">
+<input class="ibadah-checkbox" onchange="toggleCard(this, 'card-maghrib')" type="checkbox">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface" style="font-size: 20px;">Evening Meditation</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">06:05 PM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-50">schedule</span>
+</div>
+</label>
+<label class="block cursor-pointer">
+<div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow border-l-4 border-l-tertiary flex items-center justify-between transition-all duration-300" id="card-isha">
+<div class="flex items-center gap-4">
+<input class="ibadah-checkbox" onchange="toggleCard(this, 'card-isha')" type="checkbox">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface" style="font-size: 20px;">Night Reflection</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">07:20 PM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-50">schedule</span>
+</div>
+</label>
+</div>
+<!-- Right Column: Additional Practices (Bento style) -->
+<div class="lg:col-span-4 flex flex-col gap-stack-gap">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4">Personal Reflections</h2>
+<!-- Dzikir Card -->
+<div class="bg-surface-container-lowest p-6 rounded-3xl ambient-shadow flex flex-col h-full relative overflow-hidden group">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-500"></div>
+<div class="flex items-center justify-between mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">self_improvement</span>
+</div>
+<h3 class="font-headline-md text-headline-md" style="font-size: 18px;">Morning Mindfulness</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-variant flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+<div class="mt-auto relative z-10">
+<div class="w-full bg-surface-container h-2 rounded-full mb-3 overflow-hidden">
+<div class="bg-primary h-full w-[100%] rounded-full"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Completed</span>
+<span class="font-label-md text-label-md text-primary">33/33</span>
+</div>
+</div>
+</div>
+<!-- Quran Card -->
+<div class="bg-surface-container-lowest p-6 rounded-3xl ambient-shadow flex flex-col h-full relative overflow-hidden group">
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-colors duration-500"></div>
+<div class="flex items-center justify-between mb-6 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</div>
+<h3 class="font-headline-md text-headline-md" style="font-size: 18px;">Inspirational Reading</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded-md">Daily Reading</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 relative z-10">Read 2 pages after evening meditation to maintain daily streak.</p>
+<div class="mt-auto relative z-10">
+<button class="w-full py-3 rounded-xl border border-outline font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                            Start Session
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface dark:bg-surface-dim fixed bottom-0 w-full z-50 rounded-t-xl border-t border-outline-variant dark:border-outline shadow-sm flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span class="font-label-sm text-label-sm mt-1">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-2xl px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined icon-filled" data-icon="spa">spa</span>
+<span class="font-label-sm text-label-sm mt-1">Devotion</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="volunteer_activism">volunteer_activism</span>
+<span class="font-label-sm text-label-sm mt-1">Kindness</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        function toggleCard(checkbox, cardId) {
+            const card = document.getElementById(cardId);
+            if (checkbox.checked) {
+                card.classList.add('card-checked');
+                card.classList.remove('border-l-primary', 'border-l-tertiary');
+                card.classList.add('border-l-outline-variant');
+            } else {
+                card.classList.remove('card-checked');
+                card.classList.remove('border-l-outline-variant');
+                // Basic logic to restore color based on ID for demo purposes
+                if(cardId === 'card-asr') card.classList.add('border-l-primary');
+                else card.classList.add('border-l-tertiary');
+            }
+        }
+    </script>
+</body></html>

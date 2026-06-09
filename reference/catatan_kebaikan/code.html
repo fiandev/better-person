@@ -1,0 +1,257 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Daily Kindness</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#707973",
+                        "on-secondary-fixed": "#001e2e",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2d6a4f",
+                        "surface-tint": "#2c694e",
+                        "secondary-fixed-dim": "#97cdf3",
+                        "on-background": "#191c1d",
+                        "outline-variant": "#bfc9c1",
+                        "surface-container": "#edeeef",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "inverse-primary": "#95d4b3",
+                        "on-secondary-container": "#245f80",
+                        "on-tertiary-fixed": "#2c1600",
+                        "tertiary-container": "#7e572e",
+                        "on-surface": "#191c1d",
+                        "on-secondary-fixed-variant": "#034c6c",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#a2d8ff",
+                        "on-tertiary-container": "#ffd1a7",
+                        "inverse-surface": "#2e3132",
+                        "background": "#f8f9fa",
+                        "secondary-fixed": "#c7e7ff",
+                        "primary": "#0f5238",
+                        "surface": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary-fixed": "#002114",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#95d4b3",
+                        "tertiary-fixed": "#ffdcbd",
+                        "secondary": "#2a6485",
+                        "surface-bright": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-highest": "#e1e3e4",
+                        "tertiary-fixed-dim": "#f0bd8b",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#404943",
+                        "primary-fixed": "#b1f0ce",
+                        "on-primary-container": "#a8e7c5",
+                        "tertiary": "#634019",
+                        "on-tertiary-fixed-variant": "#623f18"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "1rem",
+                        "container-padding-mobile": "1.25rem",
+                        "container-padding-desktop": "2.5rem",
+                        "section-gap": "2.5rem",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "body-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+        
+        .kindness-card {
+            box-shadow: 0 4px 40px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        .kindness-card:hover {
+            box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .idea-chip {
+            transition: all 0.2s ease;
+        }
+        .idea-chip.selected {
+            background-color: #2d6a4f; /* primary-container */
+            color: #a8e7c5; /* on-primary-container */
+            border-color: #2d6a4f;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:pb-0 pb-20">
+<!-- TopAppBar (Web) -->
+<header class="w-full top-0 sticky z-40 hidden md:flex items-center justify-between px-container-padding-desktop py-4 max-w-[1200px] mx-auto bg-surface">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRWbd1NPSE80qsO2HhUUuFhI-IGYR6lgK7-vPBc68daPFt6eOfG0c1wmFKnXDp18qxC1Ksk0Xm6EV1cATap0ks3TUR0J1lu7NzLUH7iHPWBAkIJSxccwPK7DC557UYYT1RYc7F-MWUndSrFu3Y1F_8a_a1AQsDOUCZ-wLoD2w2TF3CKmHj5YPOqyq6YKmK2nM3VpHjohoiLycXHu7G31M1lLtrvGRHV4NxJSoYOq9mSr2NNLtjni_oHAcD02h68TGm7Ri1cBgMmZM">
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">HabitFocus</h1>
+</div>
+<nav class="flex items-center gap-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-2xl px-4 py-2 scale-95 active:duration-100" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-2xl px-4 py-2 scale-95 active:duration-100" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span class="font-label-sm text-label-sm mt-1">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-2xl px-4 py-2 scale-95 active:duration-100" href="#">
+<span class="material-symbols-outlined">auto_awesome_motion</span>
+<span class="font-label-sm text-label-sm mt-1">Ibadah</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container hover:bg-surface-container-low transition-colors rounded-2xl px-4 py-2 scale-95 active:duration-100" href="#">
+<span class="material-symbols-outlined icon-fill">volunteer_activism</span>
+<span class="font-label-sm text-label-sm mt-1">Kindness</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-2xl px-4 py-2 scale-95 active:duration-100" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<!-- TopAppBar (Mobile) -->
+<header class="w-full top-0 sticky z-40 md:hidden flex items-center justify-between px-container-padding-mobile py-4 bg-surface">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9-vVtzO3kBkpjaCRxZKbs8zEesqKJEmtwzqKE-d34s7JNQ3tA3zN9-TRl13RtZ6VkJ2Od8aezo7dyhyAo1yq8WDi0ZtMc63VsNvQ6ViVuzzpiR5LaTrZQEcLOJJlBucTzW7mwwzTYLQ8SeY7HCkqadjj2cDfIfdXK3aQnI3uzG0nyfDuYZBvTuTXY8wrb_gzaL_esSLvO8sR3MsQC8rfoF-toXlpkGB0shdZm040xR0oyigUEmxRsbK-394f8HZiCzAvKK92S5QI">
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">HabitFocus</h1>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow flex flex-col items-center px-container-padding-mobile md:px-container-padding-desktop py-stack-gap max-w-[800px] mx-auto w-full">
+<!-- Header Section -->
+<div class="w-full text-center mb-section-gap relative">
+<div class="absolute inset-0 flex justify-center items-center opacity-10 pointer-events-none -z-10">
+<span class="material-symbols-outlined" style="font-size: 160px;">volunteer_activism</span>
+</div>
+<span class="inline-block px-4 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm mb-4">Daily Reflection</span>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-2">How did you help today?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">Small acts of kindness create a ripple effect. Log your moments of connection and compassion.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-stack-gap w-full">
+<!-- Quick Ideas Area (Spans 8 columns on desktop) -->
+<div class="md:col-span-8 kindness-card bg-surface-container-lowest rounded-xl p-6 border-l-4 border-tertiary-container">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-tertiary-container">lightbulb</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Quick Ideas</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Select the acts of kindness you performed today.</p>
+<div class="flex flex-wrap gap-3" id="ideas-container">
+<button class="idea-chip px-4 py-2 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low focus:outline-none" onclick="toggleChip(this)">Gave a compliment</button>
+<button class="idea-chip px-4 py-2 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low focus:outline-none" onclick="toggleChip(this)">Helped a colleague</button>
+<button class="idea-chip px-4 py-2 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low focus:outline-none" onclick="toggleChip(this)">Held the door open</button>
+<button class="idea-chip px-4 py-2 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low focus:outline-none" onclick="toggleChip(this)">Listened actively</button>
+<button class="idea-chip px-4 py-2 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low focus:outline-none" onclick="toggleChip(this)">Donated to charity</button>
+<button class="idea-chip px-4 py-2 rounded-full border border-outline-variant font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low focus:outline-none" onclick="toggleChip(this)">Sent a thoughtful message</button>
+</div>
+</div>
+<!-- Stats/Impact Area (Spans 4 columns on desktop) -->
+<div class="md:col-span-4 kindness-card bg-tertiary-container text-on-tertiary rounded-xl p-6 flex flex-col justify-center items-center text-center relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-20">
+<span class="material-symbols-outlined" style="font-size: 100px;">favorite</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2 relative z-10">Your Impact</h3>
+<div class="text-5xl font-bold font-headline-lg mb-2 relative z-10">14</div>
+<p class="font-body-md text-body-md opacity-90 relative z-10">Acts of kindness this week</p>
+<div class="mt-6 w-full bg-black/20 h-2 rounded-full overflow-hidden relative z-10">
+<div class="bg-white h-full w-3/4 rounded-full"></div>
+</div>
+<p class="font-label-sm text-label-sm mt-2 opacity-80 relative z-10">Almost reached your weekly goal!</p>
+</div>
+<!-- Custom Note Area (Spans full width) -->
+<div class="md:col-span-12 kindness-card bg-surface-container-lowest rounded-xl p-6 mt-2">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Reflection</h3>
+</div>
+<div class="relative">
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg p-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow resize-none h-32" placeholder="Describe your act of kindness or how it made you feel..."></textarea>
+</div>
+<div class="flex justify-end mt-6">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-sm">check</span>
+                        Log Kindness
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface border-t border-outline-variant shadow-sm md:hidden flex justify-around items-center h-16 px-2 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span class="font-label-sm text-label-sm">Focus</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:scale-90 transition-transform" href="#"><span class="material-symbols-outlined">self_improvement</span><span class="font-label-sm text-label-sm">Devotion</span></a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-2xl px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined icon-fill">volunteer_activism</span>
+<span class="font-label-sm text-label-sm">Kindness</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        function toggleChip(element) {
+            element.classList.toggle('selected');
+        }
+    </script>
+</body></html>

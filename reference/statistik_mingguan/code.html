@@ -1,0 +1,339 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>Statistik Mingguan - HabitFocus</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "primary": "#0f5238",
+                    "tertiary-fixed": "#ffdcbd",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "primary-fixed": "#b1f0ce",
+                    "on-primary-fixed": "#002114",
+                    "tertiary-fixed-dim": "#f0bd8b",
+                    "tertiary-container": "#7e572e",
+                    "surface-tint": "#2c694e",
+                    "secondary-fixed-dim": "#97cdf3",
+                    "on-surface": "#191c1d",
+                    "tertiary": "#634019",
+                    "on-secondary-fixed": "#001e2e",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-fixed-dim": "#95d4b3",
+                    "on-secondary-fixed-variant": "#034c6c",
+                    "secondary-fixed": "#c7e7ff",
+                    "on-primary": "#ffffff",
+                    "on-primary-container": "#a8e7c5",
+                    "error-container": "#ffdad6",
+                    "outline": "#707973",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#2e3132",
+                    "surface-dim": "#d9dadb",
+                    "outline-variant": "#bfc9c1",
+                    "on-tertiary-fixed-variant": "#623f18",
+                    "on-tertiary-container": "#ffd1a7",
+                    "on-surface-variant": "#404943",
+                    "secondary": "#2a6485",
+                    "surface-container-high": "#e7e8e9",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-variant": "#e1e3e4",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#edeeef",
+                    "primary-container": "#2d6a4f",
+                    "secondary-container": "#a2d8ff",
+                    "surface": "#f8f9fa",
+                    "background": "#f8f9fa",
+                    "on-tertiary-fixed": "#2c1600",
+                    "on-secondary-container": "#245f80",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#191c1d",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#95d4b3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding-desktop": "2.5rem",
+                    "container-padding-mobile": "1.25rem",
+                    "section-gap": "2.5rem",
+                    "stack-gap": "1rem",
+                    "base": "8px",
+                    "safe": "env(safe-area-inset-bottom)"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-md": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "label-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Hide scrollbar for clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Chart Bar Animations */
+        @keyframes growUp {
+            from { height: 0; }
+            to { height: var(--target-height); }
+        }
+        .chart-bar-fill {
+            animation: growUp 1s ease-out forwards;
+        }
+        
+        /* Soft Drop Shadows as per guidance */
+        .soft-shadow {
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-24 flex flex-col items-center">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-50 bg-surface-bright dark:bg-surface-dim">
+<div class="flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop h-16 w-full max-w-[1200px] mx-auto">
+<button class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary dark:text-primary-fixed-dim font-bold">Statistik Mingguan</h1>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border-2 border-surface-container-lowest shadow-sm flex-shrink-0 cursor-pointer active:scale-95 transition-transform duration-200">
+<img alt="User profile picture" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrEXDd4-C-rwJdXQF3dM9Xn7G8Vl1Gs5_CcVeGsNO16SLVFbxLSzzAqJAbdANhzhimEqsEgR5BQuwe_Kro5UrZLj7fkkhPfdUOx5fXXF4BFUv7OvVtbJaAPhqcwRT7NBGotjdssi6yVQxCqZMqPSulSM7Gt1yUlXlmZK4pCoSvTilcdnbKXghN_cr01dc330iLPm9TY4I1eQ1QNECm3PoQ1hqpwqjgcLu7mM_9pXCvsjc9-oMR24fat6IFb1ywrbS-bhZAlfnPju0">
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[1200px] px-container-padding-mobile md:px-container-padding-desktop flex flex-col gap-section-gap pt-6 pb-section-gap">
+<!-- Weekly Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl soft-shadow p-6 flex items-center justify-between">
+<div class="flex flex-col gap-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Growth Score</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">85%</span>
+<span class="font-label-sm text-label-sm text-primary-container bg-primary-fixed px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5%
+                    </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Great consistency this week. Keep nurturing your habits.</p>
+</div>
+<!-- Circular Progress Indicator -->
+<div class="relative w-24 h-24 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+<!-- Background Circle -->
+<path class="text-surface-container-high" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3"></path>
+<!-- Progress Circle -->
+<path class="text-primary transition-all duration-1000 ease-out" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="85, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+</div>
+</section>
+<!-- Habit Progress Chart -->
+<section class="flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Daily Consistency</h3>
+<div class="bg-surface-container-lowest rounded-xl soft-shadow p-6 h-64 flex items-end justify-between gap-2 md:gap-4">
+<!-- Bars (Mon-Sun) -->
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary/40 rounded-t-sm chart-bar-fill transition-colors group-hover:bg-primary/60" style="--target-height: 60%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">M</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary/40 rounded-t-sm chart-bar-fill transition-colors group-hover:bg-primary/60" style="--target-height: 75%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary/40 rounded-t-sm chart-bar-fill transition-colors group-hover:bg-primary/60" style="--target-height: 90%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">W</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary rounded-t-sm chart-bar-fill" style="--target-height: 100%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary/40 rounded-t-sm chart-bar-fill transition-colors group-hover:bg-primary/60" style="--target-height: 85%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">F</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary/40 rounded-t-sm chart-bar-fill transition-colors group-hover:bg-primary/60" style="--target-height: 50%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">S</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-surface-container h-full rounded-t-sm relative overflow-hidden flex items-end">
+<div class="w-full bg-primary/40 rounded-t-sm chart-bar-fill transition-colors group-hover:bg-primary/60" style="--target-height: 65%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">S</span>
+</div>
+</div>
+</section>
+<!-- Activity Breakdown (Bento Grid) -->
+<section class="flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Activity Breakdown</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-gap">
+<!-- Work Focus -->
+<div class="bg-surface-container-lowest border-l-4 border-secondary rounded-xl soft-shadow p-5 flex flex-col justify-between h-40">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
+<h4 class="font-label-md text-label-md uppercase tracking-wide">Work Focus</h4>
+</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">18h 45m</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+<span>12% from last week</span>
+</div>
+</div>
+</div>
+<!-- Ibadah -->
+<div class="bg-surface-container-lowest border-l-4 border-tertiary-container rounded-xl soft-shadow p-5 flex flex-col justify-between h-40">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mosque</span>
+<h4 class="font-label-md text-label-md uppercase tracking-wide">Ibadah</h4>
+</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">95%</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">
+                            High consistency in Shalat &amp; Dzikir.
+                        </div>
+</div>
+</div>
+<!-- Kindness -->
+<div class="bg-surface-container-lowest border-l-4 border-primary rounded-xl soft-shadow p-5 flex flex-col justify-between h-40">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<h4 class="font-label-md text-label-md uppercase tracking-wide">Kindness</h4>
+</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">24 Acts</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">
+                            Spreading positivity daily.
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Achievements Section -->
+<section class="flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface flex items-center justify-between">
+<span>Recent Badges</span>
+<span class="font-label-md text-label-md text-primary cursor-pointer">View All</span>
+</h3>
+<!-- Horizontal Scroll Container -->
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
+<!-- Badge 1 -->
+<div class="snap-start flex-shrink-0 w-32 bg-surface-container-lowest rounded-xl soft-shadow p-4 flex flex-col items-center text-center gap-2 border border-surface-variant/50">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Focus Master</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10h tracked</span>
+</div>
+<!-- Badge 2 -->
+<div class="snap-start flex-shrink-0 w-32 bg-surface-container-lowest rounded-xl soft-shadow p-4 flex flex-col items-center text-center gap-2 border border-surface-variant/50">
+<div class="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">wb_twilight</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Early Bird</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">5 days 5AM</span>
+</div>
+<!-- Badge 3 -->
+<div class="snap-start flex-shrink-0 w-32 bg-surface-container-lowest rounded-xl soft-shadow p-4 flex flex-col items-center text-center gap-2 border border-surface-variant/50">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-tertiary text-3xl" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Helper</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10 kindness</span>
+</div>
+<!-- Empty Placeholder to ensure scroll cuts off nicely -->
+<div class="snap-start flex-shrink-0 w-4"></div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center py-3 px-6 pb-safe bg-surface-container-lowest dark:bg-surface-dim shadow-[0_-4px_40px_rgba(0,0,0,0.04)] rounded-t-xl z-50">
+<!-- Inactive: Today -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+<span class="font-label-sm text-label-sm">Today</span>
+</button>
+<!-- Active: Stats -->
+<button class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full px-4 py-1 hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-sm text-label-sm">Stats</span>
+</button>
+<!-- Inactive: Growth -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">auto_awesome</span>
+<span class="font-label-sm text-label-sm">Growth</span>
+</button>
+<!-- Inactive: Profile -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</button>
+</nav>
+</body></html>
