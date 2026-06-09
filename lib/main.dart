@@ -39,24 +39,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final builder = routes[queryParams["path"]];
+    final widget = builder?.call() ?? const HomeScreen();
+
     return MaterialApp(
       title: 'HabitFocus',
-      theme: queryParams["theme"] == "dark"
-          ? ThemeData.dark()
-          : ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            ),
-      home: Builder(
-        builder: (context) {
-          final builder = routes[queryParams["path"]];
-          final widget = builder?.call() ?? const HomeScreen();
-          final path = queryParams["path"] ?? "";
-          if (path.startsWith("/habit_focus/") || builder == null) {
-            return Theme(data: HabitFocusTheme.themeData, child: widget);
-          }
-          return widget;
-        },
-      ),
+      theme: HabitFocusTheme.themeData,
+      home: widget,
     );
   }
 }
