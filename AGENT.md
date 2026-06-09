@@ -17,7 +17,7 @@ This is a **Flutter web application** for mindful habit tracking. HabitFocus hel
 ```
 better-person/
 ├── lib/
-│   ├── main.dart                    # App entry point with route map
+│   ├── main.dart                    # App entry point (renders HomeScreen directly)
 │   └── habit_focus/                 # HabitFocus habit tracking app
 │       ├── theme/
 │       │   └── habit_focus_theme.dart       # ThemeData based on Mindful Growth design system
@@ -48,37 +48,26 @@ better-person/
 └── analysis_options.yaml            # Dart analyzer configuration
 ```
 
-## Routing Mechanism
+## Navigation
 
-The app uses **URL query parameters** for routing. There is no Flutter Navigator-based routing.
+The app uses an internal bottom navigation bar (`HabitFocusBottomNav`) to switch between screens. There is no URL-based routing or Flutter Navigator routing.
 
 ### How it works
 
-1. `lib/main.dart` defines a `routes` map: `Map<String, Widget Function()>`
-2. Keys are path strings like `"/habit_focus/screen_name"`
-3. The app reads the path from `Uri.base.queryParameters["path"]`
-4. It looks up the matching builder function and renders the widget
-5. If no match is found, the HomeScreen is shown as the default
-
-### URL format
-
-```
-http://localhost:PORT/?path=/habit_focus/home
-http://localhost:PORT/?path=/habit_focus/focus
-```
-
-All routes use `HabitFocusTheme.themeData` applied directly on `MaterialApp`.
+1. `lib/main.dart` renders `HomeScreen` directly as the `home` widget of `MaterialApp`
+2. The `HabitFocusBottomNav` widget handles screen switching within the app
+3. `HabitFocusTheme.themeData` is applied on `MaterialApp`
 
 ## Pages
 
-| Page | Reference Folder | Route Path | Description |
-|------|-----------------|------------|-------------|
-| Home (Beranda) | `reference/beranda_habitfocus/` | `/habit_focus/home` | Main dashboard with daily habit overview |
-| Focus (Fokus Kerja) | `reference/fokus_kerja/` | `/habit_focus/focus` | Work focus timer with circular progress |
-| Ibadah (Rutinitas Ibadah) | `reference/rutinitas_ibadah/` | `/habit_focus/ibadah` | Religious routine tracker |
-| Spiritual (Rutinitas Spiritual) | `reference/rutinitas_spiritual/` | `/habit_focus/spiritual` | Spiritual routine tracker |
-| Kindness (Catatan Kebaikan) | `reference/catatan_kebaikan/` | `/habit_focus/kindness` | Daily kindness journal/notes |
-| Statistics (Statistik Mingguan) | `reference/statistik_mingguan/` | `/habit_focus/statistics` | Weekly statistics and progress |
+| Page | Reference Folder | Description |
+|------|-----------------|-------------|
+| Home (Beranda) | `reference/beranda_habitfocus/` | Main dashboard with daily habit overview |
+| Focus (Fokus Kerja) | `reference/fokus_kerja/` | Work focus timer with circular progress |
+| Ibadah (Rutinitas Ibadah) | `reference/rutinitas_ibadah/` | Religious routine tracker |
+| Spiritual (Rutinitas Spiritual) | `reference/rutinitas_spiritual/` | Spiritual routine tracker |
+| Kindness (Catatan Kebaikan) | `reference/catatan_kebaikan/` | Daily kindness journal/notes |
+| Statistics (Statistik Mingguan) | `reference/statistik_mingguan/` | Weekly statistics and progress |
 
 ## Design System: Mindful Growth
 
@@ -133,9 +122,6 @@ flutter run -d chrome
 
 # Analyze code for errors/warnings
 flutter analyze
-
-# Access a specific page
-# Open browser to: http://localhost:PORT/?path=/habit_focus/home
 ```
 
 ## Conventions
