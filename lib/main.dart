@@ -162,6 +162,13 @@ import 'utilities/calculator.dart';
 import 'utilities/notes_app.dart';
 import 'utilities/stopwatch.dart';
 import 'utilities/world_clock.dart';
+import 'habit_focus/screens/home_screen.dart';
+import 'habit_focus/screens/focus_screen.dart';
+import 'habit_focus/screens/ibadah_screen.dart';
+import 'habit_focus/screens/spiritual_screen.dart';
+import 'habit_focus/screens/kindness_screen.dart';
+import 'habit_focus/screens/statistics_screen.dart';
+import 'habit_focus/theme/habit_focus_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -333,6 +340,12 @@ final routes = <String, Widget Function()>{
   "/utilities/notes_app": () => const NotesApp(),
   "/utilities/stopwatch": () => const StopwatchScreen(),
   "/utilities/world_clock": () => const WorldClock(),
+  "/habit_focus/home": () => const HomeScreen(),
+  "/habit_focus/focus": () => const FocusScreen(),
+  "/habit_focus/ibadah": () => const IbadahScreen(),
+  "/habit_focus/spiritual": () => const SpiritualScreen(),
+  "/habit_focus/kindness": () => const KindnessScreen(),
+  "/habit_focus/statistics": () => const StatisticsScreen(),
 };
 
 class MyApp extends StatefulWidget {
@@ -363,8 +376,14 @@ class _MyAppState extends State<MyApp> {
       home: Builder(
         builder: (context) {
           final builder = routes[queryParams["path"]];
-          return builder?.call() ??
+          final widget = builder?.call() ??
               Scaffold(body: Center(child: Text("No page found")));
+          final path = queryParams["path"] ?? "";
+          if (path.startsWith("/habit_focus/")) {
+            return Theme(
+                data: HabitFocusTheme.themeData, child: widget);
+          }
+          return widget;
         },
       ),
     );
