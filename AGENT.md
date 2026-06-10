@@ -1,8 +1,8 @@
-# HabitFocus - Mindful Habit Tracking App
+# Better Person - Mindful Habit Tracking App
 
 ## Project Overview
 
-This is a **Flutter web application** for mindful habit tracking. HabitFocus helps users build and maintain daily habits across three life pillars:
+This is a **Flutter web application** for mindful habit tracking. Better Person helps users build and maintain daily habits across three life pillars:
 
 - **Growth (Daily Habits)** - represented by Primary (deep green)
 - **Work Focus** - represented by Secondary (steel blue)
@@ -43,19 +43,19 @@ This is a **Flutter web application** for mindful habit tracking. HabitFocus hel
 
 ## Navigation
 
-The app uses an internal bottom navigation bar (`HabitFocusBottomNav`) to switch between screens. There is no URL-based routing or Flutter Navigator routing.
+The app uses an internal bottom navigation bar (`Better PersonBottomNav`) to switch between screens. There is no URL-based routing or Flutter Navigator routing.
 
 ### How it works
 
 1. `lib/main.dart` renders `HomeScreen` directly as the `home` widget of `MaterialApp`
-2. The `HabitFocusBottomNav` widget handles screen switching within the app
-3. `HabitFocusTheme.themeData` is applied on `MaterialApp`
+2. The `Better PersonBottomNav` widget handles screen switching within the app
+3. `Better PersonTheme.themeData` is applied on `MaterialApp`
 
 ## Pages
 
 | Page | Reference Folder | Description |
 |------|-----------------|-------------|
-| Home (Beranda) | `reference/beranda_habitfocus/` | Main dashboard with daily habit overview |
+| Home (Beranda) | `reference/beranda_Better Person/` | Main dashboard with daily habit overview |
 | Focus (Fokus Kerja) | `reference/fokus_kerja/` | Work focus timer with circular progress |
 | Ibadah (Rutinitas Ibadah) | `reference/rutinitas_ibadah/` | Religious routine tracker |
 | Spiritual (Rutinitas Spiritual) | `reference/rutinitas_spiritual/` | Spiritual routine tracker |
@@ -94,8 +94,8 @@ Each page is composed of shared widgets:
 - **Progress Ring** - Thin circular ring (secondary color) showing time/completion
 - **Daily Progress Bar** - Persistent thin bar at screen top showing daily habit score
 - **Section Card** - Generic container card with ambient shadow and optional left border color
-- **HabitFocus App Bar** - Shared top bar with user avatar, 'HabitFocus' title, settings icon
-- **HabitFocus Bottom Nav** - 5-item bottom navigation (Home, Focus, Ibadah, Kindness, Profile)
+- **Better Person App Bar** - Shared top bar with user avatar, 'Better Person' title, settings icon
+- **Better Person Bottom Nav** - 5-item bottom navigation (Home, Focus, Ibadah, Kindness, Profile)
 
 ## Dependencies
 

@@ -16,7 +16,7 @@ class HabitFocusAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: colorScheme.surface,
       elevation: 0,
       title: Text(
-        'HabitFocus',
+        'Better Person',
         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
           color: colorScheme.primary,
           fontWeight: FontWeight.w700,
