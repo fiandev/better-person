@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/screens/focus_screen.dart';
 import '../components/screens/home_screen.dart';
-import '../components/screens/ibadah_screen.dart';
+import '../components/screens/devotion_screen.dart';
 import '../components/screens/kindness_screen.dart';
 import '../components/screens/statistics_screen.dart';
 
@@ -20,7 +20,7 @@ class AppRoutes {
       case focus:
         return MaterialPageRoute(builder: (_) => const FocusScreen());
       case ibadah:
-        return MaterialPageRoute(builder: (_) => const IbadahScreen());
+        return MaterialPageRoute(builder: (_) => const DevotionScreen());
       case kindness:
         return MaterialPageRoute(builder: (_) => const KindnessScreen());
       case statistics:
@@ -28,9 +28,7 @@ class AppRoutes {
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            body: Center(
-              child: Text('No route defined for ${settings.name}'),
-            ),
+            body: Center(child: Text('No route defined for ${settings.name}')),
           ),
         );
     }

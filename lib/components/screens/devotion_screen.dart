@@ -5,14 +5,14 @@ import '../widgets/daily_progress_bar.dart';
 import '../widgets/habit_focus_app_bar.dart';
 import '../../routes/route_shell.dart';
 
-class IbadahScreen extends StatefulWidget {
-  const IbadahScreen({super.key});
+class DevotionScreen extends StatefulWidget {
+  const DevotionScreen({super.key});
 
   @override
-  State<IbadahScreen> createState() => _IbadahScreenState();
+  State<DevotionScreen> createState() => _DevotionScreenState();
 }
 
-class _IbadahScreenState extends State<IbadahScreen> {
+class _DevotionScreenState extends State<DevotionScreen> {
   int _selectedTab = 0;
 
   @override
@@ -23,10 +23,7 @@ class _IbadahScreenState extends State<IbadahScreen> {
       appBar: const HabitFocusAppBar(),
       body: Column(
         children: [
-          DailyProgressBar(
-            progress: 0.45,
-            color: colorScheme.tertiary,
-          ),
+          DailyProgressBar(progress: 0.45, color: colorScheme.tertiary),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: HabitFocusTheme.mobilePadding,
@@ -90,7 +87,9 @@ class _BadgeTab extends StatelessWidget {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? colorScheme.primary : colorScheme.surfaceContainer,
+          color: isSelected
+              ? colorScheme.primary
+              : colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(100),
         ),
         child: Text(
@@ -124,15 +123,11 @@ class _IslamicTabContent extends StatelessWidget {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: _DailyShalatSection(
-                      colorScheme: colorScheme,
-                    ),
+                    child: _DailyShalatSection(colorScheme: colorScheme),
                   ),
                   const SizedBox(width: 32),
                   Expanded(
-                    child: _SunnahDzikirSection(
-                      colorScheme: colorScheme,
-                    ),
+                    child: _SunnahDzikirSection(colorScheme: colorScheme),
                   ),
                 ],
               );
@@ -185,9 +180,7 @@ class _NextPrayerHero extends StatelessWidget {
                   ),
                   child: Text(
                     'Upcoming Prayer',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: Colors.white,
-                    ),
+                    style: textTheme.labelSmall?.copyWith(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -356,9 +349,7 @@ class _PrayerCard extends StatelessWidget {
               ? colorScheme.surfaceContainerHighest
               : colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(16),
-          border: Border(
-            left: BorderSide(color: borderColor, width: 4),
-          ),
+          border: Border(left: BorderSide(color: borderColor, width: 4)),
           boxShadow: isChecked ? null : [HabitFocusTheme.ambientShadow],
         ),
         child: Row(
@@ -370,7 +361,9 @@ class _PrayerCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isChecked ? colorScheme.primary : Colors.transparent,
                 border: Border.all(
-                  color: isChecked ? colorScheme.primary : colorScheme.outlineVariant,
+                  color: isChecked
+                      ? colorScheme.primary
+                      : colorScheme.outlineVariant,
                   width: 2,
                 ),
               ),
@@ -622,9 +615,7 @@ class _CustomDevotionHero extends StatelessWidget {
                   ),
                   child: Text(
                     'Next Devotion',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: Colors.white,
-                    ),
+                    style: textTheme.labelSmall?.copyWith(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -699,7 +690,7 @@ class _OtherTabContent extends StatelessWidget {
         // Hero Section for Custom Devotions
         _CustomDevotionHero(colorScheme: colorScheme),
         const SizedBox(height: HabitFocusTheme.sectionGap),
-        
+
         Text(
           'Custom Devotions',
           style: textTheme.headlineMedium?.copyWith(
@@ -707,7 +698,7 @@ class _OtherTabContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: HabitFocusTheme.stackGap),
-        
+
         // Devotion List
         _DevotionCard(
           name: 'Morning Meditation',
@@ -729,19 +720,16 @@ class _OtherTabContent extends StatelessWidget {
           isCompleted: false,
           colorScheme: colorScheme,
         ),
-        
+
         const SizedBox(height: HabitFocusTheme.sectionGap),
-        
+
         // Add New Devotion Form
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: colorScheme.outlineVariant,
-              width: 2,
-            ),
+            border: Border.all(color: colorScheme.outlineVariant, width: 2),
             boxShadow: [HabitFocusTheme.ambientShadow],
           ),
           child: Column(
@@ -772,7 +760,7 @@ class _OtherTabContent extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Name Field
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -802,9 +790,9 @@ class _OtherTabContent extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Time Field
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -842,9 +830,9 @@ class _OtherTabContent extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Add Button
               SizedBox(
                 width: double.infinity,
@@ -960,10 +948,7 @@ class _DevotionCard extends StatelessWidget {
             onPressed: () {
               // Delete action will be added later
             },
-            icon: Icon(
-              Icons.more_vert,
-              color: colorScheme.outline,
-            ),
+            icon: Icon(Icons.more_vert, color: colorScheme.outline),
           ),
         ],
       ),
