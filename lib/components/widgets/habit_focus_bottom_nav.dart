@@ -23,7 +23,9 @@ class HabitFocusBottomNav extends StatelessWidget {
         activeIcon: Icons.volunteer_activism,
         label: 'Kindness'),
     _NavItem(
-        icon: Icons.person_outline, activeIcon: Icons.person, label: 'Profile'),
+        icon: Icons.bar_chart_outlined,
+        activeIcon: Icons.bar_chart,
+        label: 'Statistics'),
   ];
 
   @override

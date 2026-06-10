@@ -8,44 +8,37 @@ This is a **Flutter web application** for mindful habit tracking. HabitFocus hel
 - **Work Focus** - represented by Secondary (steel blue)
 - **Kindness & Spirituality** - represented by Tertiary (ochre)
 
-**SDK:** Flutter ^3.8.0  
-**Package name:** `core`  
-**Platform:** Web (Chrome)
+**SDK:** Flutter ^3.44.1 
 
 ## Directory Structure
 
 ```
-better-person/
-├── lib/
-│   ├── main.dart                    # App entry point (renders HomeScreen directly)
-│   └── habit_focus/                 # HabitFocus habit tracking app
-│       ├── theme/
-│       │   └── habit_focus_theme.dart       # ThemeData based on Mindful Growth design system
-│       ├── widgets/
-│       │   ├── habit_card.dart              # Reusable habit card with category color indicator
-│       │   ├── progress_ring.dart           # Circular progress indicator
-│       │   ├── daily_progress_bar.dart      # Top-of-screen daily completion bar
-│       │   ├── habit_focus_app_bar.dart     # Shared app bar with avatar and brand text
-│       │   ├── habit_focus_bottom_nav.dart  # Custom 5-item bottom navigation
-│       │   └── section_card.dart            # Generic container card with optional border
-│       └── screens/
-│           ├── home_screen.dart             # Home/dashboard
-│           ├── focus_screen.dart            # Work focus timer
-│           ├── ibadah_screen.dart           # Religious routines
-│           ├── spiritual_screen.dart        # Spiritual routines
-│           ├── kindness_screen.dart         # Kindness journal
-│           └── statistics_screen.dart       # Weekly stats
-├── reference/                       # HTML mockups for HabitFocus
-│   ├── mindful_growth/DESIGN.md     # Design system specification
-│   ├── beranda_habitfocus/          # Home/dashboard page mockup
-│   ├── fokus_kerja/                 # Work focus timer page mockup
-│   ├── rutinitas_ibadah/            # Religious routine page mockup
-│   ├── rutinitas_spiritual/         # Spiritual routine page mockup
-│   ├── catatan_kebaikan/            # Daily kindness notes page mockup
-│   └── statistik_mingguan/          # Weekly statistics page mockup
-├── web/                             # Flutter web entrypoint (index.html)
-├── pubspec.yaml                     # Project manifest and dependencies
-└── analysis_options.yaml            # Dart analyzer configuration
+|better-person/
+├── lib
+│   ├── components
+│   │   ├── screens
+│   │   │   ├── focus_screen.dart
+│   │   │   ├── home_screen.dart
+│   │   │   ├── ibadah_screen.dart
+│   │   │   ├── kindness_screen.dart
+│   │   │   ├── profile_screen.dart
+│   │   │   ├── spiritual_screen.dart
+│   │   │   └── statistics_screen.dart
+│   │   ├── theme
+│   │   │   └── habit_focus_theme.dart
+│   │   └── widgets
+│   │       ├── daily_progress_bar.dart
+│   │       ├── habit_card.dart
+│   │       ├── habit_focus_app_bar.dart
+│   │       ├── habit_focus_bottom_nav.dart
+│   │       ├── progress_ring.dart
+│   │       └── section_card.dart
+│   ├── controllers
+│   ├── main.dart
+│   └── routes
+    ├── app_routes.dart
+    └── route_shell.dart
+
 ```
 
 ## Navigation
@@ -117,19 +110,9 @@ Each page is composed of shared widgets:
 # Install dependencies
 flutter pub get
 
-# Run on Chrome (web)
-flutter run -d chrome
-
 # Analyze code for errors/warnings
 flutter analyze
 ```
 
-## Conventions
-
-- Each widget is a standalone `StatelessWidget` or `StatefulWidget` in its own file
-- Use `const` constructors with `super.key` parameter
-- Private helper widgets use underscore prefix: `_HelperName`
-- Use `Theme.of(context)` for styling
-- Follow Material Design 3 patterns
-- No external state management (local state only)
-- No new packages should be added without explicit approval
+## Rules
+1. always run flutter analyze every change code

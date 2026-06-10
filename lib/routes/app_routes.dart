@@ -4,14 +4,14 @@ import '../components/screens/focus_screen.dart';
 import '../components/screens/home_screen.dart';
 import '../components/screens/ibadah_screen.dart';
 import '../components/screens/kindness_screen.dart';
-import '../components/screens/profile_screen.dart';
+import '../components/screens/statistics_screen.dart';
 
 class AppRoutes {
   static const String home = '/';
   static const String focus = '/focus';
   static const String ibadah = '/ibadah';
   static const String kindness = '/kindness';
-  static const String profile = '/profile';
+  static const String statistics = '/statistics';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -23,8 +23,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const IbadahScreen());
       case kindness:
         return MaterialPageRoute(builder: (_) => const KindnessScreen());
-      case profile:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case statistics:
+        return MaterialPageRoute(builder: (_) => const StatisticsScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -37,7 +37,7 @@ class AppRoutes {
   }
 
   static void navigateToIndex(BuildContext context, int index) {
-    final routes = [home, focus, ibadah, kindness, profile];
+    final routes = [home, focus, ibadah, kindness, statistics];
     if (index >= 0 && index < routes.length) {
       Navigator.pushReplacementNamed(context, routes[index]);
     }

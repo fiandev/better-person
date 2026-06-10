@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
 import '../widgets/habit_focus_app_bar.dart';
-import '../widgets/habit_focus_bottom_nav.dart';
 import '../widgets/progress_ring.dart';
+import '../../routes/route_shell.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
@@ -39,7 +39,7 @@ class StatisticsScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const HabitFocusBottomNav(currentIndex: 0),
+      bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 4),
     );
   }
 }
