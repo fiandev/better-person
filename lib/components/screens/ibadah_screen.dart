@@ -5,8 +5,15 @@ import '../widgets/daily_progress_bar.dart';
 import '../widgets/habit_focus_app_bar.dart';
 import '../../routes/route_shell.dart';
 
-class IbadahScreen extends StatelessWidget {
+class IbadahScreen extends StatefulWidget {
   const IbadahScreen({super.key});
+
+  @override
+  State<IbadahScreen> createState() => _IbadahScreenState();
+}
+
+class _IbadahScreenState extends State<IbadahScreen> {
+  int _selectedTab = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,48 +27,126 @@ class IbadahScreen extends StatelessWidget {
             progress: 0.45,
             color: colorScheme.tertiary,
           ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: HabitFocusTheme.mobilePadding,
+              vertical: 16,
+            ),
+            child: Row(
               children: [
-                _NextPrayerHero(colorScheme: colorScheme),
-                const SizedBox(height: HabitFocusTheme.sectionGap),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth > 800) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: _DailyShalatSection(
-                              colorScheme: colorScheme,
-                            ),
-                          ),
-                          const SizedBox(width: 32),
-                          Expanded(
-                            child: _SunnahDzikirSection(
-                              colorScheme: colorScheme,
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    return Column(
-                      children: [
-                        _DailyShalatSection(colorScheme: colorScheme),
-                        const SizedBox(height: HabitFocusTheme.sectionGap),
-                        _SunnahDzikirSection(colorScheme: colorScheme),
-                      ],
-                    );
-                  },
+                _BadgeTab(
+                  label: 'Islamic',
+                  isSelected: _selectedTab == 0,
+                  colorScheme: colorScheme,
+                  onTap: () => setState(() => _selectedTab = 0),
                 ),
+                const SizedBox(width: 8),
+                _BadgeTab(
+                  label: 'Other',
+                  isSelected: _selectedTab == 1,
+                  colorScheme: colorScheme,
+                  onTap: () => setState(() => _selectedTab = 1),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: IndexedStack(
+              index: _selectedTab,
+              children: [
+                _IslamicTabContent(colorScheme: colorScheme),
+                _OtherTabContent(colorScheme: colorScheme),
               ],
             ),
           ),
         ],
       ),
       bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 2),
+    );
+  }
+}
+
+class _BadgeTab extends StatelessWidget {
+  const _BadgeTab({
+    required this.label,
+    required this.isSelected,
+    required this.colorScheme,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isSelected;
+  final ColorScheme colorScheme;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? colorScheme.primary : colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Text(
+          label,
+          style: textTheme.labelLarge?.copyWith(
+            color: isSelected ? colorScheme.onPrimary : colorScheme.outline,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IslamicTabContent extends StatelessWidget {
+  const _IslamicTabContent({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
+      children: [
+        _NextPrayerHero(colorScheme: colorScheme),
+        const SizedBox(height: HabitFocusTheme.sectionGap),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 800) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: _DailyShalatSection(
+                      colorScheme: colorScheme,
+                    ),
+                  ),
+                  const SizedBox(width: 32),
+                  Expanded(
+                    child: _SunnahDzikirSection(
+                      colorScheme: colorScheme,
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Column(
+              children: [
+                _DailyShalatSection(colorScheme: colorScheme),
+                const SizedBox(height: HabitFocusTheme.sectionGap),
+                _SunnahDzikirSection(colorScheme: colorScheme),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }
@@ -76,97 +161,85 @@ class _NextPrayerHero extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: colorScheme.primary,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [HabitFocusTheme.ambientShadow],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Text(
-                        'Upcoming',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Asr',
-                      style: textTheme.headlineLarge?.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '15:30 PM',
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'Upcoming Prayer',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.schedule,
-                      size: 48,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'TIME REMAINING',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.8),
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '01:42:15',
-                          style: textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                const SizedBox(height: 12),
+                Text(
+                  'Asr',
+                  style: textTheme.headlineLarge?.copyWith(
+                    color: Colors.white,
+                    fontSize: 28,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  '15:30',
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.schedule,
+                  size: 32,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '01:42:15',
+                  style: textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                Text(
+                  'remaining',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -511,6 +584,389 @@ class _SunnahDzikirSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _CustomDevotionHero extends StatelessWidget {
+  const _CustomDevotionHero({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: colorScheme.tertiary,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [HabitFocusTheme.ambientShadow],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'Next Devotion',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Evening Prayer',
+                  style: textTheme.headlineLarge?.copyWith(
+                    color: Colors.white,
+                    fontSize: 28,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '19:00',
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.schedule,
+                  size: 32,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '04:03:18',
+                  style: textTheme.headlineMedium?.copyWith(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                Text(
+                  'remaining',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OtherTabContent extends StatelessWidget {
+  const _OtherTabContent({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return ListView(
+      padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
+      children: [
+        // Hero Section for Custom Devotions
+        _CustomDevotionHero(colorScheme: colorScheme),
+        const SizedBox(height: HabitFocusTheme.sectionGap),
+        
+        Text(
+          'Custom Devotions',
+          style: textTheme.headlineMedium?.copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: HabitFocusTheme.stackGap),
+        
+        // Devotion List
+        _DevotionCard(
+          name: 'Morning Meditation',
+          time: '06:00 AM',
+          isCompleted: true,
+          colorScheme: colorScheme,
+        ),
+        const SizedBox(height: HabitFocusTheme.stackGap),
+        _DevotionCard(
+          name: 'Evening Prayer',
+          time: '07:00 PM',
+          isCompleted: false,
+          colorScheme: colorScheme,
+        ),
+        const SizedBox(height: HabitFocusTheme.stackGap),
+        _DevotionCard(
+          name: 'Gratitude Journal',
+          time: '09:00 PM',
+          isCompleted: false,
+          colorScheme: colorScheme,
+        ),
+        
+        const SizedBox(height: HabitFocusTheme.sectionGap),
+        
+        // Add New Devotion Form
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: colorScheme.outlineVariant,
+              width: 2,
+            ),
+            boxShadow: [HabitFocusTheme.ambientShadow],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.add_circle_outline,
+                      color: colorScheme.onPrimaryContainer,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Add New Devotion',
+                    style: textTheme.headlineMedium?.copyWith(
+                      fontSize: 20,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              
+              // Name Field
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Name',
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Enter devotion name',
+                      hintStyle: TextStyle(color: colorScheme.outline),
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Time Field
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Time',
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Select time',
+                      hintStyle: TextStyle(color: colorScheme.outline),
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      suffixIcon: Icon(
+                        Icons.access_time,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      // Time picker will be added later
+                    },
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Add Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // Add devotion logic will be added later
+                  },
+                  icon: const Icon(Icons.add, size: 20),
+                  label: const Text('Add Devotion'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DevotionCard extends StatelessWidget {
+  const _DevotionCard({
+    required this.name,
+    required this.time,
+    required this.isCompleted,
+    required this.colorScheme,
+  });
+
+  final String name;
+  final String time;
+  final bool isCompleted;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isCompleted
+            ? colorScheme.surfaceContainerHighest
+            : colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          left: BorderSide(
+            color: isCompleted ? colorScheme.primary : colorScheme.tertiary,
+            width: 4,
+          ),
+        ),
+        boxShadow: isCompleted ? null : [HabitFocusTheme.ambientShadow],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isCompleted ? colorScheme.primary : Colors.transparent,
+              border: Border.all(
+                color: isCompleted
+                    ? colorScheme.primary
+                    : colorScheme.outlineVariant,
+                width: 2,
+              ),
+            ),
+            child: isCompleted
+                ? const Icon(Icons.check, size: 18, color: Colors.white)
+                : null,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontSize: 18,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: colorScheme.outline,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      time,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.outline,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              // Delete action will be added later
+            },
+            icon: Icon(
+              Icons.more_vert,
+              color: colorScheme.outline,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
