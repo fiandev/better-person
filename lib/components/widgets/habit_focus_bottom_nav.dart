@@ -13,19 +13,25 @@ class HabitFocusBottomNav extends StatelessWidget {
   static const _items = <_NavItem>[
     _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
     _NavItem(
-        icon: Icons.timer_outlined, activeIcon: Icons.timer, label: 'Focus'),
+      icon: Icons.timer_outlined,
+      activeIcon: Icons.timer,
+      label: 'Focus',
+    ),
     _NavItem(
-        icon: Icons.self_improvement_outlined,
-        activeIcon: Icons.self_improvement,
-        label: 'Ibadah'),
+      icon: Icons.self_improvement_outlined,
+      activeIcon: Icons.self_improvement,
+      label: 'Devotion',
+    ),
     _NavItem(
-        icon: Icons.volunteer_activism_outlined,
-        activeIcon: Icons.volunteer_activism,
-        label: 'Kindness'),
+      icon: Icons.volunteer_activism_outlined,
+      activeIcon: Icons.volunteer_activism,
+      label: 'Kindness',
+    ),
     _NavItem(
-        icon: Icons.bar_chart_outlined,
-        activeIcon: Icons.bar_chart,
-        label: 'Statistics'),
+      icon: Icons.bar_chart_outlined,
+      activeIcon: Icons.bar_chart,
+      label: 'Statistics',
+    ),
   ];
 
   @override
@@ -113,8 +119,8 @@ class _NavButton extends StatelessWidget {
               Text(
                 item.label,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                    ),
+                  color: colorScheme.onPrimaryContainer,
+                ),
               ),
             ],
           ],

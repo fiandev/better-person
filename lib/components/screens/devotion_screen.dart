@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
-import '../widgets/daily_progress_bar.dart';
 import '../widgets/habit_focus_app_bar.dart';
 import '../../routes/route_shell.dart';
 
@@ -23,7 +22,6 @@ class _DevotionScreenState extends State<DevotionScreen> {
       appBar: const HabitFocusAppBar(),
       body: Column(
         children: [
-          DailyProgressBar(progress: 0.45, color: colorScheme.tertiary),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: HabitFocusTheme.mobilePadding,

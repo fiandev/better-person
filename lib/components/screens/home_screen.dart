@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
-import '../widgets/daily_progress_bar.dart';
 import '../widgets/habit_card.dart';
 import '../widgets/habit_focus_app_bar.dart';
 import '../widgets/progress_ring.dart';
@@ -19,10 +18,6 @@ class HomeScreen extends StatelessWidget {
       appBar: const HabitFocusAppBar(),
       body: Column(
         children: [
-          DailyProgressBar(
-            progress: 0.65,
-            color: colorScheme.primary,
-          ),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
@@ -32,10 +27,7 @@ class HomeScreen extends StatelessWidget {
                   colorScheme: colorScheme,
                 ),
                 const SizedBox(height: HabitFocusTheme.sectionGap),
-                _BentoGrid(
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
+                _BentoGrid(colorScheme: colorScheme, textTheme: textTheme),
                 const SizedBox(height: HabitFocusTheme.sectionGap),
                 _KeyHabitsSection(
                   colorScheme: colorScheme,
@@ -52,10 +44,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _GreetingSection extends StatelessWidget {
-  const _GreetingSection({
-    required this.textTheme,
-    required this.colorScheme,
-  });
+  const _GreetingSection({required this.textTheme, required this.colorScheme});
 
   final TextTheme textTheme;
   final ColorScheme colorScheme;
@@ -82,9 +71,7 @@ class _GreetingSection extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           '- Robin Sharma',
-          style: textTheme.labelSmall?.copyWith(
-            color: colorScheme.outline,
-          ),
+          style: textTheme.labelSmall?.copyWith(color: colorScheme.outline),
         ),
       ],
     );
@@ -92,10 +79,7 @@ class _GreetingSection extends StatelessWidget {
 }
 
 class _BentoGrid extends StatelessWidget {
-  const _BentoGrid({
-    required this.colorScheme,
-    required this.textTheme,
-  });
+  const _BentoGrid({required this.colorScheme, required this.textTheme});
 
   final ColorScheme colorScheme;
   final TextTheme textTheme;
@@ -110,10 +94,7 @@ class _BentoGrid extends StatelessWidget {
         if (crossAxisCount == 2) {
           return Column(
             children: [
-              _MainProgressCard(
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-              ),
+              _MainProgressCard(colorScheme: colorScheme, textTheme: textTheme),
               SizedBox(height: gap),
               Row(
                 children: [
@@ -185,10 +166,7 @@ class _BentoGrid extends StatelessWidget {
 }
 
 class _MainProgressCard extends StatelessWidget {
-  const _MainProgressCard({
-    required this.colorScheme,
-    required this.textTheme,
-  });
+  const _MainProgressCard({required this.colorScheme, required this.textTheme});
 
   final ColorScheme colorScheme;
   final TextTheme textTheme;
@@ -286,9 +264,7 @@ class _SmallStatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             label,
-            style: textTheme.labelSmall?.copyWith(
-              color: colorScheme.outline,
-            ),
+            style: textTheme.labelSmall?.copyWith(color: colorScheme.outline),
           ),
           const SizedBox(height: 4),
           Text(
@@ -304,10 +280,7 @@ class _SmallStatCard extends StatelessWidget {
 }
 
 class _KeyHabitsSection extends StatelessWidget {
-  const _KeyHabitsSection({
-    required this.colorScheme,
-    required this.textTheme,
-  });
+  const _KeyHabitsSection({required this.colorScheme, required this.textTheme});
 
   final ColorScheme colorScheme;
   final TextTheme textTheme;

@@ -9,7 +9,7 @@ import '../components/screens/statistics_screen.dart';
 class AppRoutes {
   static const String home = '/';
   static const String focus = '/focus';
-  static const String ibadah = '/ibadah';
+  static const String devotion = '/devotion';
   static const String kindness = '/kindness';
   static const String statistics = '/statistics';
 
@@ -19,7 +19,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case focus:
         return MaterialPageRoute(builder: (_) => const FocusScreen());
-      case ibadah:
+      case devotion:
         return MaterialPageRoute(builder: (_) => const DevotionScreen());
       case kindness:
         return MaterialPageRoute(builder: (_) => const KindnessScreen());
@@ -35,7 +35,7 @@ class AppRoutes {
   }
 
   static void navigateToIndex(BuildContext context, int index) {
-    final routes = [home, focus, ibadah, kindness, statistics];
+    final routes = [home, focus, devotion, kindness, statistics];
     if (index >= 0 && index < routes.length) {
       Navigator.pushReplacementNamed(context, routes[index]);
     }
