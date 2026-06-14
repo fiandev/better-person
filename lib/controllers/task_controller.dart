@@ -11,6 +11,15 @@ class TaskController extends BaseController<Task> {
   TaskController._internal();
 
   @override
+  String get storageKey => 'tasks';
+
+  @override
+  Map<String, dynamic> toJson(Task item) => item.toJson();
+
+  @override
+  Task fromJson(Map<String, dynamic> json) => Task.fromJson(json);
+
+  @override
   Task? getById(String id) {
     try {
       return items.firstWhere((task) => task.id == id);
@@ -22,6 +31,7 @@ class TaskController extends BaseController<Task> {
   @override
   Future<Task> create(Task task) async {
     items.add(task);
+    await persist();
     return task;
   }
 
@@ -31,6 +41,7 @@ class TaskController extends BaseController<Task> {
     if (index == -1) return null;
     
     items[index] = task;
+    await persist();
     return task;
   }
 
@@ -69,14 +80,18 @@ class TaskController extends BaseController<Task> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((task) => task.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((task) => ids.contains(task.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get tasks by priority

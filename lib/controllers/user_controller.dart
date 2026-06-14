@@ -11,6 +11,15 @@ class UserController extends BaseController<User> {
   UserController._internal();
 
   @override
+  String get storageKey => 'users';
+
+  @override
+  Map<String, dynamic> toJson(User item) => item.toJson();
+
+  @override
+  User fromJson(Map<String, dynamic> json) => User.fromJson(json);
+
+  @override
   User? getById(String id) {
     try {
       return items.firstWhere((user) => user.id == id);
@@ -22,6 +31,7 @@ class UserController extends BaseController<User> {
   @override
   Future<User> create(User user) async {
     items.add(user);
+    await persist();
     return user;
   }
 
@@ -31,6 +41,7 @@ class UserController extends BaseController<User> {
     if (index == -1) return null;
     
     items[index] = user;
+    await persist();
     return user;
   }
 
@@ -72,14 +83,18 @@ class UserController extends BaseController<User> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((user) => user.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((user) => ids.contains(user.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get user by name

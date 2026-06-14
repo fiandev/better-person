@@ -56,10 +56,9 @@ class Badge {
     return Badge(
       id: json['id'] as String,
       title: json['title'] as String,
-      // ignore: non_const_argument_for_const_parameter
       icon: IconData(
-        json['iconCodePoint'] as int,
-        fontFamily: json['iconFontFamily'] as String?,
+        json['iconCodePoint'] as int, // ignore: non_const_argument_for_const_parameter
+        fontFamily: json['iconFontFamily'] as String?, // ignore: non_const_argument_for_const_parameter
       ),
       backgroundColor: Color(json['backgroundColor'] as int),
       detail: json['detail'] as String,

@@ -52,7 +52,8 @@ class FocusSession {
   String get timerStateLabel {
     switch (timerState) {
       case TimerState.idle:
-        return 'Ready';
+        if (timerDuration.inMinutes == 5) return 'Ready for Break';
+        return 'Ready to Focus';
       case TimerState.focusing:
         return 'Focusing';
       case TimerState.onBreak:

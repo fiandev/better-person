@@ -1,9 +1,49 @@
-/// Base CRUD controller providing standard database operations.
+import '../utils/storage_service.dart';
+
+/// Base CRUD controller providing standard database operations with disk persistence.
 /// 
 /// Type parameter [T] represents the model type.
 /// Subclasses should implement the abstract methods for persistence logic.
 abstract class BaseController<T> {
   final List<T> items = [];
+  final StorageService _storage = StorageService();
+  bool _isInitialized = false;
+
+  /// The storage key used for persistence (must be unique per controller)
+  String get storageKey;
+
+  /// Convert an item to JSON for storage
+  Map<String, dynamic> toJson(T item);
+
+  /// Convert JSON to an item for loading
+  T fromJson(Map<String, dynamic> json);
+
+  /// Initialize the controller by loading data from disk
+  Future<void> init() async {
+    if (_isInitialized) return;
+    
+    try {
+      final data = await _storage.load(storageKey);
+      items.clear();
+      for (final json in data) {
+        items.add(fromJson(json));
+      }
+      _isInitialized = true;
+    } catch (e) {
+      print('Error initializing $storageKey controller: $e');
+      _isInitialized = true;
+    }
+  }
+
+  /// Save all items to disk
+  Future<void> persist() async {
+    try {
+      final jsonList = items.map((item) => toJson(item)).toList();
+      await _storage.save(storageKey, jsonList);
+    } catch (e) {
+      print('Error persisting $storageKey data: $e');
+    }
+  }
 
   /// Get all items.
   List<T> getAll() {
@@ -69,5 +109,6 @@ abstract class BaseController<T> {
 
   Future<void> clear() async {
     items.clear();
+    await persist();
   }
 }

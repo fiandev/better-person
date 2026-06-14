@@ -11,6 +11,15 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
   CustomDevotionController._internal();
 
   @override
+  String get storageKey => 'custom_devotions';
+
+  @override
+  Map<String, dynamic> toJson(CustomDevotion item) => item.toJson();
+
+  @override
+  CustomDevotion fromJson(Map<String, dynamic> json) => CustomDevotion.fromJson(json);
+
+  @override
   CustomDevotion? getById(String id) {
     try {
       return items.firstWhere((devotion) => devotion.id == id);
@@ -22,6 +31,7 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
   @override
   Future<CustomDevotion> create(CustomDevotion devotion) async {
     items.add(devotion);
+    await persist();
     return devotion;
   }
 
@@ -31,6 +41,7 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
     if (index == -1) return null;
     
     items[index] = devotion;
+    await persist();
     return devotion;
   }
 
@@ -68,14 +79,18 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((devotion) => devotion.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((devotion) => ids.contains(devotion.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get devotions by date

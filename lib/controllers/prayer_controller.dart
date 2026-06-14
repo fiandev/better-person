@@ -11,6 +11,15 @@ class PrayerController extends BaseController<Prayer> {
   PrayerController._internal();
 
   @override
+  String get storageKey => 'prayers';
+
+  @override
+  Map<String, dynamic> toJson(Prayer item) => item.toJson();
+
+  @override
+  Prayer fromJson(Map<String, dynamic> json) => Prayer.fromJson(json);
+
+  @override
   Prayer? getById(String id) {
     try {
       return items.firstWhere((prayer) => prayer.id == id);
@@ -22,6 +31,7 @@ class PrayerController extends BaseController<Prayer> {
   @override
   Future<Prayer> create(Prayer prayer) async {
     items.add(prayer);
+    await persist();
     return prayer;
   }
 
@@ -31,6 +41,7 @@ class PrayerController extends BaseController<Prayer> {
     if (index == -1) return null;
     
     items[index] = prayer;
+    await persist();
     return prayer;
   }
 
@@ -68,14 +79,18 @@ class PrayerController extends BaseController<Prayer> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((prayer) => prayer.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((prayer) => ids.contains(prayer.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get prayers by name

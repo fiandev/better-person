@@ -11,6 +11,15 @@ class QuranSessionController extends BaseController<QuranSession> {
   QuranSessionController._internal();
 
   @override
+  String get storageKey => 'quran_sessions';
+
+  @override
+  Map<String, dynamic> toJson(QuranSession item) => item.toJson();
+
+  @override
+  QuranSession fromJson(Map<String, dynamic> json) => QuranSession.fromJson(json);
+
+  @override
   QuranSession? getById(String id) {
     try {
       return items.firstWhere((session) => session.id == id);
@@ -22,6 +31,7 @@ class QuranSessionController extends BaseController<QuranSession> {
   @override
   Future<QuranSession> create(QuranSession session) async {
     items.add(session);
+    await persist();
     return session;
   }
 
@@ -31,6 +41,7 @@ class QuranSessionController extends BaseController<QuranSession> {
     if (index == -1) return null;
     
     items[index] = session;
+    await persist();
     return session;
   }
 
@@ -71,14 +82,18 @@ class QuranSessionController extends BaseController<QuranSession> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((session) => session.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((session) => ids.contains(session.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get sessions by date

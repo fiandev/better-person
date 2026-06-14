@@ -11,6 +11,15 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
   DzikirEntryController._internal();
 
   @override
+  String get storageKey => 'dzikir_entries';
+
+  @override
+  Map<String, dynamic> toJson(DzikirEntry item) => item.toJson();
+
+  @override
+  DzikirEntry fromJson(Map<String, dynamic> json) => DzikirEntry.fromJson(json);
+
+  @override
   DzikirEntry? getById(String id) {
     try {
       return items.firstWhere((entry) => entry.id == id);
@@ -22,6 +31,7 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
   @override
   Future<DzikirEntry> create(DzikirEntry entry) async {
     items.add(entry);
+    await persist();
     return entry;
   }
 
@@ -31,6 +41,7 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
     if (index == -1) return null;
     
     items[index] = entry;
+    await persist();
     return entry;
   }
 
@@ -68,14 +79,18 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((entry) => entry.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((entry) => ids.contains(entry.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get entries by date

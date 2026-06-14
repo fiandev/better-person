@@ -11,6 +11,15 @@ class KindnessActController extends BaseController<KindnessAct> {
   KindnessActController._internal();
 
   @override
+  String get storageKey => 'kindness_acts';
+
+  @override
+  Map<String, dynamic> toJson(KindnessAct item) => item.toJson();
+
+  @override
+  KindnessAct fromJson(Map<String, dynamic> json) => KindnessAct.fromJson(json);
+
+  @override
   KindnessAct? getById(String id) {
     try {
       return items.firstWhere((act) => act.id == id);
@@ -22,6 +31,7 @@ class KindnessActController extends BaseController<KindnessAct> {
   @override
   Future<KindnessAct> create(KindnessAct act) async {
     items.add(act);
+    await persist();
     return act;
   }
 
@@ -31,6 +41,7 @@ class KindnessActController extends BaseController<KindnessAct> {
     if (index == -1) return null;
     
     items[index] = act;
+    await persist();
     return act;
   }
 
@@ -66,14 +77,18 @@ class KindnessActController extends BaseController<KindnessAct> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((act) => act.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((act) => ids.contains(act.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get selected acts

@@ -11,6 +11,15 @@ class KindnessLogController extends BaseController<KindnessLog> {
   KindnessLogController._internal();
 
   @override
+  String get storageKey => 'kindness_logs';
+
+  @override
+  Map<String, dynamic> toJson(KindnessLog item) => item.toJson();
+
+  @override
+  KindnessLog fromJson(Map<String, dynamic> json) => KindnessLog.fromJson(json);
+
+  @override
   KindnessLog? getById(String id) {
     try {
       return items.firstWhere((log) => log.id == id);
@@ -22,6 +31,7 @@ class KindnessLogController extends BaseController<KindnessLog> {
   @override
   Future<KindnessLog> create(KindnessLog log) async {
     items.add(log);
+    await persist();
     return log;
   }
 
@@ -31,6 +41,7 @@ class KindnessLogController extends BaseController<KindnessLog> {
     if (index == -1) return null;
     
     items[index] = log;
+    await persist();
     return log;
   }
 
@@ -66,14 +77,18 @@ class KindnessLogController extends BaseController<KindnessLog> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((log) => log.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((log) => ids.contains(log.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get logs by date

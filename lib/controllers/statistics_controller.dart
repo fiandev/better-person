@@ -12,6 +12,15 @@ class BadgeController extends BaseController<Badge> {
   BadgeController._internal();
 
   @override
+  String get storageKey => 'badges';
+
+  @override
+  Map<String, dynamic> toJson(Badge item) => item.toJson();
+
+  @override
+  Badge fromJson(Map<String, dynamic> json) => Badge.fromJson(json);
+
+  @override
   Badge? getById(String id) {
     try {
       return items.firstWhere((badge) => badge.id == id);
@@ -23,6 +32,7 @@ class BadgeController extends BaseController<Badge> {
   @override
   Future<Badge> create(Badge badge) async {
     items.add(badge);
+    await persist();
     return badge;
   }
 
@@ -32,6 +42,7 @@ class BadgeController extends BaseController<Badge> {
     if (index == -1) return null;
     
     items[index] = badge;
+    await persist();
     return badge;
   }
 
@@ -69,14 +80,18 @@ class BadgeController extends BaseController<Badge> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((badge) => badge.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((badge) => ids.contains(badge.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get earned badges
@@ -106,6 +121,15 @@ class GrowthScoreController extends BaseController<GrowthScore> {
   GrowthScoreController._internal();
 
   @override
+  String get storageKey => 'growth_scores';
+
+  @override
+  Map<String, dynamic> toJson(GrowthScore item) => item.toJson();
+
+  @override
+  GrowthScore fromJson(Map<String, dynamic> json) => GrowthScore.fromJson(json);
+
+  @override
   GrowthScore? getById(String id) {
     try {
       return items.firstWhere((score) => score.id == id);
@@ -117,6 +141,7 @@ class GrowthScoreController extends BaseController<GrowthScore> {
   @override
   Future<GrowthScore> create(GrowthScore score) async {
     items.add(score);
+    await persist();
     return score;
   }
 
@@ -126,6 +151,7 @@ class GrowthScoreController extends BaseController<GrowthScore> {
     if (index == -1) return null;
     
     items[index] = score;
+    await persist();
     return score;
   }
 
@@ -162,14 +188,18 @@ class GrowthScoreController extends BaseController<GrowthScore> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((score) => score.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((score) => ids.contains(score.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get current week's score
@@ -195,6 +225,15 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
   ActivitySummaryController._internal();
 
   @override
+  String get storageKey => 'activity_summaries';
+
+  @override
+  Map<String, dynamic> toJson(ActivitySummary item) => item.toJson();
+
+  @override
+  ActivitySummary fromJson(Map<String, dynamic> json) => ActivitySummary.fromJson(json);
+
+  @override
   ActivitySummary? getById(String id) {
     try {
       return items.firstWhere((summary) => summary.id == id);
@@ -206,6 +245,7 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
   @override
   Future<ActivitySummary> create(ActivitySummary summary) async {
     items.add(summary);
+    await persist();
     return summary;
   }
 
@@ -215,6 +255,7 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
     if (index == -1) return null;
     
     items[index] = summary;
+    await persist();
     return summary;
   }
 
@@ -253,14 +294,18 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((summary) => summary.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((summary) => ids.contains(summary.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get summaries by category
@@ -291,6 +336,15 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
   DailyConsistencyRecordController._internal();
 
   @override
+  String get storageKey => 'daily_consistency_records';
+
+  @override
+  Map<String, dynamic> toJson(DailyConsistencyRecord item) => item.toJson();
+
+  @override
+  DailyConsistencyRecord fromJson(Map<String, dynamic> json) => DailyConsistencyRecord.fromJson(json);
+
+  @override
   DailyConsistencyRecord? getById(String id) {
     try {
       return items.firstWhere((record) => record.id == id);
@@ -302,6 +356,7 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
   @override
   Future<DailyConsistencyRecord> create(DailyConsistencyRecord record) async {
     items.add(record);
+    await persist();
     return record;
   }
 
@@ -311,6 +366,7 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
     if (index == -1) return null;
     
     items[index] = record;
+    await persist();
     return record;
   }
 
@@ -346,14 +402,18 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((record) => record.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((record) => ids.contains(record.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get records by date

@@ -11,6 +11,15 @@ class HabitController extends BaseController<Habit> {
   HabitController._internal();
 
   @override
+  String get storageKey => 'habits';
+
+  @override
+  Map<String, dynamic> toJson(Habit item) => item.toJson();
+
+  @override
+  Habit fromJson(Map<String, dynamic> json) => Habit.fromJson(json);
+
+  @override
   Habit? getById(String id) {
     try {
       return items.firstWhere((habit) => habit.id == id);
@@ -22,6 +31,7 @@ class HabitController extends BaseController<Habit> {
   @override
   Future<Habit> create(Habit habit) async {
     items.add(habit);
+    await persist();
     return habit;
   }
 
@@ -31,6 +41,7 @@ class HabitController extends BaseController<Habit> {
     if (index == -1) return null;
     
     items[index] = habit;
+    await persist();
     return habit;
   }
 
@@ -69,14 +80,18 @@ class HabitController extends BaseController<Habit> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((habit) => habit.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((habit) => ids.contains(habit.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get habits by category

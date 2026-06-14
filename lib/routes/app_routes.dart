@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../components/screens/focus_screen.dart';
+import '../components/screens/focus_screen/focus_screen.dart';
 import '../components/screens/home_screen.dart';
 import '../components/screens/devotion_screen.dart';
 import '../components/screens/kindness_screen.dart';

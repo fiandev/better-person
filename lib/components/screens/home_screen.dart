@@ -1,19 +1,161 @@
 import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
-import '../widgets/habit_card.dart';
 import '../widgets/habit_focus_app_bar.dart';
-import '../widgets/progress_ring.dart';
+import '../widgets/home/greeting_section.dart';
+import '../widgets/home/bento_grid.dart';
+import '../widgets/home/key_habits_section.dart';
 import '../../routes/route_shell.dart';
+import '../../controllers/controllers.dart';
+import '../../models/models.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  final _userController = UserController();
+  final _habitController = HabitController();
+  final _focusSessionController = FocusSessionController();
+
+  User? _currentUser;
+  List<Habit> _habits = [];
+  double _todayProgress = 0.0;
+  String _deepWorkTime = '0h 0m';
+  int _devotionCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    // Get or create default user
+    User? user = _userController.getAll().isNotEmpty
+        ? _userController.getAll().first
+        : null;
+
+    if (user == null) {
+      user = await _createDefaultUser();
+    }
+
+    // Get all habits
+    final habits = _habitController.getAll();
+
+    // Calculate today's progress
+    final completedCount = habits.where((h) => h.isCompleted).length;
+    final totalCount = habits.length;
+    final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
+
+    // Calculate deep work time from focus sessions
+    final focusSessions = _focusSessionController.getAll();
+    final totalMinutes = focusSessions.fold<int>(
+      0,
+      (sum, session) => sum + session.elapsed.inMinutes,
+    );
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+
+    // Count devotion habits completed
+    final devotionHabits = habits.where(
+      (h) => h.category == HabitCategory.devotion && h.isCompleted,
+    );
+
+    setState(() {
+      _currentUser = user;
+      _habits = habits;
+      _todayProgress = progress;
+      _deepWorkTime = '${hours}h ${minutes}m';
+      _devotionCount = devotionHabits.length;
+    });
+  }
+
+  Future<User> _createDefaultUser() async {
+    final user = User(
+      id: 'user_1',
+      name: 'Sarah',
+      streak: 12,
+      dailyProgress: 0.0,
+      totalHabitsDone: 0,
+      totalFocusHours: 0.0,
+      totalKindActs: 0,
+      growthScore: 0.65,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await _userController.create(user);
+    await _createDefaultHabits();
+
+    return user;
+  }
+
+  Future<void> _createDefaultHabits() async {
+    final now = DateTime.now();
+
+    final defaultHabits = [
+      // Habit(
+      //   id: 'habit_1',
+      //   title: 'Morning Meditation',
+      //   category: HabitCategory.growth,
+      //   duration: '10 mins',
+      //   isCompleted: true,
+      //   createdAt: now,
+      //   completedAt: now,
+      // ),
+      // Habit(
+      //   id: 'habit_2',
+      //   title: 'Deep Work Session',
+      //   category: HabitCategory.work,
+      //   duration: '90 mins',
+      //   isCompleted: false,
+      //   createdAt: now,
+      // ),
+      // Habit(
+      //   id: 'habit_3',
+      //   title: 'Daily Impact',
+      //   category: HabitCategory.kindness,
+      //   duration: 'Any amount',
+      //   isCompleted: false,
+      //   createdAt: now,
+      // ),
+    ];
+
+    for (final habit in defaultHabits) {
+      await _habitController.create(habit);
+    }
+  }
+
+  // Habits are automatically checked when tasks/activities complete
+  // Users cannot manually toggle habits
+
+  Future<void> _updateUserProgress() async {
+    if (_currentUser == null) return;
+
+    final habits = _habitController.getAll();
+    final completedCount = habits.where((h) => h.isCompleted).length;
+    final totalCount = habits.length;
+    final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
+
+    await _userController.updateFields(_currentUser!.id, {
+      'dailyProgress': progress,
+      'totalHabitsDone': _currentUser!.totalHabitsDone + 1,
+    });
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const HabitFocusAppBar(),
       body: Column(
@@ -22,318 +164,25 @@ class HomeScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
               children: [
-                _GreetingSection(
-                  textTheme: textTheme,
-                  colorScheme: colorScheme,
+                GreetingSection(
+                  userName: _currentUser?.name ?? 'Friend',
+                  greeting: _getGreeting(),
                 ),
                 const SizedBox(height: HabitFocusTheme.sectionGap),
-                _BentoGrid(colorScheme: colorScheme, textTheme: textTheme),
-                const SizedBox(height: HabitFocusTheme.sectionGap),
-                _KeyHabitsSection(
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
+                BentoGrid(
+                  todayProgress: _todayProgress,
+                  streak: _currentUser?.streak ?? 0,
+                  deepWorkTime: _deepWorkTime,
+                  devotionCount: _devotionCount,
                 ),
+                const SizedBox(height: HabitFocusTheme.sectionGap),
+                KeyHabitsSection(habits: _habits.take(3).toList()),
               ],
             ),
           ),
         ],
       ),
       bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 0),
-    );
-  }
-}
-
-class _GreetingSection extends StatelessWidget {
-  const _GreetingSection({required this.textTheme, required this.colorScheme});
-
-  final TextTheme textTheme;
-  final ColorScheme colorScheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Good Morning, Sarah.',
-          style: textTheme.headlineLarge?.copyWith(
-            color: colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: HabitFocusTheme.spacingBase),
-        Text(
-          '"Small daily improvements over time lead to stunning results."',
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.outline,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '- Robin Sharma',
-          style: textTheme.labelSmall?.copyWith(color: colorScheme.outline),
-        ),
-      ],
-    );
-  }
-}
-
-class _BentoGrid extends StatelessWidget {
-  const _BentoGrid({required this.colorScheme, required this.textTheme});
-
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
-        final gap = HabitFocusTheme.stackGap;
-
-        if (crossAxisCount == 2) {
-          return Column(
-            children: [
-              _MainProgressCard(colorScheme: colorScheme, textTheme: textTheme),
-              SizedBox(height: gap),
-              Row(
-                children: [
-                  Expanded(
-                    child: _SmallStatCard(
-                      icon: Icons.timer,
-                      iconColor: colorScheme.secondary,
-                      label: 'Deep Work',
-                      value: '2h 15m',
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                    ),
-                  ),
-                  SizedBox(width: gap),
-                  Expanded(
-                    child: _SmallStatCard(
-                      icon: Icons.auto_awesome_motion,
-                      iconColor: colorScheme.tertiary,
-                      label: 'Devotion',
-                      value: '3/5',
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        }
-
-        // Desktop 4-column layout
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 2,
-              child: _MainProgressCard(
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-              ),
-            ),
-            SizedBox(width: gap),
-            Expanded(
-              child: _SmallStatCard(
-                icon: Icons.timer,
-                iconColor: colorScheme.secondary,
-                label: 'Deep Work',
-                value: '2h 15m',
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-              ),
-            ),
-            SizedBox(width: gap),
-            Expanded(
-              child: _SmallStatCard(
-                icon: Icons.auto_awesome_motion,
-                iconColor: colorScheme.tertiary,
-                label: 'Devotion',
-                value: '3/5',
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _MainProgressCard extends StatelessWidget {
-  const _MainProgressCard({required this.colorScheme, required this.textTheme});
-
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(HabitFocusTheme.cardRadius),
-        boxShadow: [HabitFocusTheme.ambientShadow],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Today's Focus",
-                  style: textTheme.labelLarge?.copyWith(
-                    color: colorScheme.outline,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '65% Completed',
-                  style: textTheme.headlineMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.local_fire_department,
-                      size: 16,
-                      color: colorScheme.primary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '12-day streak',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          ProgressRing(
-            progress: 0.65,
-            color: colorScheme.primary,
-            size: 80,
-            strokeWidth: 8,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SmallStatCard extends StatelessWidget {
-  const _SmallStatCard({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.value,
-    required this.colorScheme,
-    required this.textTheme,
-  });
-
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String value;
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(HabitFocusTheme.cardRadius),
-        boxShadow: [HabitFocusTheme.ambientShadow],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: iconColor, size: 28),
-          const SizedBox(height: 12),
-          Text(
-            label,
-            style: textTheme.labelSmall?.copyWith(color: colorScheme.outline),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: textTheme.headlineMedium?.copyWith(
-              color: colorScheme.onSurface,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _KeyHabitsSection extends StatelessWidget {
-  const _KeyHabitsSection({required this.colorScheme, required this.textTheme});
-
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Key Habits',
-              style: textTheme.headlineMedium?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'View All',
-                style: textTheme.labelLarge?.copyWith(
-                  color: colorScheme.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: HabitFocusTheme.stackGap),
-        HabitCard(
-          title: 'Morning Meditation',
-          categoryLabel: 'Growth',
-          categoryColor: colorScheme.primary,
-          duration: '10 mins',
-          isCompleted: true,
-        ),
-        const SizedBox(height: 12),
-        HabitCard(
-          title: 'Deep Work Session',
-          categoryLabel: 'Work',
-          categoryColor: colorScheme.secondary,
-          duration: '90 mins',
-          isCompleted: false,
-        ),
-        const SizedBox(height: 12),
-        HabitCard(
-          title: 'Daily Impact',
-          categoryLabel: 'Kindness',
-          categoryColor: colorScheme.tertiary,
-          duration: 'Any amount',
-          isCompleted: false,
-        ),
-      ],
     );
   }
 }

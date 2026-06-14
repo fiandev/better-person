@@ -11,6 +11,15 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
   SpiritualMomentController._internal();
 
   @override
+  String get storageKey => 'spiritual_moments';
+
+  @override
+  Map<String, dynamic> toJson(SpiritualMoment item) => item.toJson();
+
+  @override
+  SpiritualMoment fromJson(Map<String, dynamic> json) => SpiritualMoment.fromJson(json);
+
+  @override
   SpiritualMoment? getById(String id) {
     try {
       return items.firstWhere((moment) => moment.id == id);
@@ -22,6 +31,7 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
   @override
   Future<SpiritualMoment> create(SpiritualMoment moment) async {
     items.add(moment);
+    await persist();
     return moment;
   }
 
@@ -31,6 +41,7 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
     if (index == -1) return null;
     
     items[index] = moment;
+    await persist();
     return moment;
   }
 
@@ -68,14 +79,18 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
   Future<bool> delete(String id) async {
     final initialLength = items.length;
     items.removeWhere((moment) => moment.id == id);
-    return items.length < initialLength;
+    final deleted = items.length < initialLength;
+    if (deleted) await persist();
+    return deleted;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
     final initialLength = items.length;
     items.removeWhere((moment) => ids.contains(moment.id));
-    return initialLength - items.length;
+    final deletedCount = initialLength - items.length;
+    if (deletedCount > 0) await persist();
+    return deletedCount;
   }
 
   /// Get moments by date
