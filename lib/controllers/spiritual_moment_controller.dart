@@ -13,7 +13,7 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
   @override
   SpiritualMoment? getById(String id) {
     try {
-      return _items.firstWhere((moment) => moment.id == id);
+      return items.firstWhere((moment) => moment.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
 
   @override
   Future<SpiritualMoment> create(SpiritualMoment moment) async {
-    _items.add(moment);
+    items.add(moment);
     return moment;
   }
 
   @override
   Future<SpiritualMoment?> update(String id, SpiritualMoment moment) async {
-    final index = _items.indexWhere((m) => m.id == id);
+    final index = items.indexWhere((m) => m.id == id);
     if (index == -1) return null;
     
-    _items[index] = moment;
+    items[index] = moment;
     return moment;
   }
 
@@ -66,16 +66,16 @@ class SpiritualMomentController extends BaseController<SpiritualMoment> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((moment) => moment.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((moment) => moment.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((moment) => ids.contains(moment.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((moment) => ids.contains(moment.id));
+    return initialLength - items.length;
   }
 
   /// Get moments by date

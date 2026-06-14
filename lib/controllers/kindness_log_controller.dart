@@ -13,7 +13,7 @@ class KindnessLogController extends BaseController<KindnessLog> {
   @override
   KindnessLog? getById(String id) {
     try {
-      return _items.firstWhere((log) => log.id == id);
+      return items.firstWhere((log) => log.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class KindnessLogController extends BaseController<KindnessLog> {
 
   @override
   Future<KindnessLog> create(KindnessLog log) async {
-    _items.add(log);
+    items.add(log);
     return log;
   }
 
   @override
   Future<KindnessLog?> update(String id, KindnessLog log) async {
-    final index = _items.indexWhere((l) => l.id == id);
+    final index = items.indexWhere((l) => l.id == id);
     if (index == -1) return null;
     
-    _items[index] = log;
+    items[index] = log;
     return log;
   }
 
@@ -64,16 +64,16 @@ class KindnessLogController extends BaseController<KindnessLog> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((log) => log.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((log) => log.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((log) => ids.contains(log.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((log) => ids.contains(log.id));
+    return initialLength - items.length;
   }
 
   /// Get logs by date

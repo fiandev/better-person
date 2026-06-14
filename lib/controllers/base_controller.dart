@@ -3,12 +3,11 @@
 /// Type parameter [T] represents the model type.
 /// Subclasses should implement the abstract methods for persistence logic.
 abstract class BaseController<T> {
-  /// Storage for all items in memory.
-  final List<T> _items = [];
+  final List<T> items = [];
 
   /// Get all items.
   List<T> getAll() {
-    return List.unmodifiable(_items);
+    return List.unmodifiable(items);
   }
 
   /// Get a single item by ID.
@@ -48,30 +47,27 @@ abstract class BaseController<T> {
 
   /// Find items matching a predicate.
   List<T> findWhere(bool Function(T item) predicate) {
-    return _items.where(predicate).toList();
+    return items.where(predicate).toList();
   }
 
   /// Get the first item matching a predicate, or null.
   T? findFirst(bool Function(T item) predicate) {
     try {
-      return _items.firstWhere(predicate);
+      return items.firstWhere(predicate);
     } catch (e) {
       return null;
     }
   }
 
-  /// Count total items.
   int count() {
-    return _items.length;
+    return items.length;
   }
 
-  /// Count items matching a predicate.
   int countWhere(bool Function(T item) predicate) {
-    return _items.where(predicate).length;
+    return items.where(predicate).length;
   }
 
-  /// Clear all items.
   Future<void> clear() async {
-    _items.clear();
+    items.clear();
   }
 }

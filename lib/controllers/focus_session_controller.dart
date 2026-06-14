@@ -13,7 +13,7 @@ class FocusSessionController extends BaseController<FocusSession> {
   @override
   FocusSession? getById(String id) {
     try {
-      return _items.firstWhere((session) => session.id == id);
+      return items.firstWhere((session) => session.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class FocusSessionController extends BaseController<FocusSession> {
 
   @override
   Future<FocusSession> create(FocusSession session) async {
-    _items.add(session);
+    items.add(session);
     return session;
   }
 
   @override
   Future<FocusSession?> update(String id, FocusSession session) async {
-    final index = _items.indexWhere((s) => s.id == id);
+    final index = items.indexWhere((s) => s.id == id);
     if (index == -1) return null;
     
-    _items[index] = session;
+    items[index] = session;
     return session;
   }
 
@@ -69,16 +69,16 @@ class FocusSessionController extends BaseController<FocusSession> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((session) => session.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((session) => session.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((session) => ids.contains(session.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((session) => ids.contains(session.id));
+    return initialLength - items.length;
   }
 
   /// Get sessions by category

@@ -13,7 +13,7 @@ class HabitController extends BaseController<Habit> {
   @override
   Habit? getById(String id) {
     try {
-      return _items.firstWhere((habit) => habit.id == id);
+      return items.firstWhere((habit) => habit.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class HabitController extends BaseController<Habit> {
 
   @override
   Future<Habit> create(Habit habit) async {
-    _items.add(habit);
+    items.add(habit);
     return habit;
   }
 
   @override
   Future<Habit?> update(String id, Habit habit) async {
-    final index = _items.indexWhere((h) => h.id == id);
+    final index = items.indexWhere((h) => h.id == id);
     if (index == -1) return null;
     
-    _items[index] = habit;
+    items[index] = habit;
     return habit;
   }
 
@@ -67,16 +67,16 @@ class HabitController extends BaseController<Habit> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((habit) => habit.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((habit) => habit.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((habit) => ids.contains(habit.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((habit) => ids.contains(habit.id));
+    return initialLength - items.length;
   }
 
   /// Get habits by category

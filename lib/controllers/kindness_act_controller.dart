@@ -13,7 +13,7 @@ class KindnessActController extends BaseController<KindnessAct> {
   @override
   KindnessAct? getById(String id) {
     try {
-      return _items.firstWhere((act) => act.id == id);
+      return items.firstWhere((act) => act.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class KindnessActController extends BaseController<KindnessAct> {
 
   @override
   Future<KindnessAct> create(KindnessAct act) async {
-    _items.add(act);
+    items.add(act);
     return act;
   }
 
   @override
   Future<KindnessAct?> update(String id, KindnessAct act) async {
-    final index = _items.indexWhere((a) => a.id == id);
+    final index = items.indexWhere((a) => a.id == id);
     if (index == -1) return null;
     
-    _items[index] = act;
+    items[index] = act;
     return act;
   }
 
@@ -64,16 +64,16 @@ class KindnessActController extends BaseController<KindnessAct> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((act) => act.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((act) => act.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((act) => ids.contains(act.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((act) => ids.contains(act.id));
+    return initialLength - items.length;
   }
 
   /// Get selected acts
@@ -88,7 +88,7 @@ class KindnessActController extends BaseController<KindnessAct> {
 
   /// Get acts sorted by sortOrder
   List<KindnessAct> getSorted() {
-    final sorted = List<KindnessAct>.from(_items);
+    final sorted = List<KindnessAct>.from(items);
     sorted.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     return sorted;
   }
@@ -113,7 +113,7 @@ class KindnessActController extends BaseController<KindnessAct> {
 
   /// Deselect all acts
   Future<void> deselectAll() async {
-    for (final act in _items) {
+    for (final act in items) {
       await updateFields(act.id, {'isSelected': false});
     }
   }

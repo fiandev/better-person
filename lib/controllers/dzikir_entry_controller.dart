@@ -13,7 +13,7 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
   @override
   DzikirEntry? getById(String id) {
     try {
-      return _items.firstWhere((entry) => entry.id == id);
+      return items.firstWhere((entry) => entry.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
 
   @override
   Future<DzikirEntry> create(DzikirEntry entry) async {
-    _items.add(entry);
+    items.add(entry);
     return entry;
   }
 
   @override
   Future<DzikirEntry?> update(String id, DzikirEntry entry) async {
-    final index = _items.indexWhere((e) => e.id == id);
+    final index = items.indexWhere((e) => e.id == id);
     if (index == -1) return null;
     
-    _items[index] = entry;
+    items[index] = entry;
     return entry;
   }
 
@@ -66,16 +66,16 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((entry) => entry.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((entry) => entry.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((entry) => ids.contains(entry.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((entry) => ids.contains(entry.id));
+    return initialLength - items.length;
   }
 
   /// Get entries by date

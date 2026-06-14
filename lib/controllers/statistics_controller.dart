@@ -14,7 +14,7 @@ class BadgeController extends BaseController<Badge> {
   @override
   Badge? getById(String id) {
     try {
-      return _items.firstWhere((badge) => badge.id == id);
+      return items.firstWhere((badge) => badge.id == id);
     } catch (e) {
       return null;
     }
@@ -22,16 +22,16 @@ class BadgeController extends BaseController<Badge> {
 
   @override
   Future<Badge> create(Badge badge) async {
-    _items.add(badge);
+    items.add(badge);
     return badge;
   }
 
   @override
   Future<Badge?> update(String id, Badge badge) async {
-    final index = _items.indexWhere((b) => b.id == id);
+    final index = items.indexWhere((b) => b.id == id);
     if (index == -1) return null;
     
-    _items[index] = badge;
+    items[index] = badge;
     return badge;
   }
 
@@ -67,16 +67,16 @@ class BadgeController extends BaseController<Badge> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((badge) => badge.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((badge) => badge.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((badge) => ids.contains(badge.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((badge) => ids.contains(badge.id));
+    return initialLength - items.length;
   }
 
   /// Get earned badges
@@ -108,7 +108,7 @@ class GrowthScoreController extends BaseController<GrowthScore> {
   @override
   GrowthScore? getById(String id) {
     try {
-      return _items.firstWhere((score) => score.id == id);
+      return items.firstWhere((score) => score.id == id);
     } catch (e) {
       return null;
     }
@@ -116,16 +116,16 @@ class GrowthScoreController extends BaseController<GrowthScore> {
 
   @override
   Future<GrowthScore> create(GrowthScore score) async {
-    _items.add(score);
+    items.add(score);
     return score;
   }
 
   @override
   Future<GrowthScore?> update(String id, GrowthScore score) async {
-    final index = _items.indexWhere((s) => s.id == id);
+    final index = items.indexWhere((s) => s.id == id);
     if (index == -1) return null;
     
-    _items[index] = score;
+    items[index] = score;
     return score;
   }
 
@@ -160,16 +160,16 @@ class GrowthScoreController extends BaseController<GrowthScore> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((score) => score.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((score) => score.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((score) => ids.contains(score.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((score) => ids.contains(score.id));
+    return initialLength - items.length;
   }
 
   /// Get current week's score
@@ -197,7 +197,7 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
   @override
   ActivitySummary? getById(String id) {
     try {
-      return _items.firstWhere((summary) => summary.id == id);
+      return items.firstWhere((summary) => summary.id == id);
     } catch (e) {
       return null;
     }
@@ -205,16 +205,16 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
 
   @override
   Future<ActivitySummary> create(ActivitySummary summary) async {
-    _items.add(summary);
+    items.add(summary);
     return summary;
   }
 
   @override
   Future<ActivitySummary?> update(String id, ActivitySummary summary) async {
-    final index = _items.indexWhere((s) => s.id == id);
+    final index = items.indexWhere((s) => s.id == id);
     if (index == -1) return null;
     
-    _items[index] = summary;
+    items[index] = summary;
     return summary;
   }
 
@@ -251,16 +251,16 @@ class ActivitySummaryController extends BaseController<ActivitySummary> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((summary) => summary.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((summary) => summary.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((summary) => ids.contains(summary.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((summary) => ids.contains(summary.id));
+    return initialLength - items.length;
   }
 
   /// Get summaries by category
@@ -293,7 +293,7 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
   @override
   DailyConsistencyRecord? getById(String id) {
     try {
-      return _items.firstWhere((record) => record.id == id);
+      return items.firstWhere((record) => record.id == id);
     } catch (e) {
       return null;
     }
@@ -301,16 +301,16 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
 
   @override
   Future<DailyConsistencyRecord> create(DailyConsistencyRecord record) async {
-    _items.add(record);
+    items.add(record);
     return record;
   }
 
   @override
   Future<DailyConsistencyRecord?> update(String id, DailyConsistencyRecord record) async {
-    final index = _items.indexWhere((r) => r.id == id);
+    final index = items.indexWhere((r) => r.id == id);
     if (index == -1) return null;
     
-    _items[index] = record;
+    items[index] = record;
     return record;
   }
 
@@ -344,16 +344,16 @@ class DailyConsistencyRecordController extends BaseController<DailyConsistencyRe
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((record) => record.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((record) => record.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((record) => ids.contains(record.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((record) => ids.contains(record.id));
+    return initialLength - items.length;
   }
 
   /// Get records by date

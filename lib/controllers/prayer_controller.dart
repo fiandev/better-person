@@ -13,7 +13,7 @@ class PrayerController extends BaseController<Prayer> {
   @override
   Prayer? getById(String id) {
     try {
-      return _items.firstWhere((prayer) => prayer.id == id);
+      return items.firstWhere((prayer) => prayer.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class PrayerController extends BaseController<Prayer> {
 
   @override
   Future<Prayer> create(Prayer prayer) async {
-    _items.add(prayer);
+    items.add(prayer);
     return prayer;
   }
 
   @override
   Future<Prayer?> update(String id, Prayer prayer) async {
-    final index = _items.indexWhere((p) => p.id == id);
+    final index = items.indexWhere((p) => p.id == id);
     if (index == -1) return null;
     
-    _items[index] = prayer;
+    items[index] = prayer;
     return prayer;
   }
 
@@ -66,16 +66,16 @@ class PrayerController extends BaseController<Prayer> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((prayer) => prayer.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((prayer) => prayer.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((prayer) => ids.contains(prayer.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((prayer) => ids.contains(prayer.id));
+    return initialLength - items.length;
   }
 
   /// Get prayers by name

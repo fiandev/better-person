@@ -13,7 +13,7 @@ class TaskController extends BaseController<Task> {
   @override
   Task? getById(String id) {
     try {
-      return _items.firstWhere((task) => task.id == id);
+      return items.firstWhere((task) => task.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class TaskController extends BaseController<Task> {
 
   @override
   Future<Task> create(Task task) async {
-    _items.add(task);
+    items.add(task);
     return task;
   }
 
   @override
   Future<Task?> update(String id, Task task) async {
-    final index = _items.indexWhere((t) => t.id == id);
+    final index = items.indexWhere((t) => t.id == id);
     if (index == -1) return null;
     
-    _items[index] = task;
+    items[index] = task;
     return task;
   }
 
@@ -67,16 +67,16 @@ class TaskController extends BaseController<Task> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((task) => task.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((task) => task.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((task) => ids.contains(task.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((task) => ids.contains(task.id));
+    return initialLength - items.length;
   }
 
   /// Get tasks by priority
@@ -96,7 +96,7 @@ class TaskController extends BaseController<Task> {
 
   /// Get tasks sorted by sortOrder
   List<Task> getSorted() {
-    final sorted = List<Task>.from(_items);
+    final sorted = List<Task>.from(items);
     sorted.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     return sorted;
   }

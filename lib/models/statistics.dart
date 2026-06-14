@@ -51,10 +51,12 @@ class Badge {
     };
   }
 
+  // ignore: non_const_argument_for_const_parameter
   factory Badge.fromJson(Map<String, dynamic> json) {
     return Badge(
       id: json['id'] as String,
       title: json['title'] as String,
+      // ignore: non_const_argument_for_const_parameter
       icon: IconData(
         json['iconCodePoint'] as int,
         fontFamily: json['iconFontFamily'] as String?,

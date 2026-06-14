@@ -13,7 +13,7 @@ class UserController extends BaseController<User> {
   @override
   User? getById(String id) {
     try {
-      return _items.firstWhere((user) => user.id == id);
+      return items.firstWhere((user) => user.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class UserController extends BaseController<User> {
 
   @override
   Future<User> create(User user) async {
-    _items.add(user);
+    items.add(user);
     return user;
   }
 
   @override
   Future<User?> update(String id, User user) async {
-    final index = _items.indexWhere((u) => u.id == id);
+    final index = items.indexWhere((u) => u.id == id);
     if (index == -1) return null;
     
-    _items[index] = user;
+    items[index] = user;
     return user;
   }
 
@@ -70,16 +70,16 @@ class UserController extends BaseController<User> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((user) => user.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((user) => user.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((user) => ids.contains(user.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((user) => ids.contains(user.id));
+    return initialLength - items.length;
   }
 
   /// Get user by name

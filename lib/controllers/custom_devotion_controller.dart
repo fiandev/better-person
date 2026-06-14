@@ -13,7 +13,7 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
   @override
   CustomDevotion? getById(String id) {
     try {
-      return _items.firstWhere((devotion) => devotion.id == id);
+      return items.firstWhere((devotion) => devotion.id == id);
     } catch (e) {
       return null;
     }
@@ -21,16 +21,16 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
 
   @override
   Future<CustomDevotion> create(CustomDevotion devotion) async {
-    _items.add(devotion);
+    items.add(devotion);
     return devotion;
   }
 
   @override
   Future<CustomDevotion?> update(String id, CustomDevotion devotion) async {
-    final index = _items.indexWhere((d) => d.id == id);
+    final index = items.indexWhere((d) => d.id == id);
     if (index == -1) return null;
     
-    _items[index] = devotion;
+    items[index] = devotion;
     return devotion;
   }
 
@@ -66,16 +66,16 @@ class CustomDevotionController extends BaseController<CustomDevotion> {
 
   @override
   Future<bool> delete(String id) async {
-    final initialLength = _items.length;
-    _items.removeWhere((devotion) => devotion.id == id);
-    return _items.length < initialLength;
+    final initialLength = items.length;
+    items.removeWhere((devotion) => devotion.id == id);
+    return items.length < initialLength;
   }
 
   @override
   Future<int> deleteMany(List<String> ids) async {
-    final initialLength = _items.length;
-    _items.removeWhere((devotion) => ids.contains(devotion.id));
-    return initialLength - _items.length;
+    final initialLength = items.length;
+    items.removeWhere((devotion) => ids.contains(devotion.id));
+    return initialLength - items.length;
   }
 
   /// Get devotions by date
