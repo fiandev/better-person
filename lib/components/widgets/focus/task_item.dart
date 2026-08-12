@@ -43,7 +43,7 @@ class TaskItem extends StatelessWidget {
                 color: task.isCompleted ? colorScheme.secondary : null,
                 border: Border.all(
                   color: isDisabled
-                      ? colorScheme.outline.withOpacity(0.3)
+                      ? colorScheme.outline.withValues(alpha: 0.3)
                       : (task.isCompleted
                           ? colorScheme.secondary
                           : colorScheme.outline),
@@ -60,7 +60,7 @@ class TaskItem extends StatelessWidget {
                 task.title,
                 style: textTheme.bodyMedium?.copyWith(
                   color: isDisabled 
-                      ? colorScheme.onSurface.withOpacity(0.4)
+                      ? colorScheme.onSurface.withValues(alpha: 0.4)
                       : colorScheme.onSurface,
                   decoration: task.isCompleted
                       ? TextDecoration.lineThrough

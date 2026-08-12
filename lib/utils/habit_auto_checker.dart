@@ -13,10 +13,7 @@ class HabitAutoChecker {
   HabitAutoChecker._internal();
 
   final _habitController = HabitController();
-  final _focusSessionController = FocusSessionController();
-  final _kindnessLogController = KindnessLogController();
   final _prayerController = PrayerController();
-  final _quranSessionController = QuranSessionController();
 
   /// Check habit when a focus session completes
   Future<void> onFocusSessionComplete(FocusSession session) async {

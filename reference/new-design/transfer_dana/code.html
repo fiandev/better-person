@@ -1,0 +1,250 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>HabitFocus - Transfer Between Wallets</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@600;700&amp;family=Work+Sans:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d9dadb",
+                        "surface-tint": "#2c694e",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "surface": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#95d4b3",
+                        "on-tertiary-fixed": "#002114",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-secondary-fixed": "#002112",
+                        "outline-variant": "#bfc9c1",
+                        "surface-container": "#edeeef",
+                        "primary-fixed-dim": "#95d4b3",
+                        "surface-container-low": "#f3f4f5",
+                        "primary": "#0f5238",
+                        "primary-fixed": "#b1f0ce",
+                        "primary-container": "#2d6a4f",
+                        "on-secondary-fixed-variant": "#264f39",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "tertiary": "#274f3d",
+                        "tertiary-fixed": "#c1ecd4",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#274e3d",
+                        "on-primary-fixed": "#002114",
+                        "on-primary-container": "#a8e7c5",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "secondary-container": "#bdeacd",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#b8e3cb",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-fixed-dim": "#a4d1b4",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#404943",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#3e6750",
+                        "on-secondary-container": "#426b54",
+                        "background": "#f8f9fa",
+                        "secondary-fixed": "#c0edd0",
+                        "outline": "#707973",
+                        "on-background": "#191c1d",
+                        "tertiary-container": "#3f6754",
+                        "tertiary-fixed-dim": "#a5d0b9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "container-padding-mobile": "16px",
+                        "container-padding-desktop": "32px",
+                        "stack-sm": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Work Sans"],
+                        "label-data": ["JetBrains Mono"],
+                        "display-currency": ["Manrope"],
+                        "body-lg": ["Work Sans"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-data": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-currency": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Work Sans', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', sans-serif; }
+        .data-label { font-family: 'JetBrains Mono', monospace; }
+        .shadow-ambient { box-shadow: 0 4px 12px rgba(27, 67, 50, 0.04); }
+        .shadow-elevated { box-shadow: 0 8px 24px rgba(27, 67, 50, 0.08); }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar Component -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface shadow-[0_4px_12px_rgba(27,67,50,0.04)]">
+<div class="flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop h-16 w-full max-w-[1200px] mx-auto">
+<button aria-label="Menu" class="text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full p-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary font-bold">Transfer Dana</h1>
+<button aria-label="User profile photo" class="text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full p-1 active:scale-95 transition-transform">
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover" data-alt="A small circular avatar placeholder image showing a generic user silhouette in a minimalist, light-mode financial app design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP67vCKV6klFSyg9ZWU0XMeLBPreAZbu11WevInl8Fq4iEmYv0qfMFuicFQ_nVpV16oJMNbygLkAaGTR4qJt3eXOOcOiSEFFJy89OxtDh-Onmh8QMYgFNbcYFKW_ZhF9b-_O7fDZ86PmWfEeNpjlz6iTBagyHEWMbCpGIFdw2VZBK-PzHThDVDHfhI_7X8z9XUT16P5SIaSti9tll5jFCcKk39-AZxys1iJf6s7mlGiyYCCMlz_zyH">
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="pt-24 px-container-padding-mobile md:px-container-padding-desktop max-w-[800px] mx-auto w-full">
+<form class="flex flex-col gap-stack-lg">
+<!-- Flow Visualization Section -->
+<section class="flex flex-col gap-stack-md relative">
+<!-- From Wallet Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-ambient border border-surface-variant/50 relative z-10 transition-transform hover:shadow-elevated cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-on-surface-variant font-body-md mb-1">From Account</p>
+<h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary">Main Checking</h2>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-sm">Available Balance</span>
+<span class="font-display-currency text-display-currency text-on-surface tracking-tight">$4,250.00</span>
+</div>
+<p class="font-label-data text-label-data text-on-surface-variant opacity-70">**** 4921</p>
+</div>
+</div>
+<!-- Directional Arrow -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center">
+<div class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center shadow-elevated border-4 border-background hover:scale-110 transition-transform cursor-pointer">
+<span class="material-symbols-outlined" data-icon="swap_vert">swap_vert</span>
+</div>
+</div>
+<!-- To Wallet Card -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-ambient border border-surface-variant/50 relative z-10 transition-transform hover:shadow-elevated cursor-pointer group mt-stack-sm">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-on-surface-variant font-body-md mb-1">To Account</p>
+<h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary">Emergency Fund</h2>
+</div>
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="savings">savings</span>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="text-on-surface-variant text-sm">Current Balance</span>
+<span class="font-display-currency text-display-currency text-on-surface tracking-tight opacity-50">$12,000.00</span>
+</div>
+<p class="font-label-data text-label-data text-on-surface-variant opacity-70">**** 8832</p>
+</div>
+</div>
+</section>
+<!-- Amount Input -->
+<section class="bg-surface-container-lowest rounded-xl p-6 shadow-ambient border border-surface-variant/50 flex flex-col gap-unit items-center">
+<label class="text-on-surface-variant font-body-md text-center w-full" for="amount">Transfer Amount</label>
+<div class="relative w-full max-w-[300px] flex items-center justify-center">
+<span class="absolute left-4 font-display-currency text-display-currency text-on-surface-variant opacity-50">$</span>
+<input class="w-full bg-transparent border-none text-center font-display-currency text-display-currency text-on-surface focus:ring-0 placeholder:text-surface-variant pl-12 pr-4 py-2" id="amount" min="0" placeholder="0.00" step="0.01" type="number">
+</div>
+<div class="w-full max-w-[300px] h-[2px] bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary w-0 transition-all duration-300" id="amount-bar"></div>
+</div>
+</section>
+<!-- Details Section -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-unit">
+<label class="text-on-surface-variant font-label-data text-label-data uppercase tracking-wider text-xs" for="date">Date</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors shadow-sm" id="date" type="date" value="2023-10-27">
+</div>
+</div>
+<div class="flex flex-col gap-unit">
+<label class="text-on-surface-variant font-label-data text-label-data uppercase tracking-wider text-xs" for="note">Note (Optional)</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors shadow-sm placeholder:text-outline-variant" id="note" placeholder="What is this for?" type="text">
+</div>
+</section>
+<!-- Submit Button -->
+<div class="mt-stack-md flex justify-center">
+<button class="bg-primary-container text-on-primary w-full md:w-auto px-12 py-4 rounded-full font-headline-md text-[18px] md:text-headline-md shadow-elevated hover:bg-primary transition-colors active:scale-95 duration-200 flex items-center justify-center gap-2" type="button">
+<span>Confirm Transfer</span>
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+</button>
+</div>
+</form>
+</main>
+<!-- BottomNavBar Component -->
+<nav class="fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-safe bg-surface dark:bg-surface shadow-[0_-4px_12px_0_rgba(27,67,50,0.04)] z-50 md:hidden">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-data text-label-data mt-1 text-[10px]">Home</span>
+</a>
+<!-- Focus -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="target">target</span>
+<span class="font-label-data text-label-data mt-1 text-[10px]">Focus</span>
+</a>
+<!-- Devotion -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-data text-label-data mt-1 text-[10px]">Devotion</span>
+</a>
+<!-- Finance (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-full px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet" data-weight="fill" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-label-data text-label-data mt-1 text-[10px] font-bold">Finance</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-90 transition-transform duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-data text-label-data mt-1 text-[10px]">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple interaction for the amount input to show a progress bar effect
+        const amountInput = document.getElementById('amount');
+        const amountBar = document.getElementById('amount-bar');
+        
+        if(amountInput && amountBar) {
+            amountInput.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value) || 0;
+                // Max visual width at $5000 for this example
+                const max = 5000;
+                let percentage = (val / max) * 100;
+                if(percentage > 100) percentage = 100;
+                amountBar.style.width = `${percentage}%`;
+            });
+        }
+    </script>
+</body></html>

@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'components/theme/habit_focus_theme.dart';
 import 'routes/app_routes.dart';
 import 'utils/controller_initializer.dart';
+import 'utils/daily_reset_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize all controllers with persisted data
   await ControllerInitializer.initializeAll();
+  
+  // Initialize daily reset service
+  await DailyResetService.initialize();
   
   runApp(const MyApp());
 }

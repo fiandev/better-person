@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 
 import '../theme/habit_focus_theme.dart';
 import '../widgets/habit_focus_app_bar.dart';
 import '../../routes/route_shell.dart';
+import '../../controllers/controllers.dart';
+import '../../models/models.dart';
+import '../../utils/habit_auto_checker.dart';
+import '../../utils/badge_checker.dart';
 
 class KindnessScreen extends StatefulWidget {
   const KindnessScreen({super.key});
@@ -12,16 +16,112 @@ class KindnessScreen extends StatefulWidget {
 }
 
 class _KindnessScreenState extends State<KindnessScreen> {
-  final Set<int> _selectedChips = {};
+  final TextEditingController _reflectionController = TextEditingController();
+  final _kindnessActController = KindnessActController();
+  final _kindnessLogController = KindnessLogController();
+  bool _isSubmitting = false;
 
-  void _toggleChip(int index) {
-    setState(() {
-      if (_selectedChips.contains(index)) {
-        _selectedChips.remove(index);
-      } else {
-        _selectedChips.add(index);
+  @override
+  void dispose() {
+    _reflectionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogKindness() async {
+    final selectedActs = _kindnessActController.getSelected();
+    final reflection = _reflectionController.text.trim();
+    
+    if (selectedActs.isEmpty && reflection.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one act or write a reflection'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final selectedActIds = selectedActs.map((act) => act.id).toList();
+      
+      await _kindnessLogController.logKindness(selectedActIds, reflection);
+      
+      final userController = UserController();
+      await userController.incrementKindActs();
+      
+      final habitAutoChecker = HabitAutoChecker();
+      final log = _kindnessLogController.getTodayLog();
+      if (log != null) {
+        await habitAutoChecker.onKindnessLogComplete(log);
       }
-    });
+      
+      _reflectionController.clear();
+      await _kindnessActController.clearSelection();
+      
+      // Check for badge awards
+      final newBadges = await BadgeChecker.checkAndAwardBadges();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Kindness logged successfully! 🎉'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Show badge notifications
+        _showBadgeNotifications(newBadges);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error logging kindness: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  void _showBadgeNotifications(List<Badge> badges) {
+    for (var badge in badges) {
+      Future.delayed(Duration(milliseconds: badges.indexOf(badge) * 500), () {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(badge.icon, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '🎉 Badge Earned: ${badge.title}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(badge.detail),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: badge.backgroundColor,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      });
+    }
   }
 
   @override
@@ -37,8 +137,10 @@ class _KindnessScreenState extends State<KindnessScreen> {
           const SizedBox(height: HabitFocusTheme.sectionGap),
           _BentoGrid(
             colorScheme: colorScheme,
-            selectedChips: _selectedChips,
-            onToggleChip: _toggleChip,
+            kindnessActController: _kindnessActController,
+            reflectionController: _reflectionController,
+            isSubmitting: _isSubmitting,
+            onSubmit: _handleLogKindness,
           ),
         ],
       ),
@@ -102,16 +204,30 @@ class _HeaderSection extends StatelessWidget {
   }
 }
 
-class _BentoGrid extends StatelessWidget {
+class _BentoGrid extends StatefulWidget {
   const _BentoGrid({
     required this.colorScheme,
-    required this.selectedChips,
-    required this.onToggleChip,
+    required this.kindnessActController,
+    required this.reflectionController,
+    required this.isSubmitting,
+    required this.onSubmit,
   });
 
   final ColorScheme colorScheme;
-  final Set<int> selectedChips;
-  final ValueChanged<int> onToggleChip;
+  final KindnessActController kindnessActController;
+  final TextEditingController reflectionController;
+  final bool isSubmitting;
+  final VoidCallback onSubmit;
+
+  @override
+  State<_BentoGrid> createState() => _BentoGridState();
+}
+
+class _BentoGridState extends State<_BentoGrid> {
+  Future<void> _toggleChip(String actId) async {
+    await widget.kindnessActController.toggleSelection(actId);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,33 +242,49 @@ class _BentoGrid extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: _QuickIdeasCard(
-                      colorScheme: colorScheme,
-                      selectedChips: selectedChips,
-                      onToggleChip: onToggleChip,
+                      colorScheme: widget.colorScheme,
+                      kindnessActController: widget.kindnessActController,
+                      onToggleChip: _toggleChip,
                     ),
                   ),
                   const SizedBox(width: HabitFocusTheme.stackGap),
                   Expanded(
-                    child: _ImpactCounterCard(colorScheme: colorScheme),
+                    child: _ImpactCounterCard(
+                      colorScheme: widget.colorScheme,
+                      kindnessActController: widget.kindnessActController,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: HabitFocusTheme.stackGap),
-              _ReflectionCard(colorScheme: colorScheme),
+              _ReflectionCard(
+                colorScheme: widget.colorScheme,
+                reflectionController: widget.reflectionController,
+                isSubmitting: widget.isSubmitting,
+                onSubmit: widget.onSubmit,
+              ),
             ],
           );
         }
         return Column(
           children: [
             _QuickIdeasCard(
-              colorScheme: colorScheme,
-              selectedChips: selectedChips,
-              onToggleChip: onToggleChip,
+              colorScheme: widget.colorScheme,
+              kindnessActController: widget.kindnessActController,
+              onToggleChip: _toggleChip,
             ),
             const SizedBox(height: HabitFocusTheme.stackGap),
-            _ImpactCounterCard(colorScheme: colorScheme),
+            _ImpactCounterCard(
+              colorScheme: widget.colorScheme,
+              kindnessActController: widget.kindnessActController,
+            ),
             const SizedBox(height: HabitFocusTheme.stackGap),
-            _ReflectionCard(colorScheme: colorScheme),
+            _ReflectionCard(
+              colorScheme: widget.colorScheme,
+              reflectionController: widget.reflectionController,
+              isSubmitting: widget.isSubmitting,
+              onSubmit: widget.onSubmit,
+            ),
           ],
         );
       },
@@ -163,26 +295,18 @@ class _BentoGrid extends StatelessWidget {
 class _QuickIdeasCard extends StatelessWidget {
   const _QuickIdeasCard({
     required this.colorScheme,
-    required this.selectedChips,
+    required this.kindnessActController,
     required this.onToggleChip,
   });
 
   final ColorScheme colorScheme;
-  final Set<int> selectedChips;
-  final ValueChanged<int> onToggleChip;
-
-  static const _ideas = [
-    'Gave a compliment',
-    'Helped a colleague',
-    'Held the door open',
-    'Listened actively',
-    'Donated to charity',
-    'Sent a thoughtful message',
-  ];
+  final KindnessActController kindnessActController;
+  final Function(String) onToggleChip;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final acts = kindnessActController.getSorted();
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -223,37 +347,36 @@ class _QuickIdeasCard extends StatelessWidget {
           Wrap(
             spacing: 12,
             runSpacing: 12,
-            children: List.generate(_ideas.length, (index) {
-              final isSelected = selectedChips.contains(index);
+            children: acts.map((act) {
               return GestureDetector(
-                onTap: () => onToggleChip(index),
+                onTap: () => onToggleChip(act.id),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: isSelected
+                    color: act.isSelected
                         ? colorScheme.primaryContainer
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isSelected
+                      color: act.isSelected
                           ? colorScheme.primaryContainer
                           : colorScheme.outlineVariant,
                     ),
                   ),
                   child: Text(
-                    _ideas[index],
+                    act.label,
                     style: textTheme.labelMedium?.copyWith(
-                      color: isSelected
+                      color: act.isSelected
                           ? colorScheme.onPrimaryContainer
                           : colorScheme.outline,
                     ),
                   ),
                 ),
               );
-            }),
+            }).toList(),
           ),
         ],
       ),
@@ -262,13 +385,29 @@ class _QuickIdeasCard extends StatelessWidget {
 }
 
 class _ImpactCounterCard extends StatelessWidget {
-  const _ImpactCounterCard({required this.colorScheme});
+  const _ImpactCounterCard({
+    required this.colorScheme,
+    required this.kindnessActController,
+  });
 
   final ColorScheme colorScheme;
+  final KindnessActController kindnessActController;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    
+    // Get weekly acts count from logs
+    final kindnessLogController = KindnessLogController();
+    final weeklyLogs = kindnessLogController.getThisWeekLogs();
+    int weeklyActCount = 0;
+    for (var log in weeklyLogs) {
+      weeklyActCount += log.selectedActIds.length;
+    }
+    
+    // Calculate progress (goal: 14 acts per week)
+    const weeklyGoal = 14;
+    final progress = (weeklyActCount / weeklyGoal).clamp(0.0, 1.0);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -299,7 +438,7 @@ class _ImpactCounterCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                '14',
+                '$weeklyActCount',
                 style: textTheme.headlineLarge?.copyWith(
                   fontSize: 48,
                   fontWeight: FontWeight.w700,
@@ -318,7 +457,7 @@ class _ImpactCounterCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value: 0.75,
+                  value: progress,
                   backgroundColor: Colors.black.withValues(alpha: 0.2),
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   minHeight: 8,
@@ -326,7 +465,9 @@ class _ImpactCounterCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Almost reached your weekly goal!',
+                weeklyActCount >= weeklyGoal
+                    ? 'Weekly goal reached! 🎉'
+                    : '${weeklyGoal - weeklyActCount} more to reach your goal',
                 style: textTheme.labelSmall?.copyWith(
                   color: colorScheme.onTertiary.withValues(alpha: 0.8),
                 ),
@@ -341,9 +482,17 @@ class _ImpactCounterCard extends StatelessWidget {
 }
 
 class _ReflectionCard extends StatelessWidget {
-  const _ReflectionCard({required this.colorScheme});
+  const _ReflectionCard({
+    required this.colorScheme,
+    required this.reflectionController,
+    required this.isSubmitting,
+    required this.onSubmit,
+  });
 
   final ColorScheme colorScheme;
+  final TextEditingController reflectionController;
+  final bool isSubmitting;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -373,6 +522,7 @@ class _ReflectionCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           TextField(
+            controller: reflectionController,
             maxLines: 4,
             decoration: InputDecoration(
               hintText: 'Describe your act of kindness or how it made you feel...',
@@ -400,8 +550,17 @@ class _ReflectionCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.check, size: 18),
+              onPressed: isSubmitting ? null : onSubmit,
+              icon: isSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.check, size: 18),
               label: const Text('Log Kindness'),
               style: FilledButton.styleFrom(
                 backgroundColor: colorScheme.primary,

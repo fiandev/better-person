@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../theme/habit_focus_theme.dart';
 import '../widgets/habit_focus_app_bar.dart';
 import '../../routes/route_shell.dart';
+import '../../controllers/controllers.dart';
+import '../../models/models.dart';
 
 class DevotionScreen extends StatefulWidget {
   const DevotionScreen({super.key});
@@ -593,14 +595,111 @@ class _CustomDevotionHero extends StatelessWidget {
   }
 }
 
-class _OtherTabContent extends StatelessWidget {
+class _OtherTabContent extends StatefulWidget {
   const _OtherTabContent({required this.colorScheme});
 
   final ColorScheme colorScheme;
 
   @override
+  State<_OtherTabContent> createState() => _OtherTabContentState();
+}
+
+class _OtherTabContentState extends State<_OtherTabContent> {
+  final TextEditingController _devotionNameController = TextEditingController();
+  final _customDevotionController = CustomDevotionController();
+  TimeOfDay _selectedTime = const TimeOfDay(hour: 6, minute: 0);
+  bool _isAddingDevotion = false;
+
+  @override
+  void dispose() {
+    _devotionNameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.tertiary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
+  }
+
+  Future<void> _handleAddDevotion() async {
+    final name = _devotionNameController.text.trim();
+    
+    if (name.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a devotion name'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isAddingDevotion = true);
+
+    try {
+      final newDevotion = CustomDevotion(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: name,
+        scheduledTime: _selectedTime,
+        isCompleted: false,
+        date: DateTime.now(),
+        completedAt: null,
+      );
+      
+      await _customDevotionController.create(newDevotion);
+      
+      _devotionNameController.clear();
+      setState(() {
+        _selectedTime = const TimeOfDay(hour: 6, minute: 0);
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Devotion added successfully! ✨'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error adding devotion: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingDevotion = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = widget.colorScheme;
 
     return ListView(
       padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
@@ -617,27 +716,28 @@ class _OtherTabContent extends StatelessWidget {
         ),
         const SizedBox(height: HabitFocusTheme.stackGap),
 
-        // Devotion List
-        _DevotionCard(
-          name: 'Morning Meditation',
-          time: '06:00 AM',
-          isCompleted: true,
-          colorScheme: colorScheme,
-        ),
-        const SizedBox(height: HabitFocusTheme.stackGap),
-        _DevotionCard(
-          name: 'Evening Prayer',
-          time: '07:00 PM',
-          isCompleted: false,
-          colorScheme: colorScheme,
-        ),
-        const SizedBox(height: HabitFocusTheme.stackGap),
-        _DevotionCard(
-          name: 'Gratitude Journal',
-          time: '09:00 PM',
-          isCompleted: false,
-          colorScheme: colorScheme,
-        ),
+        // Devotion List from controller
+        ..._customDevotionController.getTodayDevotions().map((devotion) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: HabitFocusTheme.stackGap),
+            child: _DevotionCard(
+              devotion: devotion,
+              colorScheme: colorScheme,
+              onDelete: () async {
+                await _customDevotionController.delete(devotion.id);
+                setState(() {});
+              },
+              onToggle: () async {
+                if (devotion.isCompleted) {
+                  await _customDevotionController.markIncomplete(devotion.id);
+                } else {
+                  await _customDevotionController.markCompleted(devotion.id);
+                }
+                setState(() {});
+              },
+            ),
+          );
+        }),
 
         const SizedBox(height: HabitFocusTheme.sectionGap),
 
@@ -691,6 +791,7 @@ class _OtherTabContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: _devotionNameController,
                     decoration: InputDecoration(
                       hintText: 'Enter devotion name',
                       hintStyle: TextStyle(color: colorScheme.outline),
@@ -724,8 +825,8 @@ class _OtherTabContent extends StatelessWidget {
                   const SizedBox(height: 8),
                   TextField(
                     decoration: InputDecoration(
-                      hintText: 'Select time',
-                      hintStyle: TextStyle(color: colorScheme.outline),
+                      hintText: _selectedTime.format(context),
+                      hintStyle: TextStyle(color: colorScheme.onSurface),
                       filled: true,
                       fillColor: colorScheme.surfaceContainer,
                       border: OutlineInputBorder(
@@ -742,9 +843,7 @@ class _OtherTabContent extends StatelessWidget {
                       ),
                     ),
                     readOnly: true,
-                    onTap: () {
-                      // Time picker will be added later
-                    },
+                    onTap: _pickTime,
                   ),
                 ],
               ),
@@ -755,10 +854,17 @@ class _OtherTabContent extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // Add devotion logic will be added later
-                  },
-                  icon: const Icon(Icons.add, size: 20),
+                  onPressed: _isAddingDevotion ? null : _handleAddDevotion,
+                  icon: _isAddingDevotion
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.add, size: 20),
                   label: const Text('Add Devotion'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
@@ -781,94 +887,96 @@ class _OtherTabContent extends StatelessWidget {
 
 class _DevotionCard extends StatelessWidget {
   const _DevotionCard({
-    required this.name,
-    required this.time,
-    required this.isCompleted,
+    required this.devotion,
     required this.colorScheme,
+    required this.onDelete,
+    required this.onToggle,
   });
 
-  final String name;
-  final String time;
-  final bool isCompleted;
+  final CustomDevotion devotion;
   final ColorScheme colorScheme;
+  final VoidCallback onDelete;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final timeString = devotion.scheduledTime.format(context);
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isCompleted
-            ? colorScheme.surfaceContainerHighest
-            : colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border(
-          left: BorderSide(
-            color: isCompleted ? colorScheme.primary : colorScheme.tertiary,
-            width: 4,
-          ),
-        ),
-        boxShadow: isCompleted ? null : [HabitFocusTheme.ambientShadow],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isCompleted ? colorScheme.primary : Colors.transparent,
-              border: Border.all(
-                color: isCompleted
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant,
-                width: 2,
-              ),
+    return GestureDetector(
+      onTap: onToggle,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: devotion.isCompleted
+              ? colorScheme.surfaceContainerHighest
+              : colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16),
+          border: Border(
+            left: BorderSide(
+              color: devotion.isCompleted ? colorScheme.primary : colorScheme.tertiary,
+              width: 4,
             ),
-            child: isCompleted
-                ? const Icon(Icons.check, size: 18, color: Colors.white)
-                : null,
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: textTheme.headlineMedium?.copyWith(
-                    fontSize: 18,
-                    color: colorScheme.onSurface,
-                  ),
+          boxShadow: devotion.isCompleted ? null : [HabitFocusTheme.ambientShadow],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: devotion.isCompleted ? colorScheme.primary : Colors.transparent,
+                border: Border.all(
+                  color: devotion.isCompleted
+                      ? colorScheme.primary
+                      : colorScheme.outlineVariant,
+                  width: 2,
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time,
-                      size: 14,
-                      color: colorScheme.outline,
+              ),
+              child: devotion.isCompleted
+                  ? const Icon(Icons.check, size: 18, color: Colors.white)
+                  : null,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    devotion.name,
+                    style: textTheme.headlineMedium?.copyWith(
+                      fontSize: 18,
+                      color: colorScheme.onSurface,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      time,
-                      style: textTheme.bodyMedium?.copyWith(
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14,
                         color: colorScheme.outline,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 4),
+                      Text(
+                        timeString,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              // Delete action will be added later
-            },
-            icon: Icon(Icons.more_vert, color: colorScheme.outline),
-          ),
-        ],
+            IconButton(
+              onPressed: onDelete,
+              icon: Icon(Icons.delete_outline, color: colorScheme.error),
+            ),
+          ],
+        ),
       ),
     );
   }

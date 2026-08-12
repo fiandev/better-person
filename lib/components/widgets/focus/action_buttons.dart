@@ -20,22 +20,15 @@ class ActionButtons extends StatelessWidget {
     final isFocusing = session.timerState == TimerState.focusing;
     final isOnBreak = session.timerState == TimerState.onBreak;
     
-    // If we're idle, we need to know if we were in a break or focus mode
-    // We can infer this from the timerDuration
     final isBreakMode =
         isOnBreak ||
         (session.timerState == TimerState.idle &&
             session.timerDuration.inMinutes == 5);
-    final isFocusMode =
-        isFocusing ||
-        (session.timerState == TimerState.idle &&
-            session.timerDuration.inMinutes == 25);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (!isBreakMode) ...[
-          // Show Focus button when not in break mode
           FilledButton.icon(
             onPressed: onToggleFocus,
             icon: Icon(isFocusing ? Icons.pause : Icons.play_arrow),
@@ -58,7 +51,6 @@ class ActionButtons extends StatelessWidget {
             ),
           ),
         ] else ...[
-          // Show Break button when in break mode
           FilledButton.icon(
             onPressed: onToggleBreak,
             icon: Icon(isOnBreak ? Icons.pause : Icons.play_arrow),

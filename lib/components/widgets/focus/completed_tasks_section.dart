@@ -53,7 +53,7 @@ class CompletedTasksSection extends StatelessWidget {
               isDisabled: false,
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

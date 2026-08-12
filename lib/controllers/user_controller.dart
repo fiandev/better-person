@@ -106,4 +106,21 @@ class UserController extends BaseController<User> {
   List<User> getUsersWithStreak(int minStreak) {
     return findWhere((user) => user.streak >= minStreak);
   }
+
+  /// Get current user (assumes single user for now)
+  User getCurrentUser() {
+    final users = getAll();
+    if (users.isEmpty) {
+      throw Exception('No user found. Please initialize user data.');
+    }
+    return users.first;
+  }
+
+  /// Increment kind acts count
+  Future<User?> incrementKindActs() async {
+    final user = getCurrentUser();
+    return updateFields(user.id, {
+      'totalKindActs': user.totalKindActs + 1,
+    });
+  }
 }

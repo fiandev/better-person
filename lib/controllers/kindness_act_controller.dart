@@ -133,6 +133,11 @@ class KindnessActController extends BaseController<KindnessAct> {
     }
   }
 
+  /// Clear selection (alias for deselectAll)
+  Future<void> clearSelection() async {
+    await deselectAll();
+  }
+
   /// Reorder acts
   Future<void> reorderActs(List<String> orderedIds) async {
     for (int i = 0; i < orderedIds.length; i++) {

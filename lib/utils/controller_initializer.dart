@@ -25,6 +25,8 @@ class ControllerInitializer {
       GrowthScoreController().init(),
       ActivitySummaryController().init(),
       DailyConsistencyRecordController().init(),
+      WalletController().init(),
+      TransactionController().init(),
     ]);
 
     _initialized = true;

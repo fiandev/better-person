@@ -72,7 +72,7 @@ class KeyHabitsSection extends StatelessWidget {
                 isCompleted: habit.isCompleted,
               ),
             );
-          }).toList(),
+          }),
       ],
     );
   }

@@ -1,5 +1,7 @@
 import 'package:better_person/controllers/base_controller.dart';
 import 'package:better_person/models/models.dart';
+import 'package:better_person/utils/prayer_time_calculator.dart';
+import 'package:better_person/utils/location_service.dart';
 
 class PrayerController extends BaseController<Prayer> {
   static final PrayerController _instance = PrayerController._internal();
@@ -136,5 +138,35 @@ class PrayerController extends BaseController<Prayer> {
   /// Get today's prayers
   List<Prayer> getTodayPrayers() {
     return getByDate(DateTime.now());
+  }
+  
+  /// Initialize daily prayers with default times
+  Future<void> initializeDailyPrayers() async {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    
+    // Get user location
+    final location = await LocationService.getLocation();
+    
+    // Calculate prayer times
+    final prayerTimes = PrayerTimeCalculator.calculatePrayerTimes(
+      date: todayDate,
+      latitude: location.latitude,
+      longitude: location.longitude,
+    );
+    
+    // Create prayer entries
+    for (var entry in prayerTimes.entries) {
+      final prayer = Prayer(
+        id: '${todayDate.millisecondsSinceEpoch}_${entry.key.toString()}',
+        name: entry.key,
+        scheduledTime: entry.value,
+        isChecked: false,
+        checkedAt: null,
+        date: todayDate,
+      );
+      
+      await create(prayer);
+    }
   }
 }

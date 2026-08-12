@@ -143,4 +143,21 @@ class KindnessLogController extends BaseController<KindnessLog> {
     final updatedActIds = log.selectedActIds.where((id) => id != actId).toList();
     return updateFields(id, {'selectedActIds': updatedActIds});
   }
+
+  /// Log kindness with selected acts and reflection
+  Future<KindnessLog> logKindness(
+    List<String> selectedActIds,
+    String reflectionText,
+  ) async {
+    final now = DateTime.now();
+    final log = KindnessLog(
+      id: now.millisecondsSinceEpoch.toString(),
+      date: now,
+      selectedActIds: selectedActIds,
+      reflectionText: reflectionText,
+      createdAt: now,
+    );
+    
+    return create(log);
+  }
 }

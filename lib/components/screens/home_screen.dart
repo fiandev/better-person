@@ -39,9 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ? _userController.getAll().first
         : null;
 
-    if (user == null) {
-      user = await _createDefaultUser();
-    }
+    user ??= await _createDefaultUser();
 
     // Get all habits
     final habits = _habitController.getAll();
@@ -95,8 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _createDefaultHabits() async {
-    final now = DateTime.now();
-
     final defaultHabits = [
       // Habit(
       //   id: 'habit_1',
@@ -132,20 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Habits are automatically checked when tasks/activities complete
   // Users cannot manually toggle habits
-
-  Future<void> _updateUserProgress() async {
-    if (_currentUser == null) return;
-
-    final habits = _habitController.getAll();
-    final completedCount = habits.where((h) => h.isCompleted).length;
-    final totalCount = habits.length;
-    final progress = totalCount > 0 ? completedCount / totalCount : 0.0;
-
-    await _userController.updateFields(_currentUser!.id, {
-      'dailyProgress': progress,
-      'totalHabitsDone': _currentUser!.totalHabitsDone + 1,
-    });
-  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;

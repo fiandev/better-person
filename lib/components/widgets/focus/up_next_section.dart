@@ -65,7 +65,7 @@ class UpNextSection extends StatelessWidget {
                 isDisabled: true,
               ),
             );
-          }).toList(),
+          }),
         const SizedBox(height: 12),
         AddTaskButton(onTap: onAddTask),
       ],

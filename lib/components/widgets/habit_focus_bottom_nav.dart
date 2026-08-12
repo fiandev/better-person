@@ -23,9 +23,9 @@ class HabitFocusBottomNav extends StatelessWidget {
       label: 'Devotion',
     ),
     _NavItem(
-      icon: Icons.volunteer_activism_outlined,
-      activeIcon: Icons.volunteer_activism,
-      label: 'Kindness',
+      icon: Icons.account_balance_wallet_outlined,
+      activeIcon: Icons.account_balance_wallet,
+      label: 'Finance',
     ),
     _NavItem(
       icon: Icons.bar_chart_outlined,

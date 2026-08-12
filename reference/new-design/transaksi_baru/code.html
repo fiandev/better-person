@@ -1,0 +1,301 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>HabitFocus - New Transaction</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@600;700&amp;family=Work+Sans:wght@400&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config from Design System -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d9dadb",
+                    "surface-tint": "#2c694e",
+                    "surface-bright": "#f8f9fa",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "surface": "#f8f9fa",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#95d4b3",
+                    "on-tertiary-fixed": "#002114",
+                    "inverse-on-surface": "#f0f1f2",
+                    "on-secondary-fixed": "#002112",
+                    "outline-variant": "#bfc9c1",
+                    "surface-container": "#edeeef",
+                    "primary-fixed-dim": "#95d4b3",
+                    "surface-container-low": "#f3f4f5",
+                    "primary": "#0f5238",
+                    "primary-fixed": "#b1f0ce",
+                    "primary-container": "#2d6a4f",
+                    "on-secondary-fixed-variant": "#264f39",
+                    "inverse-surface": "#2e3132",
+                    "error": "#ba1a1a",
+                    "tertiary": "#274f3d",
+                    "tertiary-fixed": "#c1ecd4",
+                    "surface-variant": "#e1e3e4",
+                    "on-tertiary-fixed-variant": "#274e3d",
+                    "on-primary-fixed": "#002114",
+                    "on-primary-container": "#a8e7c5",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "secondary-container": "#bdeacd",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#b8e3cb",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-fixed-dim": "#a4d1b4",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#404943",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#3e6750",
+                    "on-secondary-container": "#426b54",
+                    "background": "#f8f9fa",
+                    "secondary-fixed": "#c0edd0",
+                    "outline": "#707973",
+                    "on-background": "#191c1d",
+                    "tertiary-container": "#3f6754",
+                    "tertiary-fixed-dim": "#a5d0b9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "stack-lg": "32px",
+                    "stack-md": "16px",
+                    "container-padding-mobile": "16px",
+                    "container-padding-desktop": "32px",
+                    "stack-sm": "8px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-md": ["Work Sans"],
+                    "label-data": ["JetBrains Mono"],
+                    "display-currency": ["Manrope"],
+                    "body-lg": ["Work Sans"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-data": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-currency": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Ambient Shadows & Utilities */
+        .ambient-shadow-surface {
+            box-shadow: 0 12px 24px -4px rgba(27, 67, 50, 0.04), 0 4px 8px -2px rgba(27, 67, 50, 0.02);
+        }
+        .ambient-shadow-elevated {
+            box-shadow: 0 20px 32px -4px rgba(27, 67, 50, 0.08), 0 8px 12px -2px rgba(27, 67, 50, 0.04);
+        }
+        
+        /* Gradient Transitions */
+        .transaction-header-expense {
+            background: linear-gradient(180deg, theme('colors.error-container') 0%, theme('colors.surface') 100%);
+        }
+        .transaction-header-income {
+            background: linear-gradient(180deg, theme('colors.primary-fixed') 0%, theme('colors.surface') 100%);
+        }
+        
+        /* Hide scrollbar for horizontal lists */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen pb-safe">
+<!-- TopAppBar (From JSON Source of Truth) -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface transition-transform active:scale-95">
+<div class="flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop h-16 w-full max-w-[1200px] mx-auto">
+<!-- Leading Icon -->
+<button class="p-2 -ml-2 rounded-full hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors flex items-center justify-center text-primary dark:text-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<!-- Headline -->
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary dark:text-primary-fixed-dim font-bold truncate mx-4">
+                Finance
+            </h1>
+<!-- Trailing Avatar -->
+<button class="w-10 h-10 rounded-full overflow-hidden hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors active:scale-95 outline-none focus:ring-2 focus:ring-primary">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A minimalist, high-key lighting profile picture placeholder for a finance app user, featuring soft shadows and a pristine white background with subtle green tints. Professional and serene aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCIOtWIFagelHv4ELF04MApw-pbq1o6HejVecv5Sbkx_JRS0nUUvccAVy8TtMZm463zhet_g5Y0tEaE3spQ6WqJO-3ziyGjGG9g1LA16DYUjTfNB8W_F0I6SMpVC2LqZz53DvPaMMsUC3ooTop8sPAJxBbm9VWiNGUxeynzlY_HPTIRrXoinwRv2xIQj8JzGt4VU9uygV9DUHKGKN6tuea4sN37TXf3UqbAedtXuqKstcN_OnAsaXS">
+</button>
+</div>
+</header>
+<!-- Main Content Canvas (Navigation Shell Suppressed for Task-Focused Flow) -->
+<main class="pt-[64px] pb-24 max-w-[800px] mx-auto">
+<!-- Dynamic Header Area (Toggle + Amount) -->
+<section class="pt-8 pb-12 px-container-padding-mobile md:px-container-padding-desktop transaction-header-expense transition-colors duration-500 rounded-b-3xl" id="transaction-header">
+<!-- Income / Expense Toggle -->
+<div class="flex p-1 bg-surface-container-high rounded-full w-full max-w-[300px] mx-auto mb-stack-lg shadow-sm">
+<button class="flex-1 py-2 rounded-full font-label-data text-label-data transition-all duration-300 bg-surface-container-lowest text-error shadow-sm" id="btn-expense" onclick="setTransactionType('expense')">
+                    Expense
+                </button>
+<button class="flex-1 py-2 rounded-full font-label-data text-label-data transition-all duration-300 text-on-surface-variant hover:bg-surface-container-highest" id="btn-income" onclick="setTransactionType('income')">
+                    Income
+                </button>
+</div>
+<!-- Amount Input -->
+<div class="flex flex-col items-center justify-center">
+<label class="text-on-surface-variant font-body-md mb-2" for="amount">How much?</label>
+<div class="flex items-center justify-center relative w-full">
+<span class="font-display-currency text-display-currency text-on-surface absolute left-1/2 -translate-x-[calc(50%+4rem)] pointer-events-none opacity-50">$</span>
+<input class="w-full text-center bg-transparent border-none outline-none focus:ring-0 font-display-currency text-display-currency text-on-surface placeholder:text-outline-variant p-0 m-0" id="amount" placeholder="0.00" step="0.01" type="number">
+</div>
+</div>
+</section>
+<!-- Form Details (Bento/Card Layout) -->
+<section class="px-container-padding-mobile md:px-container-padding-desktop -mt-6 space-y-stack-md relative z-10">
+<!-- Wallet Selector (Horizontal List) -->
+<div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow-surface">
+<h3 class="font-label-data text-label-data text-on-surface-variant mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                    Source Account
+                </h3>
+<div class="flex gap-4 overflow-x-auto no-scrollbar py-2 -mx-2 px-2">
+<!-- Active Wallet -->
+<button class="shrink-0 flex items-center gap-3 bg-secondary-container text-on-secondary-container px-4 py-3 rounded-lg border border-secondary transition-colors">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div class="text-left">
+<div class="font-body-md text-sm font-medium">Main Checking</div>
+<div class="font-label-data text-xs opacity-80">**** 4921</div>
+</div>
+</button>
+<!-- Inactive Wallet -->
+<button class="shrink-0 flex items-center gap-3 bg-surface text-on-surface px-4 py-3 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">credit_card</span>
+</div>
+<div class="text-left">
+<div class="font-body-md text-sm font-medium">Travel Rewards</div>
+<div class="font-label-data text-xs text-on-surface-variant">**** 8832</div>
+</div>
+</button>
+<!-- Inactive Wallet -->
+<button class="shrink-0 flex items-center gap-3 bg-surface text-on-surface px-4 py-3 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">savings</span>
+</div>
+<div class="text-left">
+<div class="font-body-md text-sm font-medium">Emergency Fund</div>
+<div class="font-label-data text-xs text-on-surface-variant">**** 1109</div>
+</div>
+</button>
+</div>
+</div>
+<!-- Category Selector (Tags + Input) -->
+<div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow-surface">
+<h3 class="font-label-data text-label-data text-on-surface-variant mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">category</span>
+                    Category
+                </h3>
+<div class="flex flex-wrap gap-2 mb-4" id="category-tags">
+<!-- Selected Tag -->
+<button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-data text-sm flex items-center gap-1 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[16px]">restaurant</span>
+                        Food &amp; Drink
+                    </button>
+<!-- Common Tags -->
+<button class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface font-label-data text-sm hover:bg-surface-container-high transition-colors">
+                        Transport
+                    </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface font-label-data text-sm hover:bg-surface-container-high transition-colors">
+                        Groceries
+                    </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface font-label-data text-sm hover:bg-surface-container-high transition-colors">
+                        Shopping
+                    </button>
+</div>
+<!-- Add New Category Input -->
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-3 pl-10 pr-4 font-body-md text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary-container transition-shadow" placeholder="Search or add new category..." type="text">
+</div>
+</div>
+<!-- Date & Note (Grid layout for larger screens) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<!-- Date Picker -->
+<div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow-surface flex flex-col justify-center">
+<h3 class="font-label-data text-label-data text-on-surface-variant mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                        Date
+                    </h3>
+<input class="w-full bg-transparent border-b border-outline-variant py-2 font-body-md text-on-surface focus:border-primary-container focus:ring-0 px-0 transition-colors cursor-pointer" type="date" value="2023-10-27">
+</div>
+<!-- Note Field -->
+<div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow-surface">
+<h3 class="font-label-data text-label-data text-on-surface-variant mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">notes</span>
+                        Note
+                    </h3>
+<textarea class="w-full bg-transparent border-none p-0 font-body-md text-on-surface placeholder:text-outline-variant focus:ring-0 resize-none" placeholder="What was this for?" rows="2"></textarea>
+</div>
+</div>
+</section>
+<!-- Fixed Action Button at Bottom -->
+<div class="fixed bottom-0 left-0 w-full p-container-padding-mobile md:p-container-padding-desktop bg-gradient-to-t from-surface via-surface to-transparent z-40">
+<div class="max-w-[800px] mx-auto">
+<button class="w-full bg-primary-container text-on-primary-container font-headline-md text-body-lg py-4 rounded-xl ambient-shadow-elevated hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">check_circle</span>
+                    Save Transaction
+                </button>
+</div>
+</div>
+</main>
+<script>
+        // Simple Interaction Logic for Income/Expense Toggle
+        function setTransactionType(type) {
+            const btnExpense = document.getElementById('btn-expense');
+            const btnIncome = document.getElementById('btn-income');
+            const headerSection = document.getElementById('transaction-header');
+
+            if (type === 'expense') {
+                // Style Active Expense
+                btnExpense.className = "flex-1 py-2 rounded-full font-label-data text-label-data transition-all duration-300 bg-surface-container-lowest text-error shadow-sm";
+                // Style Inactive Income
+                btnIncome.className = "flex-1 py-2 rounded-full font-label-data text-label-data transition-all duration-300 text-on-surface-variant hover:bg-surface-container-highest";
+                
+                // Change Header Background
+                headerSection.classList.remove('transaction-header-income');
+                headerSection.classList.add('transaction-header-expense');
+            } else {
+                // Style Active Income
+                btnIncome.className = "flex-1 py-2 rounded-full font-label-data text-label-data transition-all duration-300 bg-surface-container-lowest text-primary shadow-sm";
+                // Style Inactive Expense
+                btnExpense.className = "flex-1 py-2 rounded-full font-label-data text-label-data transition-all duration-300 text-on-surface-variant hover:bg-surface-container-highest";
+                
+                // Change Header Background
+                headerSection.classList.remove('transaction-header-expense');
+                headerSection.classList.add('transaction-header-income');
+            }
+        }
+    </script>
+</body></html>
