@@ -10,6 +10,8 @@ import '../components/screens/add_wallet_screen.dart';
 import '../components/screens/add_transaction_screen.dart';
 import '../components/screens/transfer_screen.dart';
 import '../components/screens/financial_analysis_screen.dart';
+import '../components/screens/profile_screen.dart';
+import '../components/screens/settings_screen.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -22,6 +24,8 @@ class AppRoutes {
   static const String addTransaction = '/add-transaction';
   static const String transfer = '/transfer';
   static const String financialAnalysis = '/financial-analysis';
+  static const String profile = '/profile';
+  static const String settingsRoute = '/settings';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -45,6 +49,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const TransferScreen());
       case financialAnalysis:
         return MaterialPageRoute(builder: (_) => const FinancialAnalysisScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case settingsRoute:
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

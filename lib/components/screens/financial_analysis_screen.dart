@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../controllers/transaction_controller.dart';
+import '../../controllers/setting_controller.dart';
 import '../../models/transaction.dart';
 import '../../routes/route_shell.dart';
 
@@ -8,12 +9,13 @@ class FinancialAnalysisScreen extends StatefulWidget {
   const FinancialAnalysisScreen({super.key});
 
   @override
-  State<FinancialAnalysisScreen> createState() => _FinancialAnalysisScreenState();
+  State<FinancialAnalysisScreen> createState() =>
+      _FinancialAnalysisScreenState();
 }
 
 class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
   final _transactionController = TransactionController();
-  
+
   DateTime _selectedMonth = DateTime.now();
   List<Transaction> _monthTransactions = [];
   double _totalExpenses = 0.0;
@@ -28,14 +30,26 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
 
   void _loadData() {
     final startOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
-    final endOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0, 23, 59, 59);
-    
-    final transactions = _transactionController.getByDateRange(startOfMonth, endOfMonth);
-    final expenses = transactions.where((t) => t.type == TransactionType.expense).toList();
-    
+    final endOfMonth = DateTime(
+      _selectedMonth.year,
+      _selectedMonth.month + 1,
+      0,
+      23,
+      59,
+      59,
+    );
+
+    final transactions = _transactionController.getByDateRange(
+      startOfMonth,
+      endOfMonth,
+    );
+    final expenses = transactions
+        .where((t) => t.type == TransactionType.expense)
+        .toList();
+
     double totalExp = 0;
     final catTotals = <TransactionCategory, double>{};
-    
+
     for (final t in expenses) {
       totalExp += t.amount;
       catTotals[t.category] = (catTotals[t.category] ?? 0) + t.amount;
@@ -58,36 +72,39 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
   ) {
     final weeks = <_WeeklyData>[];
     final now = DateTime.now();
-    
+
     DateTime weekStart = startOfMonth;
     int weekNum = 1;
-    
+
     while (weekStart.isBefore(endOfMonth)) {
       DateTime weekEnd = weekStart.add(const Duration(days: 6));
       if (weekEnd.isAfter(endOfMonth)) weekEnd = endOfMonth;
-      
+
       final weekExpenses = expenses.where((t) {
         return !t.date.isBefore(weekStart) && !t.date.isAfter(weekEnd);
       }).toList();
-      
+
       double total = 0;
       for (final t in weekExpenses) {
         total += t.amount;
       }
-      
-      final isCurrentWeek = now.isAfter(weekStart.subtract(const Duration(days: 1))) &&
+
+      final isCurrentWeek =
+          now.isAfter(weekStart.subtract(const Duration(days: 1))) &&
           now.isBefore(weekEnd.add(const Duration(days: 1)));
-      
-      weeks.add(_WeeklyData(
-        label: 'Mg $weekNum',
-        amount: total,
-        isCurrentWeek: isCurrentWeek,
-      ));
-      
+
+      weeks.add(
+        _WeeklyData(
+          label: 'Mg $weekNum',
+          amount: total,
+          isCurrentWeek: isCurrentWeek,
+        ),
+      );
+
       weekStart = weekEnd.add(const Duration(days: 1));
       weekNum++;
     }
-    
+
     return weeks;
   }
 
@@ -107,8 +124,18 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
 
   String _getMonthLabel() {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Ags',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return '${months[_selectedMonth.month - 1]} ${_selectedMonth.year}';
   }
@@ -200,7 +227,10 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
             GestureDetector(
               onTap: () => _showMonthPicker(),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFffffff),
                   borderRadius: BorderRadius.circular(24),
@@ -273,10 +303,7 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Rp ${_totalExpenses.toStringAsFixed(0).replaceAllMapped(
-                  RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                  (m) => '${m[1]}.',
-                )}',
+                '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${_totalExpenses.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
                 style: const TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 24,
@@ -310,14 +337,8 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
       spacing: 16,
       runSpacing: 16,
       children: [
-        SizedBox(
-          width: 300,
-          child: _buildPieChartCard(),
-        ),
-        SizedBox(
-          width: 300,
-          child: _buildBarChartCard(),
-        ),
+        SizedBox(width: double.infinity, child: _buildPieChartCard()),
+        SizedBox(width: double.infinity, child: _buildBarChartCard()),
       ],
     );
   }
@@ -325,9 +346,21 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
   Widget _buildPieChartCard() {
     final sortedCategories = _categoryTotals.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    
-    final topCategory = sortedCategories.isNotEmpty ? sortedCategories.first.key : null;
-    final topLabel = topCategory != null ? Transaction(category: topCategory, id: '', walletId: '', amount: 0, type: TransactionType.expense, date: DateTime.now(), createdAt: DateTime.now()).getCategoryLabel() : '-';
+
+    final topCategory = sortedCategories.isNotEmpty
+        ? sortedCategories.first.key
+        : null;
+    final topLabel = topCategory != null
+        ? Transaction(
+            category: topCategory,
+            id: '',
+            walletId: '',
+            amount: 0,
+            type: TransactionType.expense,
+            date: DateTime.now(),
+            createdAt: DateTime.now(),
+          ).getCategoryLabel()
+        : '-';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -346,7 +379,7 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             children: [
@@ -405,7 +438,9 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
           ),
           const SizedBox(height: 16),
           ...sortedCategories.take(4).map((entry) {
-            final percent = _totalExpenses > 0 ? (entry.value / _totalExpenses * 100).round() : 0;
+            final percent = _totalExpenses > 0
+                ? (entry.value / _totalExpenses * 100).round()
+                : 0;
             final index = sortedCategories.indexOf(entry);
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
@@ -424,7 +459,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        Transaction(category: entry.key, id: '', walletId: '', amount: 0, type: TransactionType.expense, date: DateTime.now(), createdAt: DateTime.now()).getCategoryLabel(),
+                        Transaction(
+                          category: entry.key,
+                          id: '',
+                          walletId: '',
+                          amount: 0,
+                          type: TransactionType.expense,
+                          date: DateTime.now(),
+                          createdAt: DateTime.now(),
+                        ).getCategoryLabel(),
                         style: const TextStyle(
                           fontFamily: 'Work Sans',
                           fontSize: 14,
@@ -548,9 +591,20 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                         child: Column(
                           children: [
                             Expanded(
-                              child: CustomPaint(
-                                size: Size.infinite,
-                                painter: _GridPainter(),
+                              child: Stack(
+                                children: [
+                                  CustomPaint(
+                                    size: Size.infinite,
+                                    painter: _GridPainter(),
+                                  ),
+                                  CustomPaint(
+                                    size: Size.infinite,
+                                    painter: _BarChartPainter(
+                                      weeklyData: _weeklyData,
+                                      maxAmount: maxAmount,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -562,7 +616,9 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                                   style: TextStyle(
                                     fontFamily: 'JetBrains Mono',
                                     fontSize: 10,
-                                    fontWeight: w.isCurrentWeek ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight: w.isCurrentWeek
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                     color: w.isCurrentWeek
                                         ? const Color(0xFF0f5238)
                                         : const Color(0xFF404943),
@@ -590,7 +646,9 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     return amount.toStringAsFixed(0);
   }
 
-  Widget _buildCategoryBreakdown(List<MapEntry<TransactionCategory, double>> sortedCategories) {
+  Widget _buildCategoryBreakdown(
+    List<MapEntry<TransactionCategory, double>> sortedCategories,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -647,9 +705,11 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
             ...sortedCategories.asMap().entries.map((entry) {
               final index = entry.key;
               final catEntry = entry.value;
-              final percent = _totalExpenses > 0 ? (catEntry.value / _totalExpenses * 100).round() : 0;
+              final percent = _totalExpenses > 0
+                  ? (catEntry.value / _totalExpenses * 100).round()
+                  : 0;
               final color = _getCategoryColor(catEntry.key, index);
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
@@ -677,7 +737,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  Transaction(category: catEntry.key, id: '', walletId: '', amount: 0, type: TransactionType.expense, date: DateTime.now(), createdAt: DateTime.now()).getCategoryLabel(),
+                                  Transaction(
+                                    category: catEntry.key,
+                                    id: '',
+                                    walletId: '',
+                                    amount: 0,
+                                    type: TransactionType.expense,
+                                    date: DateTime.now(),
+                                    createdAt: DateTime.now(),
+                                  ).getCategoryLabel(),
                                   style: const TextStyle(
                                     fontFamily: 'Work Sans',
                                     fontSize: 14,
@@ -689,10 +757,7 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Rp ${catEntry.value.toStringAsFixed(0).replaceAllMapped(
-                                  RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                                  (m) => '${m[1]}.',
-                                )}',
+                                '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${catEntry.value.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
                                 style: const TextStyle(
                                   fontFamily: 'JetBrains Mono',
                                   fontSize: 14,
@@ -741,10 +806,7 @@ class _PieChartPainter extends CustomPainter {
   final Map<TransactionCategory, double> categoryTotals;
   final double totalExpenses;
 
-  _PieChartPainter({
-    required this.categoryTotals,
-    required this.totalExpenses,
-  });
+  _PieChartPainter({required this.categoryTotals, required this.totalExpenses});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -824,6 +886,48 @@ class _GridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+class _BarChartPainter extends CustomPainter {
+  final List<_WeeklyData> weeklyData;
+  final double maxAmount;
+
+  _BarChartPainter({required this.weeklyData, required this.maxAmount});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (weeklyData.isEmpty || maxAmount == 0) return;
+
+    final barCount = weeklyData.length;
+    final totalSpacing = (barCount - 1) * 8.0;
+    final barWidth = (size.width - totalSpacing) / barCount;
+    final maxHeight = size.height;
+
+    for (int i = 0; i < barCount; i++) {
+      final data = weeklyData[i];
+      final barHeight = maxAmount > 0
+          ? (data.amount / maxAmount) * maxHeight
+          : 0.0;
+
+      final x = i * (barWidth + 8);
+      final y = maxHeight - barHeight;
+
+      final paint = Paint()
+        ..color = data.isCurrentWeek
+            ? const Color(0xFF0f5238)
+            : const Color(0xFF95d4b3)
+        ..style = PaintingStyle.fill;
+
+      final rrect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(x, y, barWidth, barHeight),
+        const Radius.circular(4),
+      );
+      canvas.drawRRect(rrect, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
 class _MonthPickerDialog extends StatefulWidget {
   final DateTime selectedMonth;
   final Function(DateTime) onMonthSelected;
@@ -849,8 +953,18 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
   @override
   Widget build(BuildContext context) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Ags',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
 
     return Dialog(
@@ -865,8 +979,13 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.chevron_left, color: Color(0xFF404943)),
-                  onPressed: () => setState(() => _currentYear = DateTime(_currentYear.year - 1)),
+                  icon: const Icon(
+                    Icons.chevron_left,
+                    color: Color(0xFF404943),
+                  ),
+                  onPressed: () => setState(
+                    () => _currentYear = DateTime(_currentYear.year - 1),
+                  ),
                 ),
                 Text(
                   '${_currentYear.year}',
@@ -878,8 +997,13 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.chevron_right, color: Color(0xFF404943)),
-                  onPressed: () => setState(() => _currentYear = DateTime(_currentYear.year + 1)),
+                  icon: const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFF404943),
+                  ),
+                  onPressed: () => setState(
+                    () => _currentYear = DateTime(_currentYear.year + 1),
+                  ),
                 ),
               ],
             ),
@@ -896,16 +1020,21 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
               itemCount: 12,
               itemBuilder: (context, index) {
                 final month = index + 1;
-                final isSelected = widget.selectedMonth.year == _currentYear.year &&
+                final isSelected =
+                    widget.selectedMonth.year == _currentYear.year &&
                     widget.selectedMonth.month == month;
-                final isFuture = _currentYear.year > DateTime.now().year ||
-                    (_currentYear.year == DateTime.now().year && month > DateTime.now().month);
+                final isFuture =
+                    _currentYear.year > DateTime.now().year ||
+                    (_currentYear.year == DateTime.now().year &&
+                        month > DateTime.now().month);
 
                 return GestureDetector(
                   onTap: isFuture
                       ? null
                       : () {
-                          widget.onMonthSelected(DateTime(_currentYear.year, month));
+                          widget.onMonthSelected(
+                            DateTime(_currentYear.year, month),
+                          );
                           Navigator.pop(context);
                         },
                   child: Container(
@@ -913,8 +1042,8 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                       color: isSelected
                           ? const Color(0xFF0f5238)
                           : isFuture
-                              ? const Color(0xFFf8f9fa)
-                              : const Color(0xFFffffff),
+                          ? const Color(0xFFf8f9fa)
+                          : const Color(0xFFffffff),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isSelected
@@ -928,12 +1057,14 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                       style: TextStyle(
                         fontFamily: 'Work Sans',
                         fontSize: 14,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w400,
                         color: isFuture
                             ? const Color(0xFFbfc9c1)
                             : isSelected
-                                ? Colors.white
-                                : const Color(0xFF191c1d),
+                            ? Colors.white
+                            : const Color(0xFF191c1d),
                       ),
                     ),
                   ),

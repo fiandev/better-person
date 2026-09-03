@@ -21,7 +21,7 @@ class _DevotionScreenState extends State<DevotionScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: const HabitFocusAppBar(),
+      appBar: const HabitFocusAppBar(overrideTitle: 'Devotion'),
       body: Column(
         children: [
           Padding(
@@ -631,7 +631,7 @@ class _OtherTabContentState extends State<_OtherTabContent> {
         );
       },
     );
-    
+
     if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
@@ -641,7 +641,7 @@ class _OtherTabContentState extends State<_OtherTabContent> {
 
   Future<void> _handleAddDevotion() async {
     final name = _devotionNameController.text.trim();
-    
+
     if (name.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -664,14 +664,14 @@ class _OtherTabContentState extends State<_OtherTabContent> {
         date: DateTime.now(),
         completedAt: null,
       );
-      
+
       await _customDevotionController.create(newDevotion);
-      
+
       _devotionNameController.clear();
       setState(() {
         _selectedTime = const TimeOfDay(hour: 6, minute: 0);
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -914,11 +914,15 @@ class _DevotionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border(
             left: BorderSide(
-              color: devotion.isCompleted ? colorScheme.primary : colorScheme.tertiary,
+              color: devotion.isCompleted
+                  ? colorScheme.primary
+                  : colorScheme.tertiary,
               width: 4,
             ),
           ),
-          boxShadow: devotion.isCompleted ? null : [HabitFocusTheme.ambientShadow],
+          boxShadow: devotion.isCompleted
+              ? null
+              : [HabitFocusTheme.ambientShadow],
         ),
         child: Row(
           children: [
@@ -927,7 +931,9 @@ class _DevotionCard extends StatelessWidget {
               height: 32,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: devotion.isCompleted ? colorScheme.primary : Colors.transparent,
+                color: devotion.isCompleted
+                    ? colorScheme.primary
+                    : Colors.transparent,
                 border: Border.all(
                   color: devotion.isCompleted
                       ? colorScheme.primary

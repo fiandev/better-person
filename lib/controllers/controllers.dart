@@ -16,3 +16,4 @@ export 'custom_devotion_controller.dart';
 export 'statistics_controller.dart';
 export 'wallet_controller.dart';
 export 'transaction_controller.dart';
+export 'setting_controller.dart';

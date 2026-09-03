@@ -200,9 +200,9 @@ class _FocusScreenState extends State<FocusScreen> {
     // Check if this is the current task being completed
     final isCurrentTask = _currentTask?.id == task.id;
     final wasCompleted = task.isCompleted;
-    
+
     await _taskManager.toggleTaskCompletion(task);
-    
+
     // If completing the current task, promote the top waiting task
     if (isCurrentTask && !wasCompleted && _currentSession != null) {
       if (_upNextTasks.isNotEmpty) {
@@ -211,20 +211,26 @@ class _FocusScreenState extends State<FocusScreen> {
         final newUpNextIds = _currentSession!.upNextTaskIds
             .where((id) => id != newCurrentTaskId)
             .toList();
-        
+
         final updatedSession = _currentSession!.copyWith(
           currentTaskId: newCurrentTaskId,
           upNextTaskIds: newUpNextIds,
         );
-        
-        await FocusSessionController().update(_currentSession!.id, updatedSession);
+
+        await FocusSessionController().update(
+          _currentSession!.id,
+          updatedSession,
+        );
       } else {
         // No waiting tasks, clear current task
         final updatedSession = _currentSession!.copyWith(currentTaskId: null);
-        await FocusSessionController().update(_currentSession!.id, updatedSession);
+        await FocusSessionController().update(
+          _currentSession!.id,
+          updatedSession,
+        );
       }
     }
-    
+
     await _loadData();
   }
 
@@ -265,14 +271,22 @@ class _FocusScreenState extends State<FocusScreen> {
 
   Future<void> _deleteTask(Task task) async {
     await _taskManager.deleteTask(task);
-    
+
     // If the deleted task was in the session's upNextTaskIds, update the session
-    if (_currentSession != null && _currentSession!.upNextTaskIds.contains(task.id)) {
-      final updatedUpNext = _currentSession!.upNextTaskIds.where((id) => id != task.id).toList();
-      final updatedSession = _currentSession!.copyWith(upNextTaskIds: updatedUpNext);
-      await FocusSessionController().update(_currentSession!.id, updatedSession);
+    if (_currentSession != null &&
+        _currentSession!.upNextTaskIds.contains(task.id)) {
+      final updatedUpNext = _currentSession!.upNextTaskIds
+          .where((id) => id != task.id)
+          .toList();
+      final updatedSession = _currentSession!.copyWith(
+        upNextTaskIds: updatedUpNext,
+      );
+      await FocusSessionController().update(
+        _currentSession!.id,
+        updatedSession,
+      );
     }
-    
+
     await _loadData();
   }
 
@@ -287,7 +301,7 @@ class _FocusScreenState extends State<FocusScreen> {
     }
 
     return Scaffold(
-      appBar: const HabitFocusAppBar(),
+      appBar: const HabitFocusAppBar(overrideTitle: 'Focus'),
       body: ListView(
         padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
         children: [

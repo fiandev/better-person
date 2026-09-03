@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const HabitFocusAppBar(),
+      appBar: const HabitFocusAppBar(overrideTitle: 'Home'),
       body: Column(
         children: [
           Expanded(

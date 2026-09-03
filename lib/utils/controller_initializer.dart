@@ -27,6 +27,7 @@ class ControllerInitializer {
       DailyConsistencyRecordController().init(),
       WalletController().init(),
       TransactionController().init(),
+      SettingController().init(),
     ]);
 
     _initialized = true;

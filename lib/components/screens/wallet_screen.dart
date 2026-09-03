@@ -1,8 +1,10 @@
+import 'package:better_person/components/widgets/habit_focus_app_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../../routes/route_shell.dart';
 import '../../routes/app_routes.dart';
 import '../../controllers/wallet_controller.dart';
+import '../../controllers/setting_controller.dart';
 import '../../models/wallet.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -43,7 +45,10 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   void _navigateToAddTransaction() {
-    Navigator.pushNamed(context, AppRoutes.addTransaction).then((_) => _loadData());
+    Navigator.pushNamed(
+      context,
+      AppRoutes.addTransaction,
+    ).then((_) => _loadData());
   }
 
   void _navigateToFinancialAnalysis() {
@@ -52,44 +57,9 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: const Color(0xFFf8f9fa), // surface
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFf8f9fa),
-        elevation: 0,
-        toolbarHeight: 64,
-        title: Row(
-          children: [
-            Icon(Icons.menu, color: colorScheme.primary),
-            const SizedBox(width: 16),
-            Text(
-              'Finance',
-              style: const TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF0f5238), // primary
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: const Color(0xFFe7e8e9), // surface-container-high
-              child: const Icon(
-                Icons.person,
-                size: 20,
-                color: Color(0xFF191c1d), // on-surface
-              ),
-            ),
-          ),
-        ],
-      ),
+      appBar: const HabitFocusAppBar(overrideTitle: 'Finance'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
@@ -98,15 +68,12 @@ class _WalletScreenState extends State<WalletScreen> {
             // Total Balance Summary
             _buildTotalBalanceSection(),
             const SizedBox(height: 32), // stack-lg
-
             // Financial Journal Card
             _buildFinancialJournalCard(),
             const SizedBox(height: 32), // stack-lg
-
             // Your Wallets Header + Action Buttons
             _buildWalletsHeader(),
             const SizedBox(height: 16), // stack-md
-
             // Horizontal Scrollable Wallet Cards
             _buildWalletsHorizontalScroll(),
           ],
@@ -140,7 +107,7 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            '\$${_totalBalance.toStringAsFixed(2)}',
+            '${SettingController().getCurrentSetting().defaultCurrencyFormat}${_totalBalance.toStringAsFixed(2)}',
             style: const TextStyle(
               fontFamily: 'Manrope',
               fontSize: 40,
@@ -216,10 +183,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   alignment: Alignment.center,
                   child: const Text(
                     'Chart Placeholder',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF404943),
-                    ),
+                    style: TextStyle(fontSize: 10, color: Color(0xFF404943)),
                   ),
                 ),
               ),
@@ -253,9 +217,7 @@ class _WalletScreenState extends State<WalletScreen> {
             child: Container(
               padding: const EdgeInsets.only(top: 16),
               decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Color(0xFFbfc9c1)),
-                ),
+                border: Border(top: BorderSide(color: Color(0xFFbfc9c1))),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -269,11 +231,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       color: Color(0xFF0f5238),
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_forward,
-                    size: 16,
-                    color: Color(0xFF0f5238),
-                  ),
+                  Icon(Icons.arrow_forward, size: 16, color: Color(0xFF0f5238)),
                 ],
               ),
             ),
@@ -334,26 +292,6 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
         Row(
           children: [
-            // Transfer button: bg-primary text-on-primary rounded-full
-            ElevatedButton.icon(
-              onPressed: _navigateToTransfer,
-              icon: const Icon(Icons.swap_horiz, size: 18),
-              label: const Text(
-                'Transfer',
-                style: TextStyle(
-                  fontFamily: 'Work Sans',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0f5238), // primary
-                foregroundColor: Colors.white, // on-primary
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: const StadiumBorder(),
-                elevation: 1,
-              ),
-            ),
             const SizedBox(width: 8),
             // Add Wallet button: bg-secondary-container text-on-secondary-container rounded-full
             ElevatedButton.icon(
@@ -369,8 +307,13 @@ class _WalletScreenState extends State<WalletScreen> {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFbdeacd), // secondary-container
-                foregroundColor: const Color(0xFF426b54), // on-secondary-container
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                foregroundColor: const Color(
+                  0xFF426b54,
+                ), // on-secondary-container
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 shape: const StadiumBorder(),
                 elevation: 1,
               ),
@@ -388,10 +331,12 @@ class _WalletScreenState extends State<WalletScreen> {
         scrollDirection: Axis.horizontal,
         children: [
           // Existing wallet cards
-          ..._wallets.map((wallet) => Padding(
-                padding: const EdgeInsets.only(right: 24), // gap-gutter
-                child: _buildWalletCard(wallet),
-              )),
+          ..._wallets.map(
+            (wallet) => Padding(
+              padding: const EdgeInsets.only(right: 24), // gap-gutter
+              child: _buildWalletCard(wallet),
+            ),
+          ),
           // Transfer shortcut card
           Padding(
             padding: const EdgeInsets.only(right: 24),
@@ -410,7 +355,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.82, // min-w-[85%]
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: gradients,
@@ -446,7 +391,6 @@ class _WalletScreenState extends State<WalletScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Name + Icon row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -473,17 +417,20 @@ class _WalletScreenState extends State<WalletScreen> {
                       ),
                     ],
                   ),
-                  Icon(
-                    _walletIconData(wallet.icon),
-                    size: 32,
-                    color: Colors.white.withValues(alpha: 0.9),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: Icon(
+                      _walletIconData(wallet.icon),
+                      size: 32,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
                   ),
                 ],
               ),
               const Spacer(),
               // Balance
               Text(
-                '\$${wallet.currentBalance.toStringAsFixed(2)}',
+                '${SettingController().getCurrentSetting().defaultCurrencyFormat}${wallet.currentBalance.toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 32,
@@ -577,8 +524,11 @@ class _WalletScreenState extends State<WalletScreen> {
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_circle_outline,
-                size: 40, color: Color(0xFF2d6a4f)), // primary-container
+            Icon(
+              Icons.add_circle_outline,
+              size: 40,
+              color: Color(0xFF2d6a4f),
+            ), // primary-container
             SizedBox(height: 8),
             Text(
               'Add New Wallet',

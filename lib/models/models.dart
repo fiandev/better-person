@@ -15,3 +15,4 @@ export 'focus_session.dart';
 export 'statistics.dart';
 export 'wallet.dart';
 export 'transaction.dart';
+export 'setting.dart';

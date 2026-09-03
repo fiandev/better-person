@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../controllers/wallet_controller.dart';
+import '../../controllers/setting_controller.dart';
 import '../../models/wallet.dart';
 
 class AddWalletScreen extends StatefulWidget {
@@ -31,7 +32,12 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   static const _iconOptions = [
-    (WalletIcon.wallet, WalletType.general, 'Dompet Umum', 'account_balance_wallet'),
+    (
+      WalletIcon.wallet,
+      WalletType.general,
+      'Dompet Umum',
+      'account_balance_wallet',
+    ),
     (WalletIcon.savings, WalletType.savings, 'Tabungan', 'savings'),
     (WalletIcon.flight, WalletType.travel, 'Perjalanan', 'flight_takeoff'),
     (WalletIcon.home, WalletType.home, 'Rumah', 'home_work'),
@@ -66,9 +72,9 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save wallet: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save wallet: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -108,7 +114,6 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
               // Preview Card
               _buildPreviewCard(),
               const SizedBox(height: 32), // stack-lg
-
               // Form Section
               _buildFormSection(),
             ],
@@ -123,7 +128,10 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2d6a4f), Color(0xFF3f6754)], // primary-container to tertiary-container
+          colors: [
+            Color(0xFF2d6a4f),
+            Color(0xFF3f6754),
+          ], // primary-container to tertiary-container
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -193,10 +201,7 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Rp ${_previewBalance.toStringAsFixed(0).replaceAllMapped(
-                      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                      (m) => '${m[1]}.',
-                    )}',
+                '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${_previewBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
                 style: const TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 40,
@@ -224,7 +229,7 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
 
   Widget _buildFormSection() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFFf8f9fa), // surface-bright
         borderRadius: BorderRadius.circular(12),
@@ -244,7 +249,6 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
           const SizedBox(height: 8),
           _buildNameField(),
           const SizedBox(height: 16), // stack-md
-
           // Balance field
           _buildLabel('Saldo Awal'),
           const SizedBox(height: 8),
@@ -258,7 +262,6 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
           const SizedBox(height: 8),
           _buildIconSelector(),
           const SizedBox(height: 32), // stack-lg
-
           // Save button
           _buildSaveButton(),
         ],
@@ -315,7 +318,10 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                   color: Color(0xFFbfc9c1),
                 ),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 0),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 0,
+                ),
               ),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? 'Nama dompet tidak boleh kosong'
@@ -336,11 +342,11 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
       ),
       child: Row(
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
-              'Rp',
-              style: TextStyle(
+              SettingController().getCurrentSetting().defaultCurrencyFormat,
+              style: const TextStyle(
                 fontFamily: 'Work Sans',
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -351,7 +357,9 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
           Expanded(
             child: TextFormField(
               controller: _balanceController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               onChanged: (value) => setState(() {
                 _previewBalance = double.tryParse(value) ?? 0.0;
               }),
@@ -381,7 +389,9 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFffdad6).withValues(alpha: 0.3), // error-container with opacity
+        color: const Color(
+          0xFFffdad6,
+        ).withValues(alpha: 0.3), // error-container with opacity
         border: Border.all(color: const Color(0xFFffdad6)),
         borderRadius: BorderRadius.circular(8),
       ),

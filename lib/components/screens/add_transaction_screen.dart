@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../controllers/wallet_controller.dart';
 import '../../controllers/transaction_controller.dart';
+import '../../controllers/setting_controller.dart';
 import '../../models/wallet.dart';
 import '../../models/transaction.dart';
 
@@ -53,9 +54,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Future<void> _saveTransaction() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedWalletId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a wallet')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a wallet')));
       return;
     }
 
@@ -63,7 +64,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     try {
       final amount = double.parse(_amountController.text);
-      
+
       final transaction = Transaction(
         id: 'txn_${DateTime.now().millisecondsSinceEpoch}',
         walletId: _selectedWalletId!,
@@ -71,13 +72,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         type: _transactionType,
         category: _selectedCategory,
         date: _selectedDate,
-        note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+        note: _noteController.text.trim().isEmpty
+            ? null
+            : _noteController.text.trim(),
         createdAt: DateTime.now(),
       );
 
       await _transactionController.create(transaction);
 
-      final balanceChange = _transactionType == TransactionType.income ? amount : -amount;
+      final balanceChange = _transactionType == TransactionType.income
+          ? amount
+          : -amount;
       await _walletController.updateBalance(_selectedWalletId!, balanceChange);
 
       if (mounted) {
@@ -102,7 +107,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         backgroundColor: const Color(0xFFf8f9fa),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
           color: const Color(0xFF0f5238), // primary
         ),
@@ -137,7 +142,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           children: [
             // Dynamic header section with type toggle and amount
             _buildHeaderSection(),
-            
+
             // Scrollable form section
             Expanded(
               child: SingleChildScrollView(
@@ -195,7 +200,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     color: const Color(0xFFba1a1a), // error
                     onTap: () => setState(() {
                       _transactionType = TransactionType.expense;
-                      if (_selectedCategory.index > TransactionCategory.other.index) {
+                      if (_selectedCategory.index >
+                          TransactionCategory.other.index) {
                         _selectedCategory = TransactionCategory.foodAndDrink;
                       }
                     }),
@@ -208,7 +214,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     color: const Color(0xFF0f5238), // primary
                     onTap: () => setState(() {
                       _transactionType = TransactionType.income;
-                      if (_selectedCategory.index <= TransactionCategory.other.index) {
+                      if (_selectedCategory.index <=
+                          TransactionCategory.other.index) {
                         _selectedCategory = TransactionCategory.salary;
                       }
                     }),
@@ -235,11 +242,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      '\$',
-                      style: TextStyle(
+                      SettingController().getCurrentSetting().defaultCurrencyFormat,
+                      style: const TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 32,
                         fontWeight: FontWeight.w700,
@@ -252,7 +259,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     child: IntrinsicWidth(
                       child: TextFormField(
                         controller: _amountController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Manrope',
@@ -268,7 +277,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             fontSize: 40,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.8,
-                            color: Color(0xFFbfc9c1), // outline-variant
+                            color: Color.fromARGB(
+                              87,
+                              25,
+                              28,
+                              29,
+                            ), // outline-variant
                           ),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
@@ -395,9 +409,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: GestureDetector(
-                      onTap: () => setState(() => _selectedWalletId = wallet.id),
+                      onTap: () =>
+                          setState(() => _selectedWalletId = wallet.id),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFFbdeacd) // secondary-container
@@ -510,11 +528,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         children: [
           Row(
             children: const [
-              Icon(
-                Icons.category_outlined,
-                size: 18,
-                color: Color(0xFF404943),
-              ),
+              Icon(Icons.category_outlined, size: 18, color: Color(0xFF404943)),
               SizedBox(width: 8),
               Text(
                 'Category',
@@ -537,7 +551,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               return GestureDetector(
                 onTap: () => setState(() => _selectedCategory = category),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? const Color(0xFF2d6a4f) // primary-container
@@ -565,139 +582,145 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Widget _buildDateAndNote() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFffffff),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A1b4332),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: const [
-                    Icon(
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFffffff),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0A1b4332),
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: const [
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: 18,
+                    color: Color(0xFF404943),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Date',
+                    style: TextStyle(
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.7,
+                      color: Color(0xFF404943),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime.now().add(const Duration(days: 1)),
+                  );
+                  if (picked != null) {
+                    setState(() => _selectedDate = picked);
+                  }
+                },
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFbfc9c1)),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFbfc9c1)),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF2d6a4f)),
+                    ),
+                    suffixIcon: Icon(
                       Icons.calendar_today_outlined,
                       size: 18,
-                      color: Color(0xFF404943),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Date',
-                      style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.7,
-                        color: Color(0xFF404943),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime.now().add(const Duration(days: 1)),
-                    );
-                    if (picked != null) {
-                      setState(() => _selectedDate = picked);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: Color(0xFFbfc9c1)),
-                      ),
-                    ),
-                    child: Text(
-                      '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                      style: const TextStyle(
-                        fontFamily: 'Work Sans',
-                        fontSize: 16,
-                        color: Color(0xFF191c1d),
-                      ),
+                      color: Color(0xFF707973),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFffffff),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A1b4332),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: const [
-                    Icon(
-                      Icons.notes,
-                      size: 18,
-                      color: Color(0xFF404943),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Note',
-                      style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.7,
-                        color: Color(0xFF404943),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _noteController,
-                  maxLines: 2,
-                  style: const TextStyle(
-                    fontFamily: 'Work Sans',
-                    fontSize: 16,
-                    color: Color(0xFF191c1d),
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: 'What was this for?',
-                    hintStyle: TextStyle(
+                  child: Text(
+                    '${_selectedDate.day.toString().padLeft(2, '0')}/${_selectedDate.month.toString().padLeft(2, '0')}/${_selectedDate.year}',
+                    style: const TextStyle(
                       fontFamily: 'Work Sans',
                       fontSize: 16,
-                      color: Color(0xFFbfc9c1),
+                      color: Color(0xFF191c1d),
                     ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFffffff),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0A1b4332),
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: const [
+                  Icon(Icons.notes, size: 18, color: Color(0xFF404943)),
+                  SizedBox(width: 8),
+                  Text(
+                    'Note',
+                    style: TextStyle(
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.7,
+                      color: Color(0xFF404943),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _noteController,
+                maxLines: 2,
+                style: const TextStyle(
+                  fontFamily: 'Work Sans',
+                  fontSize: 16,
+                  color: Color(0xFF191c1d),
+                ),
+                decoration: const InputDecoration(
+                  hintText: 'What was this for?',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Work Sans',
+                    fontSize: 16,
+                    color: Color(0xFFbfc9c1),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
         ),
       ],

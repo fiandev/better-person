@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../controllers/wallet_controller.dart';
 import '../../controllers/transaction_controller.dart';
+import '../../controllers/setting_controller.dart';
 import '../../models/wallet.dart';
 import '../../models/transaction.dart';
 
@@ -304,11 +305,11 @@ class _TransferScreenState extends State<TransferScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  '\$',
-                  style: TextStyle(
+                  SettingController().getCurrentSetting().defaultCurrencyFormat,
+                  style: const TextStyle(
                     fontFamily: 'Manrope',
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
@@ -575,7 +576,7 @@ class _TransferScreenState extends State<TransferScreen> {
                       ),
                     ),
                     subtitle: Text(
-                      '\$${wallet.currentBalance.toStringAsFixed(2)}',
+                      '${SettingController().getCurrentSetting().defaultCurrencyFormat}${wallet.currentBalance.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontFamily: 'JetBrains Mono',
                         fontSize: 14,
@@ -723,7 +724,7 @@ class _TransferScreenState extends State<TransferScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$${wallet.currentBalance.toStringAsFixed(2)}',
+                        '${SettingController().getCurrentSetting().defaultCurrencyFormat}${wallet.currentBalance.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 28,
