@@ -21,10 +21,9 @@ class QuranSession {
     this.completedAt,
   });
 
-  double get progress =>
-      dailyPageGoal > 0
-          ? (pagesReadToday / dailyPageGoal).clamp(0.0, 1.0)
-          : 0.0;
+  double get progress => dailyPageGoal > 0
+      ? (pagesReadToday / dailyPageGoal).clamp(0.0, 1.0)
+      : 0.0;
 
   QuranSession copyWith({
     String? id,
@@ -36,6 +35,7 @@ class QuranSession {
     bool? isCompleted,
     DateTime? date,
     DateTime? completedAt,
+    bool clearCompletedAt = false,
   }) {
     return QuranSession(
       id: id ?? this.id,
@@ -46,7 +46,7 @@ class QuranSession {
       instruction: instruction ?? this.instruction,
       isCompleted: isCompleted ?? this.isCompleted,
       date: date ?? this.date,
-      completedAt: completedAt ?? this.completedAt,
+      completedAt: clearCompletedAt ? null : completedAt ?? this.completedAt,
     );
   }
 

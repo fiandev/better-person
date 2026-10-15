@@ -1,21 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '../../theme/habit_focus_theme.dart';
-import '../../widgets/habit_focus_app_bar.dart';
-import '../../widgets/focus/timer_section.dart';
-import '../../widgets/focus/action_buttons.dart';
-import '../../widgets/focus/current_task_card.dart';
-import '../../widgets/focus/up_next_section.dart';
-import '../../widgets/focus/completed_tasks_section.dart';
-import '../../../routes/route_shell.dart';
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
 import '../../../utils/habit_auto_checker.dart';
+import '../../../utils/badge_checker.dart';
+import '../../../utils/badge_feedback.dart';
+import '../../../utils/notification_service.dart';
 
 import 'session_manager.dart';
 import 'task_manager.dart';
 import 'focus_dialogs.dart';
+import 'focus_data_loader.dart';
+import 'focus_screen_body.dart';
+import 'task_editor.dart';
 
 class FocusScreen extends StatefulWidget {
   const FocusScreen({super.key});
@@ -27,6 +25,7 @@ class FocusScreen extends StatefulWidget {
 class _FocusScreenState extends State<FocusScreen> {
   late final SessionManager _sessionManager;
   late final TaskManager _taskManager;
+  late final FocusDataLoader _dataLoader;
   final _habitController = HabitController();
 
   FocusSession? _currentSession;
@@ -53,6 +52,12 @@ class _FocusScreenState extends State<FocusScreen> {
       taskController: TaskController(),
       focusSessionController: FocusSessionController(),
     );
+    _dataLoader = FocusDataLoader(
+      sessionManager: _sessionManager,
+      taskManager: _taskManager,
+      habitController: _habitController,
+      taskController: TaskController(),
+    );
   }
 
   @override
@@ -62,49 +67,17 @@ class _FocusScreenState extends State<FocusScreen> {
   }
 
   Future<void> _loadData() async {
-    // Get or create active focus session
-    FocusSession session = await _sessionManager.getOrCreateSession();
-
-    // Ensure we have a related Work habit
-    final workHabits = _habitController.getByCategory(HabitCategory.work);
-    if (workHabits.isEmpty) {
-      await _habitController.create(
-        Habit(
-          id: 'habit_work_default',
-          title: session.name,
-          category: HabitCategory.work,
-          isCompleted: false,
-          createdAt: DateTime.now(),
-        ),
-      );
-    }
-
-    // Get current task and up next tasks
-    Task? currentTask = _taskManager.getCurrentTask(session);
-    List<Task> upNextTasks = _taskManager.getUpNextTasks(session);
-    List<Task> completedTasks = TaskController().getCompleted();
-
-    // If no current task in session, try to assign one
-    if (currentTask == null) {
-      final updatedSession = await _sessionManager.assignCurrentTaskIfNeeded(
-        session,
-      );
-      if (updatedSession != null) {
-        session = updatedSession;
-        currentTask = _taskManager.getCurrentTask(session);
-      }
-    }
-
+    final data = await _dataLoader.load();
+    if (!mounted) return;
     setState(() {
-      _currentSession = session;
-      _currentTask = currentTask;
-      _upNextTasks = upNextTasks;
-      _completedTasks = completedTasks;
+      _currentSession = data.session;
+      _currentTask = data.currentTask;
+      _upNextTasks = data.upNextTasks;
+      _completedTasks = data.completedTasks;
     });
 
-    // Start timer if focusing or on break
-    if (session.timerState == TimerState.focusing ||
-        session.timerState == TimerState.onBreak) {
+    if (data.session.timerState == TimerState.focusing ||
+        data.session.timerState == TimerState.onBreak) {
       _startTimer();
     }
   }
@@ -131,7 +104,17 @@ class _FocusScreenState extends State<FocusScreen> {
     final updatedSession = await _sessionManager.completeBreak(
       _currentSession!,
     );
+    if (!mounted) return;
+    final settings = SettingController().getCurrentSetting();
+    if (settings.notificationsEnabled) {
+      await NotificationService.playCompletionSound();
+      await NotificationService.show(
+        'Break complete',
+        'Your break timer has ended.',
+      );
+    }
 
+    if (!mounted) return;
     setState(() {
       _currentSession = updatedSession;
     });
@@ -148,8 +131,10 @@ class _FocusScreenState extends State<FocusScreen> {
 
     _sessionManager.stopTimer();
     await _sessionManager.completeSession(_currentSession!, _currentTask);
+    final badges = await BadgeChecker.checkAndAwardBadges();
 
     if (mounted) {
+      BadgeFeedback.show(context, badges);
       FocusDialogs.showSessionCompleteDialog(context, _loadData);
     }
   }
@@ -160,6 +145,7 @@ class _FocusScreenState extends State<FocusScreen> {
     final updatedSession = await _sessionManager.resetToFocusMode(
       _currentSession!,
     );
+    if (!mounted) return;
     setState(() {
       _currentSession = updatedSession;
     });
@@ -171,6 +157,7 @@ class _FocusScreenState extends State<FocusScreen> {
 
     _sessionManager.stopTimer();
     final updatedSession = await _sessionManager.toggleFocus(_currentSession!);
+    if (!mounted) return;
 
     setState(() {
       _currentSession = updatedSession;
@@ -186,6 +173,7 @@ class _FocusScreenState extends State<FocusScreen> {
 
     _sessionManager.stopTimer();
     final updatedSession = await _sessionManager.toggleBreak(_currentSession!);
+    if (!mounted) return;
 
     setState(() {
       _currentSession = updatedSession;
@@ -197,16 +185,20 @@ class _FocusScreenState extends State<FocusScreen> {
   }
 
   Future<void> _toggleTaskCompletion(Task task) async {
-    // Check if this is the current task being completed
     final isCurrentTask = _currentTask?.id == task.id;
     final wasCompleted = task.isCompleted;
 
     await _taskManager.toggleTaskCompletion(task);
+    if (!wasCompleted) {
+      await HabitAutoChecker().onTaskComplete(task);
+      if (mounted) {
+        final badges = await BadgeChecker.checkAndAwardBadges();
+        if (mounted) BadgeFeedback.show(context, badges);
+      }
+    }
 
-    // If completing the current task, promote the top waiting task
     if (isCurrentTask && !wasCompleted && _currentSession != null) {
       if (_upNextTasks.isNotEmpty) {
-        // Promote first waiting task to current
         final newCurrentTaskId = _upNextTasks.first.id;
         final newUpNextIds = _currentSession!.upNextTaskIds
             .where((id) => id != newCurrentTaskId)
@@ -222,7 +214,6 @@ class _FocusScreenState extends State<FocusScreen> {
           updatedSession,
         );
       } else {
-        // No waiting tasks, clear current task
         final updatedSession = _currentSession!.copyWith(currentTaskId: null);
         await FocusSessionController().update(
           _currentSession!.id,
@@ -235,30 +226,27 @@ class _FocusScreenState extends State<FocusScreen> {
   }
 
   Future<void> _editTask(Task task) async {
-    final result = await _taskManager.showEditTaskDialog(context, task);
-
-    if (result != null && result.isNotEmpty && result != task.title) {
-      await _taskManager.updateTask(task, result);
+    final draft = await TaskEditor.show(context, task: task);
+    if (draft != null) {
+      await _taskManager.updateTask(task, draft);
       await _loadData();
     }
   }
 
   Future<void> _addTask() async {
-    final result = await _taskManager.showAddTaskDialog(context);
+    final draft = await TaskEditor.show(context);
+    if (draft != null) {
+      final newTask = await _taskManager.createTask(draft);
 
-    if (result != null && result.isNotEmpty) {
-      final newTask = await _taskManager.createTask(result);
-
-      // Assign task to session if needed
       if (_currentSession != null) {
         final updatedSession = await _taskManager.assignTaskToSession(
           newTask,
           _currentSession!,
           _currentTask,
-          _upNextTasks,
         );
 
         if (updatedSession != null) {
+          if (!mounted) return;
           setState(() {
             _currentSession = updatedSession;
           });
@@ -269,10 +257,19 @@ class _FocusScreenState extends State<FocusScreen> {
     }
   }
 
+  Future<void> _reorderTasks(List<Task> tasks) async {
+    final session = _currentSession;
+    if (session == null) return;
+    final orderedIds = tasks.map((task) => task.id).toList();
+    await TaskController().reorderTasks(orderedIds);
+    final updatedSession = session.copyWith(upNextTaskIds: orderedIds);
+    await FocusSessionController().update(session.id, updatedSession);
+    await _loadData();
+  }
+
   Future<void> _deleteTask(Task task) async {
     await _taskManager.deleteTask(task);
 
-    // If the deleted task was in the session's upNextTaskIds, update the session
     if (_currentSession != null &&
         _currentSession!.upNextTaskIds.contains(task.id)) {
       final updatedUpNext = _currentSession!.upNextTaskIds
@@ -292,53 +289,18 @@ class _FocusScreenState extends State<FocusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_currentSession == null) {
-      return Scaffold(
-        appBar: const HabitFocusAppBar(),
-        body: const Center(child: CircularProgressIndicator()),
-        bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 1),
-      );
-    }
-
-    return Scaffold(
-      appBar: const HabitFocusAppBar(overrideTitle: 'Focus'),
-      body: ListView(
-        padding: const EdgeInsets.all(HabitFocusTheme.mobilePadding),
-        children: [
-          TimerSection(session: _currentSession!),
-          const SizedBox(height: 24),
-          ActionButtons(
-            session: _currentSession!,
-            onToggleFocus: _toggleFocus,
-            onToggleBreak: _toggleBreak,
-          ),
-          const SizedBox(height: HabitFocusTheme.sectionGap),
-          if (_currentTask != null)
-            CurrentTaskCard(
-              task: _currentTask!,
-              onToggle: () => _toggleTaskCompletion(_currentTask!),
-              onEdit: () => _editTask(_currentTask!),
-            ),
-          const SizedBox(height: HabitFocusTheme.sectionGap),
-          UpNextSection(
-            tasks: _upNextTasks,
-            onToggle: _toggleTaskCompletion,
-            onEdit: _editTask,
-            onAddTask: _addTask,
-            onDelete: _deleteTask,
-          ),
-          if (_completedTasks.isNotEmpty) ...[
-            const SizedBox(height: HabitFocusTheme.sectionGap),
-            CompletedTasksSection(
-              tasks: _completedTasks,
-              onToggle: _toggleTaskCompletion,
-              onEdit: _editTask,
-              onDelete: _deleteTask,
-            ),
-          ],
-        ],
-      ),
-      bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 1),
+    return FocusScreenBody(
+      session: _currentSession,
+      currentTask: _currentTask,
+      upNextTasks: _upNextTasks,
+      completedTasks: _completedTasks,
+      onToggleFocus: _toggleFocus,
+      onToggleBreak: _toggleBreak,
+      onToggleTask: _toggleTaskCompletion,
+      onEditTask: _editTask,
+      onAddTask: _addTask,
+      onDeleteTask: _deleteTask,
+      onReorderTasks: _reorderTasks,
     );
   }
 }

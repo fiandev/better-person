@@ -1,13 +1,14 @@
 import 'package:better_person/controllers/base_controller.dart';
 import 'package:better_person/models/models.dart';
+import 'habit_completion_controller.dart';
 
 class HabitController extends BaseController<Habit> {
   static final HabitController _instance = HabitController._internal();
-  
+
   factory HabitController() {
     return _instance;
   }
-  
+
   HabitController._internal();
 
   @override
@@ -39,7 +40,7 @@ class HabitController extends BaseController<Habit> {
   Future<Habit?> update(String id, Habit habit) async {
     final index = items.indexWhere((h) => h.id == id);
     if (index == -1) return null;
-    
+
     items[index] = habit;
     await persist();
     return habit;
@@ -52,27 +53,35 @@ class HabitController extends BaseController<Habit> {
 
     final updated = habit.copyWith(
       title: fields['title'] as String? ?? habit.title,
-      subtitle: fields.containsKey('subtitle') ? fields['subtitle'] as String? : habit.subtitle,
+      subtitle: fields.containsKey('subtitle')
+          ? fields['subtitle'] as String?
+          : habit.subtitle,
       category: fields['category'] as HabitCategory? ?? habit.category,
-      duration: fields.containsKey('duration') ? fields['duration'] as String? : habit.duration,
+      duration: fields.containsKey('duration')
+          ? fields['duration'] as String?
+          : habit.duration,
       isCompleted: fields['isCompleted'] as bool? ?? habit.isCompleted,
-      completedAt: fields.containsKey('completedAt') ? fields['completedAt'] as DateTime? : habit.completedAt,
+      completedAt: fields.containsKey('completedAt')
+          ? fields['completedAt'] as DateTime?
+          : habit.completedAt,
     );
 
     return update(id, updated);
   }
 
   @override
-  Future<Map<String, Habit>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, Habit>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, Habit>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -111,17 +120,19 @@ class HabitController extends BaseController<Habit> {
 
   /// Mark habit as completed
   Future<Habit?> markCompleted(String id) async {
-    return updateFields(id, {
+    final completedAt = DateTime.now();
+    final updated = await updateFields(id, {
       'isCompleted': true,
-      'completedAt': DateTime.now(),
+      'completedAt': completedAt,
     });
+    if (updated != null) {
+      await HabitCompletionController().record(id, completedAt);
+    }
+    return updated;
   }
 
   /// Mark habit as incomplete
   Future<Habit?> markIncomplete(String id) async {
-    return updateFields(id, {
-      'isCompleted': false,
-      'completedAt': null,
-    });
+    return updateFields(id, {'isCompleted': false, 'completedAt': null});
   }
 }

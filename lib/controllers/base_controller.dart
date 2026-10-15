@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
+
 import '../utils/storage_service.dart';
 
 /// Base CRUD controller providing standard database operations with disk persistence.
-/// 
+///
 /// Type parameter [T] represents the model type.
 /// Subclasses should implement the abstract methods for persistence logic.
-abstract class BaseController<T> {
+abstract class BaseController<T> extends ChangeNotifier {
   final List<T> items = [];
   final StorageService _storage = StorageService();
   bool _isInitialized = false;
@@ -21,7 +23,7 @@ abstract class BaseController<T> {
   /// Initialize the controller by loading data from disk
   Future<void> init() async {
     if (_isInitialized) return;
-    
+
     try {
       final data = await _storage.load(storageKey);
       items.clear();
@@ -29,10 +31,17 @@ abstract class BaseController<T> {
         items.add(fromJson(json));
       }
       _isInitialized = true;
+      notifyListeners();
     } catch (e) {
-      print('Error initializing $storageKey controller: $e');
+      debugPrint('Error initializing $storageKey controller: $e');
       _isInitialized = true;
+      notifyListeners();
     }
+  }
+
+  Future<void> reload() async {
+    _isInitialized = false;
+    await init();
   }
 
   /// Save all items to disk
@@ -41,7 +50,9 @@ abstract class BaseController<T> {
       final jsonList = items.map((item) => toJson(item)).toList();
       await _storage.save(storageKey, jsonList);
     } catch (e) {
-      print('Error persisting $storageKey data: $e');
+      debugPrint('Error persisting $storageKey data: $e');
+    } finally {
+      notifyListeners();
     }
   }
 
@@ -63,17 +74,17 @@ abstract class BaseController<T> {
   Future<T?> update(String id, T item);
 
   /// Update one or many columns/fields of an item.
-  /// 
+  ///
   /// [id] - The ID of the item to update
   /// [fields] - Map of field names to new values
-  /// 
+  ///
   /// Returns the updated item or null if not found.
   Future<T?> updateFields(String id, Map<String, dynamic> fields);
 
   /// Update multiple items at once.
-  /// 
+  ///
   /// [updates] - Map of item IDs to their updated data
-  /// 
+  ///
   /// Returns a map of successfully updated items.
   Future<Map<String, T>> updateMany(Map<String, Map<String, dynamic>> updates);
 

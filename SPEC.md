@@ -734,15 +734,14 @@ class DzikirEntry {
 class CustomDevotion {
   String id;
   String name;
-  String duration;
   TimeOfDay scheduledTime;
   bool isCompleted;
+  DateTime date;
   DateTime? completedAt;
-  DateTime createdAt;
 }
 ```
 
-**Status:** ✅ Model exists, 🟡 UI exists but handler missing
+**Status:** ✅ Model and Devotion custom-tab UI are wired. The model stores the scheduled date, not a duration.
 
 **SpiritualMoment** (`lib/models/spiritual_moment.dart`)
 

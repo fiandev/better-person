@@ -2,12 +2,13 @@ import 'package:better_person/controllers/base_controller.dart';
 import 'package:better_person/models/models.dart';
 
 class QuranSessionController extends BaseController<QuranSession> {
-  static final QuranSessionController _instance = QuranSessionController._internal();
-  
+  static final QuranSessionController _instance =
+      QuranSessionController._internal();
+
   factory QuranSessionController() {
     return _instance;
   }
-  
+
   QuranSessionController._internal();
 
   @override
@@ -17,7 +18,8 @@ class QuranSessionController extends BaseController<QuranSession> {
   Map<String, dynamic> toJson(QuranSession item) => item.toJson();
 
   @override
-  QuranSession fromJson(Map<String, dynamic> json) => QuranSession.fromJson(json);
+  QuranSession fromJson(Map<String, dynamic> json) =>
+      QuranSession.fromJson(json);
 
   @override
   QuranSession? getById(String id) {
@@ -39,42 +41,51 @@ class QuranSessionController extends BaseController<QuranSession> {
   Future<QuranSession?> update(String id, QuranSession session) async {
     final index = items.indexWhere((s) => s.id == id);
     if (index == -1) return null;
-    
+
     items[index] = session;
     await persist();
     return session;
   }
 
   @override
-  Future<QuranSession?> updateFields(String id, Map<String, dynamic> fields) async {
+  Future<QuranSession?> updateFields(
+    String id,
+    Map<String, dynamic> fields,
+  ) async {
     final session = getById(id);
     if (session == null) return null;
 
     final updated = session.copyWith(
       currentSurah: fields['currentSurah'] as String? ?? session.currentSurah,
-      currentSurahNumber: fields['currentSurahNumber'] as int? ?? session.currentSurahNumber,
+      currentSurahNumber:
+          fields['currentSurahNumber'] as int? ?? session.currentSurahNumber,
       dailyPageGoal: fields['dailyPageGoal'] as int? ?? session.dailyPageGoal,
-      pagesReadToday: fields['pagesReadToday'] as int? ?? session.pagesReadToday,
+      pagesReadToday:
+          fields['pagesReadToday'] as int? ?? session.pagesReadToday,
       instruction: fields['instruction'] as String? ?? session.instruction,
       isCompleted: fields['isCompleted'] as bool? ?? session.isCompleted,
       date: fields['date'] as DateTime? ?? session.date,
-      completedAt: fields.containsKey('completedAt') ? fields['completedAt'] as DateTime? : session.completedAt,
+      completedAt: fields['completedAt'] as DateTime?,
+      clearCompletedAt:
+          fields.containsKey('completedAt') && fields['completedAt'] == null,
     );
 
     return update(id, updated);
   }
 
   @override
-  Future<Map<String, QuranSession>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, QuranSession>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, QuranSession>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -98,10 +109,11 @@ class QuranSessionController extends BaseController<QuranSession> {
 
   /// Get sessions by date
   List<QuranSession> getByDate(DateTime date) {
-    return findWhere((session) => 
-      session.date.year == date.year &&
-      session.date.month == date.month &&
-      session.date.day == date.day
+    return findWhere(
+      (session) =>
+          session.date.year == date.year &&
+          session.date.month == date.month &&
+          session.date.day == date.day,
     );
   }
 
@@ -126,13 +138,33 @@ class QuranSessionController extends BaseController<QuranSession> {
     final session = getById(id);
     if (session == null) return null;
 
-    final newPagesRead = session.pagesReadToday + count;
+    final newPagesRead = (session.pagesReadToday + count).clamp(0, 604);
     final isCompleted = newPagesRead >= session.dailyPageGoal;
 
     return updateFields(id, {
       'pagesReadToday': newPagesRead,
       'isCompleted': isCompleted,
       'completedAt': isCompleted ? DateTime.now() : session.completedAt,
+    });
+  }
+
+  Future<QuranSession?> updateReadingProgress(
+    String id, {
+    required String currentSurah,
+    required int dailyPageGoal,
+    required int pagesReadToday,
+  }) async {
+    final session = getById(id);
+    if (session == null) return null;
+    final goal = dailyPageGoal.clamp(1, 604);
+    final pages = pagesReadToday.clamp(0, 604);
+    final completed = pages >= goal;
+    return updateFields(id, {
+      'currentSurah': currentSurah.trim(),
+      'dailyPageGoal': goal,
+      'pagesReadToday': pages,
+      'isCompleted': completed,
+      'completedAt': completed ? DateTime.now() : null,
     });
   }
 
@@ -146,9 +178,6 @@ class QuranSessionController extends BaseController<QuranSession> {
 
   /// Mark session as incomplete
   Future<QuranSession?> markIncomplete(String id) async {
-    return updateFields(id, {
-      'isCompleted': false,
-      'completedAt': null,
-    });
+    return updateFields(id, {'isCompleted': false, 'completedAt': null});
   }
 }

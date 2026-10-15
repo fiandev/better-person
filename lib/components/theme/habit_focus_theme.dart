@@ -42,80 +42,128 @@ class HabitFocusTheme {
   );
 
   static ColorScheme get colorScheme => const ColorScheme(
-        brightness: Brightness.light,
-        primary: _primary,
-        onPrimary: _onPrimary,
-        primaryContainer: _primaryContainer,
-        onPrimaryContainer: _onPrimaryContainer,
-        secondary: _secondary,
-        onSecondary: _onSecondary,
-        secondaryContainer: _secondaryContainer,
-        onSecondaryContainer: _onSecondaryContainer,
-        tertiary: _tertiary,
-        onTertiary: _onTertiary,
-        tertiaryContainer: _tertiaryContainer,
-        onTertiaryContainer: _onTertiaryContainer,
-        error: _error,
-        onError: _onPrimary,
-        surface: _surface,
-        onSurface: _onSurface,
-        surfaceContainerLowest: _surfaceContainerLowest,
-        surfaceContainerLow: _surfaceContainerLow,
-        surfaceContainer: _surfaceContainer,
-        surfaceContainerHigh: _surfaceContainerHigh,
-        surfaceContainerHighest: _surfaceContainerHighest,
-        outline: _outline,
-        outlineVariant: _outlineVariant,
-      );
+    brightness: Brightness.light,
+    primary: _primary,
+    onPrimary: _onPrimary,
+    primaryContainer: _primaryContainer,
+    onPrimaryContainer: _onPrimaryContainer,
+    secondary: _secondary,
+    onSecondary: _onSecondary,
+    secondaryContainer: _secondaryContainer,
+    onSecondaryContainer: _onSecondaryContainer,
+    tertiary: _tertiary,
+    onTertiary: _onTertiary,
+    tertiaryContainer: _tertiaryContainer,
+    onTertiaryContainer: _onTertiaryContainer,
+    error: _error,
+    onError: _onPrimary,
+    surface: _surface,
+    onSurface: _onSurface,
+    surfaceContainerLowest: _surfaceContainerLowest,
+    surfaceContainerLow: _surfaceContainerLow,
+    surfaceContainer: _surfaceContainer,
+    surfaceContainerHigh: _surfaceContainerHigh,
+    surfaceContainerHighest: _surfaceContainerHighest,
+    outline: _outline,
+    outlineVariant: _outlineVariant,
+  );
 
   static TextTheme get textTheme => const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.64,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w400,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-        ),
-        labelLarge: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-        labelMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-        labelSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+    headlineLarge: TextStyle(
+      fontSize: 32,
+      fontWeight: FontWeight.w700,
+      letterSpacing: -0.64,
+    ),
+    headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+    bodyLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+    bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    labelMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    labelSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+  );
+
+  static SegmentedButtonThemeData segmentedButtonTheme(ColorScheme colors) =>
+      SegmentedButtonThemeData(
+        style: ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
+          textStyle: WidgetStatePropertyAll(textTheme.labelMedium),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 12),
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? colors.primaryContainer
+                : colors.surfaceContainerLow,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? colors.onPrimaryContainer
+                : colors.onSurface,
+          ),
+          side: WidgetStatePropertyAll(
+            BorderSide(color: colors.outlineVariant),
+          ),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(defaultRadius),
+            ),
+          ),
         ),
       );
 
   static ThemeData get themeData => ThemeData(
-        useMaterial3: true,
-        colorScheme: colorScheme,
-        textTheme: textTheme,
-        scaffoldBackgroundColor: _background,
-        cardTheme: CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(cardRadius),
-          ),
-          color: _surfaceContainerLowest,
+    useMaterial3: true,
+    colorScheme: colorScheme,
+    textTheme: textTheme,
+    segmentedButtonTheme: segmentedButtonTheme(colorScheme),
+    scaffoldBackgroundColor: _background,
+    cardTheme: CardThemeData(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(cardRadius),
+      ),
+      color: _surfaceContainerLowest,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: _background,
+      foregroundColor: _onBackground,
+      elevation: 0,
+    ),
+  );
+
+  static ThemeData get darkThemeData {
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: _primary,
+          brightness: Brightness.dark,
+        ).copyWith(
+          primary: const Color(0xFF8BD3AE),
+          onPrimary: const Color(0xFF063923),
+          secondary: const Color(0xFF8FC7E7),
+          tertiary: const Color(0xFFE8B985),
+          surface: const Color(0xFF171C19),
+          onSurface: const Color(0xFFE7EEE9),
+          outline: const Color(0xFFADB8B1),
+          outlineVariant: const Color(0xFF4A554E),
+        );
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: scheme,
+      segmentedButtonTheme: segmentedButtonTheme(scheme),
+      scaffoldBackgroundColor: const Color(0xFF171C19),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF171C19),
+        foregroundColor: Color(0xFFE7EEE9),
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: const Color(0xFF202722),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(cardRadius),
         ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: _background,
-          foregroundColor: _onBackground,
-          elevation: 0,
-        ),
-      );
+      ),
+    );
+  }
 }

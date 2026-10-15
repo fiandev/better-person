@@ -224,8 +224,14 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
       children: [
         Row(
           children: [
-            GestureDetector(
+            IconButton(
+              tooltip: 'Previous month',
+              onPressed: _previousMonth,
+              icon: const Icon(Icons.chevron_left),
+            ),
+            InkWell(
               onTap: () => _showMonthPicker(),
+              borderRadius: BorderRadius.circular(24),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -273,7 +279,16 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                 ),
               ),
             ),
+            IconButton(
+              tooltip: 'Next month',
+              onPressed: _nextMonth,
+              icon: const Icon(Icons.chevron_right),
+            ),
           ],
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text('${_monthTransactions.length} transactions this month'),
         ),
         const SizedBox(height: 16),
         Container(
@@ -1028,7 +1043,7 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                     (_currentYear.year == DateTime.now().year &&
                         month > DateTime.now().month);
 
-                return GestureDetector(
+                return InkWell(
                   onTap: isFuture
                       ? null
                       : () {
@@ -1037,6 +1052,7 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                           );
                           Navigator.pop(context);
                         },
+                  borderRadius: BorderRadius.circular(8),
                   child: Container(
                     decoration: BoxDecoration(
                       color: isSelected

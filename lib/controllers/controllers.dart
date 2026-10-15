@@ -4,6 +4,7 @@
 export 'base_controller.dart';
 export 'user_controller.dart';
 export 'habit_controller.dart';
+export 'habit_completion_controller.dart';
 export 'task_controller.dart';
 export 'prayer_controller.dart';
 export 'focus_session_controller.dart';

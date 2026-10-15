@@ -3,11 +3,11 @@ import 'package:better_person/models/models.dart';
 
 class TaskController extends BaseController<Task> {
   static final TaskController _instance = TaskController._internal();
-  
+
   factory TaskController() {
     return _instance;
   }
-  
+
   TaskController._internal();
 
   @override
@@ -39,7 +39,7 @@ class TaskController extends BaseController<Task> {
   Future<Task?> update(String id, Task task) async {
     final index = items.indexWhere((t) => t.id == id);
     if (index == -1) return null;
-    
+
     items[index] = task;
     await persist();
     return task;
@@ -56,23 +56,27 @@ class TaskController extends BaseController<Task> {
       priority: fields['priority'] as TaskPriority? ?? task.priority,
       isCompleted: fields['isCompleted'] as bool? ?? task.isCompleted,
       sortOrder: fields['sortOrder'] as int? ?? task.sortOrder,
-      completedAt: fields.containsKey('completedAt') ? fields['completedAt'] as DateTime? : task.completedAt,
+      completedAt: fields.containsKey('completedAt')
+          ? fields['completedAt'] as DateTime?
+          : task.completedAt,
     );
 
     return update(id, updated);
   }
 
   @override
-  Future<Map<String, Task>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, Task>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, Task>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -112,7 +116,10 @@ class TaskController extends BaseController<Task> {
   /// Get tasks sorted by sortOrder
   List<Task> getSorted() {
     final sorted = List<Task>.from(items);
-    sorted.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    sorted.sort((a, b) {
+      final order = a.sortOrder.compareTo(b.sortOrder);
+      return order != 0 ? order : a.priority.index.compareTo(b.priority.index);
+    });
     return sorted;
   }
 
@@ -126,16 +133,15 @@ class TaskController extends BaseController<Task> {
 
   /// Mark task as incomplete
   Future<Task?> markIncomplete(String id) async {
-    return updateFields(id, {
-      'isCompleted': false,
-      'completedAt': null,
-    });
+    return updateFields(id, {'isCompleted': false, 'completedAt': null});
   }
 
   /// Reorder tasks
   Future<void> reorderTasks(List<String> orderedIds) async {
     for (int i = 0; i < orderedIds.length; i++) {
-      await updateFields(orderedIds[i], {'sortOrder': i});
+      final index = items.indexWhere((task) => task.id == orderedIds[i]);
+      if (index >= 0) items[index] = items[index].copyWith(sortOrder: i);
     }
+    await persist();
   }
 }

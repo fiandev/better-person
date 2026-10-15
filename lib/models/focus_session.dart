@@ -1,8 +1,4 @@
-enum TimerState {
-  idle,
-  focusing,
-  onBreak,
-}
+enum TimerState { idle, focusing, onBreak }
 
 class FocusSession {
   final String id;
@@ -15,6 +11,7 @@ class FocusSession {
   final List<String> upNextTaskIds; // ordered list of upcoming Task IDs
   final DateTime createdAt;
   final DateTime? completedAt;
+  final bool isArchived;
 
   FocusSession({
     required this.id,
@@ -27,13 +24,13 @@ class FocusSession {
     required this.upNextTaskIds,
     required this.createdAt,
     this.completedAt,
+    this.isArchived = false,
   });
 
   /// 0.0–1.0 progress through the timer.
-  double get progress =>
-      timerDuration.inSeconds > 0
-          ? (elapsed.inSeconds / timerDuration.inSeconds).clamp(0.0, 1.0)
-          : 0.0;
+  double get progress => timerDuration.inSeconds > 0
+      ? (elapsed.inSeconds / timerDuration.inSeconds).clamp(0.0, 1.0)
+      : 0.0;
 
   /// Remaining time in the timer.
   Duration get remaining {
@@ -72,6 +69,7 @@ class FocusSession {
     List<String>? upNextTaskIds,
     DateTime? createdAt,
     DateTime? completedAt,
+    bool? isArchived,
   }) {
     return FocusSession(
       id: id ?? this.id,
@@ -84,6 +82,7 @@ class FocusSession {
       upNextTaskIds: upNextTaskIds ?? this.upNextTaskIds,
       createdAt: createdAt ?? this.createdAt,
       completedAt: completedAt ?? this.completedAt,
+      isArchived: isArchived ?? this.isArchived,
     );
   }
 
@@ -99,6 +98,7 @@ class FocusSession {
       'upNextTaskIds': upNextTaskIds,
       'createdAt': createdAt.toIso8601String(),
       'completedAt': completedAt?.toIso8601String(),
+      'isArchived': isArchived,
     };
   }
 
@@ -118,6 +118,7 @@ class FocusSession {
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'] as String)
           : null,
+      isArchived: json['isArchived'] as bool? ?? false,
     );
   }
 }

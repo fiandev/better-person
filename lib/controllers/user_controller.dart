@@ -3,11 +3,11 @@ import 'package:better_person/models/models.dart';
 
 class UserController extends BaseController<User> {
   static final UserController _instance = UserController._internal();
-  
+
   factory UserController() {
     return _instance;
   }
-  
+
   UserController._internal();
 
   @override
@@ -39,7 +39,7 @@ class UserController extends BaseController<User> {
   Future<User?> update(String id, User user) async {
     final index = items.indexWhere((u) => u.id == id);
     if (index == -1) return null;
-    
+
     items[index] = user;
     await persist();
     return user;
@@ -52,13 +52,22 @@ class UserController extends BaseController<User> {
 
     final updated = user.copyWith(
       name: fields['name'] as String? ?? user.name,
-      avatarUrl: fields.containsKey('avatarUrl') ? fields['avatarUrl'] as String? : user.avatarUrl,
+      avatarUrl: fields.containsKey('avatarUrl')
+          ? fields['avatarUrl'] as String?
+          : user.avatarUrl,
+      avatarColorValue:
+          fields['avatarColorValue'] as int? ?? user.avatarColorValue,
       streak: fields['streak'] as int? ?? user.streak,
       dailyProgress: fields['dailyProgress'] as double? ?? user.dailyProgress,
-      totalHabitsDone: fields['totalHabitsDone'] as int? ?? user.totalHabitsDone,
-      totalFocusHours: fields['totalFocusHours'] as double? ?? user.totalFocusHours,
+      totalHabitsDone:
+          fields['totalHabitsDone'] as int? ?? user.totalHabitsDone,
+      totalFocusHours:
+          fields['totalFocusHours'] as double? ?? user.totalFocusHours,
       totalKindActs: fields['totalKindActs'] as int? ?? user.totalKindActs,
       growthScore: fields['growthScore'] as double? ?? user.growthScore,
+      lastActivityDate: fields.containsKey('lastActivityDate')
+          ? fields['lastActivityDate'] as DateTime?
+          : user.lastActivityDate,
       updatedAt: DateTime.now(),
     );
 
@@ -66,16 +75,18 @@ class UserController extends BaseController<User> {
   }
 
   @override
-  Future<Map<String, User>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, User>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, User>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -117,10 +128,42 @@ class UserController extends BaseController<User> {
   }
 
   /// Increment kind acts count
-  Future<User?> incrementKindActs() async {
+  Future<User?> incrementKindActs([int count = 1]) async {
+    if (count <= 0) return getAll().firstOrNull;
     final user = getCurrentUser();
+    return updateFields(user.id, {'totalKindActs': user.totalKindActs + count});
+  }
+
+  Future<User?> recordActivity([DateTime? activityDate]) async {
+    if (items.isEmpty) return null;
+    final user = items.first;
+    final activityDay = _dateOnly(activityDate ?? DateTime.now());
+    final lastDay = user.lastActivityDate == null
+        ? null
+        : _dateOnly(user.lastActivityDate!);
+    if (lastDay == activityDay) return user;
+
+    final streak =
+        lastDay != null && activityDay.difference(lastDay).inDays == 1
+        ? user.streak + 1
+        : 1;
     return updateFields(user.id, {
-      'totalKindActs': user.totalKindActs + 1,
+      'streak': streak,
+      'lastActivityDate': activityDay,
     });
   }
+
+  Future<void> clearExpiredStreak() async {
+    if (items.isEmpty) return;
+    final user = items.first;
+    final lastDay = user.lastActivityDate;
+    if (lastDay == null) return;
+    final today = _dateOnly(DateTime.now());
+    if (today.difference(_dateOnly(lastDay)).inDays > 1 && user.streak != 0) {
+      await updateFields(user.id, {'streak': 0});
+    }
+  }
+
+  DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 }

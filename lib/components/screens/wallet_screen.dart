@@ -107,7 +107,7 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            '${SettingController().getCurrentSetting().defaultCurrencyFormat}${_totalBalance.toStringAsFixed(2)}',
+            '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${_totalBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
             style: const TextStyle(
               fontFamily: 'Manrope',
               fontSize: 40,
@@ -430,7 +430,7 @@ class _WalletScreenState extends State<WalletScreen> {
               const Spacer(),
               // Balance
               Text(
-                '${SettingController().getCurrentSetting().defaultCurrencyFormat}${wallet.currentBalance.toStringAsFixed(2)}',
+                '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${wallet.currentBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
                 style: const TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 32,

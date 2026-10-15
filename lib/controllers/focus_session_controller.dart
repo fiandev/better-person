@@ -2,12 +2,13 @@ import 'package:better_person/controllers/base_controller.dart';
 import 'package:better_person/models/models.dart';
 
 class FocusSessionController extends BaseController<FocusSession> {
-  static final FocusSessionController _instance = FocusSessionController._internal();
-  
+  static final FocusSessionController _instance =
+      FocusSessionController._internal();
+
   factory FocusSessionController() {
     return _instance;
   }
-  
+
   FocusSessionController._internal();
 
   @override
@@ -17,7 +18,8 @@ class FocusSessionController extends BaseController<FocusSession> {
   Map<String, dynamic> toJson(FocusSession item) => item.toJson();
 
   @override
-  FocusSession fromJson(Map<String, dynamic> json) => FocusSession.fromJson(json);
+  FocusSession fromJson(Map<String, dynamic> json) =>
+      FocusSession.fromJson(json);
 
   @override
   FocusSession? getById(String id) {
@@ -39,42 +41,54 @@ class FocusSessionController extends BaseController<FocusSession> {
   Future<FocusSession?> update(String id, FocusSession session) async {
     final index = items.indexWhere((s) => s.id == id);
     if (index == -1) return null;
-    
+
     items[index] = session;
     await persist();
     return session;
   }
 
   @override
-  Future<FocusSession?> updateFields(String id, Map<String, dynamic> fields) async {
+  Future<FocusSession?> updateFields(
+    String id,
+    Map<String, dynamic> fields,
+  ) async {
     final session = getById(id);
     if (session == null) return null;
 
     final updated = session.copyWith(
       category: fields['category'] as String? ?? session.category,
       name: fields['name'] as String? ?? session.name,
-      timerDuration: fields['timerDuration'] as Duration? ?? session.timerDuration,
+      timerDuration:
+          fields['timerDuration'] as Duration? ?? session.timerDuration,
       elapsed: fields['elapsed'] as Duration? ?? session.elapsed,
       timerState: fields['timerState'] as TimerState? ?? session.timerState,
-      currentTaskId: fields.containsKey('currentTaskId') ? fields['currentTaskId'] as String? : session.currentTaskId,
-      upNextTaskIds: fields['upNextTaskIds'] as List<String>? ?? session.upNextTaskIds,
-      completedAt: fields.containsKey('completedAt') ? fields['completedAt'] as DateTime? : session.completedAt,
+      currentTaskId: fields.containsKey('currentTaskId')
+          ? fields['currentTaskId'] as String?
+          : session.currentTaskId,
+      upNextTaskIds:
+          fields['upNextTaskIds'] as List<String>? ?? session.upNextTaskIds,
+      completedAt: fields.containsKey('completedAt')
+          ? fields['completedAt'] as DateTime?
+          : session.completedAt,
+      isArchived: fields['isArchived'] as bool? ?? session.isArchived,
     );
 
     return update(id, updated);
   }
 
   @override
-  Future<Map<String, FocusSession>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, FocusSession>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, FocusSession>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -108,7 +122,9 @@ class FocusSessionController extends BaseController<FocusSession> {
 
   /// Get active (not completed) sessions
   List<FocusSession> getActiveSessions() {
-    return findWhere((session) => session.completedAt == null);
+    return findWhere(
+      (session) => session.completedAt == null && !session.isArchived,
+    );
   }
 
   /// Get completed sessions
@@ -118,30 +134,22 @@ class FocusSessionController extends BaseController<FocusSession> {
 
   /// Start focus session
   Future<FocusSession?> startFocus(String id) async {
-    return updateFields(id, {
-      'timerState': TimerState.focusing,
-    });
+    return updateFields(id, {'timerState': TimerState.focusing});
   }
 
   /// Start break
   Future<FocusSession?> startBreak(String id) async {
-    return updateFields(id, {
-      'timerState': TimerState.onBreak,
-    });
+    return updateFields(id, {'timerState': TimerState.onBreak});
   }
 
   /// Pause session (set to idle)
   Future<FocusSession?> pause(String id) async {
-    return updateFields(id, {
-      'timerState': TimerState.idle,
-    });
+    return updateFields(id, {'timerState': TimerState.idle});
   }
 
   /// Update elapsed time
   Future<FocusSession?> updateElapsed(String id, Duration elapsed) async {
-    return updateFields(id, {
-      'elapsed': elapsed,
-    });
+    return updateFields(id, {'elapsed': elapsed});
   }
 
   /// Complete session
@@ -151,4 +159,7 @@ class FocusSessionController extends BaseController<FocusSession> {
       'completedAt': DateTime.now(),
     });
   }
+
+  Future<FocusSession?> archive(String id) =>
+      updateFields(id, {'isArchived': true, 'timerState': TimerState.idle});
 }

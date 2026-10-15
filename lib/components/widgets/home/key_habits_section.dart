@@ -28,17 +28,6 @@ class KeyHabitsSection extends StatelessWidget {
                 color: colorScheme.onSurface,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                // Navigate to all habits screen
-              },
-              child: Text(
-                'View All',
-                style: textTheme.labelLarge?.copyWith(
-                  color: colorScheme.primary,
-                ),
-              ),
-            ),
           ],
         ),
         const SizedBox(height: HabitFocusTheme.stackGap),

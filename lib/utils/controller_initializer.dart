@@ -12,6 +12,7 @@ class ControllerInitializer {
     await Future.wait([
       UserController().init(),
       HabitController().init(),
+      HabitCompletionController().init(),
       TaskController().init(),
       PrayerController().init(),
       FocusSessionController().init(),
@@ -31,6 +32,30 @@ class ControllerInitializer {
     ]);
 
     _initialized = true;
+  }
+
+  static Future<void> reloadAll() async {
+    await Future.wait([
+      UserController().reload(),
+      HabitController().reload(),
+      HabitCompletionController().reload(),
+      TaskController().reload(),
+      PrayerController().reload(),
+      FocusSessionController().reload(),
+      QuranSessionController().reload(),
+      KindnessLogController().reload(),
+      KindnessActController().reload(),
+      SpiritualMomentController().reload(),
+      DzikirEntryController().reload(),
+      CustomDevotionController().reload(),
+      BadgeController().reload(),
+      GrowthScoreController().reload(),
+      ActivitySummaryController().reload(),
+      DailyConsistencyRecordController().reload(),
+      WalletController().reload(),
+      TransactionController().reload(),
+      SettingController().reload(),
+    ]);
   }
 
   /// Check if controllers have been initialized

@@ -1,13 +1,15 @@
 import '../models/transaction.dart';
 import 'base_controller.dart';
+import 'wallet_controller.dart';
 
 class TransactionController extends BaseController<Transaction> {
-  static final TransactionController _instance = TransactionController._internal();
-  
+  static final TransactionController _instance =
+      TransactionController._internal();
+
   factory TransactionController() {
     return _instance;
   }
-  
+
   TransactionController._internal();
 
   @override
@@ -39,14 +41,17 @@ class TransactionController extends BaseController<Transaction> {
   Future<Transaction?> update(String id, Transaction transaction) async {
     final index = items.indexWhere((t) => t.id == id);
     if (index == -1) return null;
-    
+
     items[index] = transaction;
     await persist();
     return transaction;
   }
 
   @override
-  Future<Transaction?> updateFields(String id, Map<String, dynamic> fields) async {
+  Future<Transaction?> updateFields(
+    String id,
+    Map<String, dynamic> fields,
+  ) async {
     final transaction = getById(id);
     if (transaction == null) return null;
 
@@ -54,27 +59,36 @@ class TransactionController extends BaseController<Transaction> {
       walletId: fields['walletId'] as String? ?? transaction.walletId,
       amount: fields['amount'] as double? ?? transaction.amount,
       type: fields['type'] as TransactionType? ?? transaction.type,
-      category: fields['category'] as TransactionCategory? ?? transaction.category,
+      category:
+          fields['category'] as TransactionCategory? ?? transaction.category,
       date: fields['date'] as DateTime? ?? transaction.date,
-      note: fields.containsKey('note') ? fields['note'] as String? : transaction.note,
-      toWalletId: fields.containsKey('toWalletId') ? fields['toWalletId'] as String? : transaction.toWalletId,
-      fromWalletId: fields.containsKey('fromWalletId') ? fields['fromWalletId'] as String? : transaction.fromWalletId,
+      note: fields.containsKey('note')
+          ? fields['note'] as String?
+          : transaction.note,
+      toWalletId: fields.containsKey('toWalletId')
+          ? fields['toWalletId'] as String?
+          : transaction.toWalletId,
+      fromWalletId: fields.containsKey('fromWalletId')
+          ? fields['fromWalletId'] as String?
+          : transaction.fromWalletId,
     );
 
     return update(id, updated);
   }
 
   @override
-  Future<Map<String, Transaction>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, Transaction>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, Transaction>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -96,6 +110,67 @@ class TransactionController extends BaseController<Transaction> {
     return deletedCount;
   }
 
+  Future<bool> deleteAndReverse(String id) async {
+    final transaction = getById(id);
+    if (transaction == null) return false;
+    final changes = _balanceChanges(transaction, multiplier: -1);
+    if (!_canApply(changes)) return false;
+    for (final entry in changes.entries) {
+      await WalletController().updateBalance(entry.key, entry.value);
+    }
+    return delete(id);
+  }
+
+  Future<bool> updateAndRebalance(String id, Transaction replacement) async {
+    final previous = getById(id);
+    if (previous == null || replacement.id != id) return false;
+    final changes = _balanceChanges(previous, multiplier: -1);
+    _mergeChanges(changes, _balanceChanges(replacement));
+    if (!_canApply(changes)) return false;
+    for (final entry in changes.entries) {
+      await WalletController().updateBalance(entry.key, entry.value);
+    }
+    return await update(id, replacement) != null;
+  }
+
+  Map<String, double> _balanceChanges(
+    Transaction transaction, {
+    double multiplier = 1,
+  }) {
+    final changes = <String, double>{};
+    if (transaction.type == TransactionType.transfer) {
+      final from = transaction.fromWalletId ?? transaction.walletId;
+      final to = transaction.toWalletId;
+      changes[from] = (changes[from] ?? 0) - transaction.amount * multiplier;
+      if (to != null) {
+        changes[to] = (changes[to] ?? 0) + transaction.amount * multiplier;
+      }
+    } else {
+      changes[transaction.walletId] =
+          (transaction.type == TransactionType.income ? 1 : -1) *
+          transaction.amount *
+          multiplier;
+    }
+    return changes;
+  }
+
+  void _mergeChanges(Map<String, double> target, Map<String, double> source) {
+    for (final entry in source.entries) {
+      target[entry.key] = (target[entry.key] ?? 0) + entry.value;
+    }
+  }
+
+  bool _canApply(Map<String, double> changes) {
+    final wallets = WalletController();
+    for (final entry in changes.entries) {
+      final wallet = wallets.getById(entry.key);
+      if (wallet == null || wallet.currentBalance + entry.value < -0.000001) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// Get transactions by wallet ID
   List<Transaction> getByWallet(String walletId) {
     return findWhere((transaction) => transaction.walletId == walletId);
@@ -114,8 +189,10 @@ class TransactionController extends BaseController<Transaction> {
   /// Get transactions within a date range
   List<Transaction> getByDateRange(DateTime start, DateTime end) {
     return findWhere((transaction) {
-      return transaction.date.isAfter(start.subtract(const Duration(days: 1))) &&
-             transaction.date.isBefore(end.add(const Duration(days: 1)));
+      return transaction.date.isAfter(
+            start.subtract(const Duration(days: 1)),
+          ) &&
+          transaction.date.isBefore(end.add(const Duration(days: 1)));
     });
   }
 
@@ -129,14 +206,18 @@ class TransactionController extends BaseController<Transaction> {
   /// Get total income for a wallet
   double getTotalIncome(String walletId) {
     return items
-        .where((t) => t.walletId == walletId && t.type == TransactionType.income)
+        .where(
+          (t) => t.walletId == walletId && t.type == TransactionType.income,
+        )
         .fold(0.0, (sum, transaction) => sum + transaction.amount);
   }
 
   /// Get total expenses for a wallet
   double getTotalExpenses(String walletId) {
     return items
-        .where((t) => t.walletId == walletId && t.type == TransactionType.expense)
+        .where(
+          (t) => t.walletId == walletId && t.type == TransactionType.expense,
+        )
         .fold(0.0, (sum, transaction) => sum + transaction.amount);
   }
 
@@ -166,7 +247,11 @@ class TransactionController extends BaseController<Transaction> {
   List<Transaction> getThisWeek() {
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final startOfDay = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+    final startOfDay = DateTime(
+      startOfWeek.year,
+      startOfWeek.month,
+      startOfWeek.day,
+    );
     final endOfWeek = startOfDay.add(const Duration(days: 7));
     return getByDateRange(startOfDay, endOfWeek);
   }

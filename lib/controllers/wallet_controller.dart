@@ -1,13 +1,15 @@
 import '../models/wallet.dart';
 import 'base_controller.dart';
+import 'transaction_controller.dart';
+import '../models/transaction.dart';
 
 class WalletController extends BaseController<Wallet> {
   static final WalletController _instance = WalletController._internal();
-  
+
   factory WalletController() {
     return _instance;
   }
-  
+
   WalletController._internal();
 
   @override
@@ -39,7 +41,7 @@ class WalletController extends BaseController<Wallet> {
   Future<Wallet?> update(String id, Wallet wallet) async {
     final index = items.indexWhere((w) => w.id == id);
     if (index == -1) return null;
-    
+
     items[index] = wallet;
     await persist();
     return wallet;
@@ -54,7 +56,8 @@ class WalletController extends BaseController<Wallet> {
       name: fields['name'] as String? ?? wallet.name,
       type: fields['type'] as WalletType? ?? wallet.type,
       icon: fields['icon'] as WalletIcon? ?? wallet.icon,
-      currentBalance: fields['currentBalance'] as double? ?? wallet.currentBalance,
+      currentBalance:
+          fields['currentBalance'] as double? ?? wallet.currentBalance,
       accountNumber: fields['accountNumber'] as String? ?? wallet.accountNumber,
     );
 
@@ -62,16 +65,18 @@ class WalletController extends BaseController<Wallet> {
   }
 
   @override
-  Future<Map<String, Wallet>> updateMany(Map<String, Map<String, dynamic>> updates) async {
+  Future<Map<String, Wallet>> updateMany(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, Wallet>{};
-    
+
     for (final entry in updates.entries) {
       final updated = await updateFields(entry.key, entry.value);
       if (updated != null) {
         result[entry.key] = updated;
       }
     }
-    
+
     return result;
   }
 
@@ -115,5 +120,27 @@ class WalletController extends BaseController<Wallet> {
   /// Set wallet balance to a specific value
   Future<Wallet?> setBalance(String id, double balance) async {
     return updateFields(id, {'currentBalance': balance});
+  }
+
+  Future<void> recalculateBalanceFromTransactions() async {
+    final transactions = TransactionController().getAll();
+    for (final wallet in getAll()) {
+      var balance = wallet.initialBalance;
+      for (final transaction in transactions) {
+        if (transaction.type == TransactionType.transfer) {
+          if (transaction.fromWalletId == wallet.id) {
+            balance -= transaction.amount;
+          }
+          if (transaction.toWalletId == wallet.id) {
+            balance += transaction.amount;
+          }
+        } else if (transaction.walletId == wallet.id) {
+          balance += transaction.type == TransactionType.income
+              ? transaction.amount
+              : -transaction.amount;
+        }
+      }
+      await setBalance(wallet.id, balance);
+    }
   }
 }

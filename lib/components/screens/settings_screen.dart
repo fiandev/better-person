@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../theme/habit_focus_theme.dart';
-import '../widgets/habit_focus_app_bar.dart';
 import '../../controllers/setting_controller.dart';
+import '../../routes/app_routes.dart';
+import 'settings_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -22,7 +23,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _settingController.ensureSettingsExist();
     final setting = _settingController.getCurrentSetting();
-    _currencyController = TextEditingController(text: setting.defaultCurrencyFormat);
+    _currencyController = TextEditingController(
+      text: setting.defaultCurrencyFormat,
+    );
   }
 
   @override
@@ -72,6 +75,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             colorScheme: colorScheme,
             textTheme: textTheme,
           ),
+          const SizedBox(height: 16),
+          const SettingsPreferences(),
+          const SizedBox(height: 16),
+          _SettingsLinks(colorScheme: colorScheme),
         ],
       ),
     );
@@ -107,7 +114,11 @@ class _CurrencySection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.monetization_on_outlined, size: 18, color: colorScheme.onSurface),
+              Icon(
+                Icons.monetization_on_outlined,
+                size: 18,
+                color: colorScheme.onSurface,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Default Currency',
@@ -123,35 +134,18 @@ class _CurrencySection extends StatelessWidget {
             runSpacing: 8,
             children: currencyOptions.map((currency) {
               final isSelected = currencyController.text == currency;
-              return GestureDetector(
-                onTap: () {
+              return ChoiceChip(
+                label: Text(currency),
+                selected: isSelected,
+                onSelected: (_) {
                   currencyController.text = currency;
                   onCurrencyChanged(currency);
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? colorScheme.primaryContainer
-                        : colorScheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.outlineVariant,
-                    ),
-                  ),
-                  child: Text(
-                    currency,
-                    style: TextStyle(
-                      fontFamily: 'JetBrains Mono',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurface,
-                    ),
-                  ),
+                selectedColor: colorScheme.primaryContainer,
+                labelStyle: TextStyle(
+                  color: isSelected
+                      ? colorScheme.onPrimaryContainer
+                      : colorScheme.onSurface,
                 ),
               );
             }).toList(),
@@ -197,4 +191,39 @@ class _CurrencySection extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SettingsLinks extends StatelessWidget {
+  const _SettingsLinks({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    child: Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.location_on_outlined),
+          title: const Text('Prayer location and method'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.pushNamed(context, AppRoutes.locationSettings),
+        ),
+        Divider(height: 1, color: colorScheme.outlineVariant),
+        ListTile(
+          leading: const Icon(Icons.receipt_long_outlined),
+          title: const Text('Transaction history'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () =>
+              Navigator.pushNamed(context, AppRoutes.transactionHistory),
+        ),
+        Divider(height: 1, color: colorScheme.outlineVariant),
+        ListTile(
+          leading: const Icon(Icons.backup_outlined),
+          title: const Text('Backup and restore'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.pushNamed(context, AppRoutes.dataBackup),
+        ),
+      ],
+    ),
+  );
 }

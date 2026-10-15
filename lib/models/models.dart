@@ -3,6 +3,7 @@
 
 export 'user.dart';
 export 'habit.dart';
+export 'habit_completion.dart';
 export 'prayer.dart';
 export 'dzikir_entry.dart';
 export 'quran_session.dart';

@@ -31,18 +31,17 @@ class HabitFocusAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: false,
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: GestureDetector(
-            onTap: onProfilePressed ??
-                () => Navigator.pushNamed(context, AppRoutes.profile),
-            child: CircleAvatar(
-              backgroundColor: colorScheme.primaryContainer,
-              child: Icon(
-                Icons.person,
-                color: colorScheme.onPrimaryContainer,
-                size: 20,
-              ),
+        IconButton(
+          tooltip: 'Open profile',
+          onPressed:
+              onProfilePressed ??
+              () => Navigator.pushNamed(context, AppRoutes.profile),
+          icon: CircleAvatar(
+            backgroundColor: colorScheme.primaryContainer,
+            child: Icon(
+              Icons.person,
+              color: colorScheme.onPrimaryContainer,
+              size: 20,
             ),
           ),
         ),

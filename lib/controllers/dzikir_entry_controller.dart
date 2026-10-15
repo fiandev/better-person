@@ -122,7 +122,7 @@ class DzikirEntryController extends BaseController<DzikirEntry> {
     final entry = getById(id);
     if (entry == null) return null;
 
-    final newCurrent = entry.current + count;
+    final newCurrent = (entry.current + count).clamp(0, entry.total);
     final isCompleted = newCurrent >= entry.total;
 
     return updateFields(id, {

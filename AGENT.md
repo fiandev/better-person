@@ -79,3 +79,17 @@ Before finalizing your response, verify the proposed code against this checklist
 3. Is asynchronous code wrapped in proper try-catch structures with safe context handling?
 4. Does the structure comply fully with Dart 3+ standard syntax and formatting?
 5. **Is the total line count for every generated or modified file strictly under 200–300 lines?**
+
+---
+
+## 6. Verification & Build Rules
+
+### Mandatory Static Analysis
+
+* **Always verify with `flutter analyze` (or `dart analyze`) after every code change.** A change is not considered complete until the analysis passes with **zero errors and zero warnings**. If issues are reported, fix them and re-run the analysis before presenting the final result.
+* In environments where the Flutter toolchain is unavailable, fall back to `dart analyze` or clearly state that verification was not possible.
+
+### Never Build Without an Explicit Request
+
+* **Never run `flutter build`, `flutter run`, `dart compile`, or any code-generation/build command (`build_runner`, etc.) unless the user explicitly asks for it.** Static analysis does not count as a build and is always permitted (and required).
+* When a task would normally require a build or code generation step, describe the command the user should run instead of executing it yourself, and wait for an explicit request before running it.

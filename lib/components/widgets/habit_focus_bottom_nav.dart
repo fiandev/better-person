@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class HabitFocusBottomNav extends StatelessWidget {
   const HabitFocusBottomNav({
@@ -55,6 +56,9 @@ class HabitFocusBottomNav extends StatelessWidget {
               final isActive = index == currentIndex;
               return _NavButton(
                 item: item,
+                label: AppLocalizations.of(
+                  context,
+                ).text(item.label.toLowerCase()),
                 isActive: isActive,
                 colorScheme: colorScheme,
                 onTap: () => onTap?.call(index),
@@ -82,48 +86,56 @@ class _NavItem {
 class _NavButton extends StatelessWidget {
   const _NavButton({
     required this.item,
+    required this.label,
     required this.isActive,
     required this.colorScheme,
     required this.onTap,
   });
 
   final _NavItem item;
+  final String label;
   final bool isActive;
   final ColorScheme colorScheme;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? colorScheme.primaryContainer : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? item.activeIcon : item.icon,
-              size: 22,
-              color: isActive
-                  ? colorScheme.onPrimaryContainer
-                  : colorScheme.onSurface,
-            ),
-            if (isActive) ...[
-              const SizedBox(width: 6),
-              Text(
-                item.label,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: colorScheme.onPrimaryContainer,
-                ),
+    return Semantics(
+      label: label,
+      button: true,
+      selected: isActive,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          constraints: const BoxConstraints(minHeight: 44),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: isActive ? colorScheme.primaryContainer : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isActive ? item.activeIcon : item.icon,
+                size: 22,
+                color: isActive
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface,
               ),
+              if (isActive) ...[
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

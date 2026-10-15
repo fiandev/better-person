@@ -3,6 +3,7 @@ import 'dart:async';
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
 import '../../../utils/habit_auto_checker.dart';
+import '../../../utils/notification_service.dart';
 
 /// Manages focus session lifecycle, timer, and state transitions
 class SessionManager {
@@ -10,18 +11,18 @@ class SessionManager {
   final TaskController _taskController;
   final HabitController _habitController;
   final HabitAutoChecker _habitAutoChecker;
-  
+
   Timer? _timer;
-  
+
   SessionManager({
     required FocusSessionController focusSessionController,
     required TaskController taskController,
     required HabitController habitController,
     required HabitAutoChecker habitAutoChecker,
-  })  : _focusSessionController = focusSessionController,
-        _taskController = taskController,
-        _habitController = habitController,
-        _habitAutoChecker = habitAutoChecker;
+  }) : _focusSessionController = focusSessionController,
+       _taskController = taskController,
+       _habitController = habitController,
+       _habitAutoChecker = habitAutoChecker;
 
   void dispose() {
     _timer?.cancel();
@@ -29,13 +30,22 @@ class SessionManager {
 
   /// Get or create an active focus session
   Future<FocusSession> getOrCreateSession() async {
-    final activeSessions = _focusSessionController.getActiveSessions();
-    
-    if (activeSessions.isEmpty) {
+    final now = DateTime.now();
+    final activeSessions = _focusSessionController.getActiveSessions()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    for (final session in activeSessions) {
+      if (now.difference(session.createdAt) > const Duration(days: 1) ||
+          session != activeSessions.first) {
+        await _focusSessionController.archive(session.id);
+      }
+    }
+    final currentSessions = _focusSessionController.getActiveSessions();
+
+    if (currentSessions.isEmpty) {
       return await _createDefaultSession();
     }
-    
-    return activeSessions.first;
+
+    return currentSessions.first;
   }
 
   Future<FocusSession> _createDefaultSession() async {
@@ -46,7 +56,10 @@ class SessionManager {
       // Intentionally empty - users should add tasks themselves
     }
 
-    final allTasks = _taskController.getIncomplete();
+    final allTasks = _taskController
+        .getSorted()
+        .where((task) => !task.isCompleted)
+        .toList();
     final firstTask = allTasks.isNotEmpty ? allTasks.first : null;
     final upNextTaskIds = allTasks.skip(1).take(2).map((t) => t.id).toList();
 
@@ -74,7 +87,9 @@ class SessionManager {
       id: 'session_${now.millisecondsSinceEpoch}',
       category: categoryName,
       name: sessionName,
-      timerDuration: const Duration(minutes: 25),
+      timerDuration: Duration(
+        minutes: SettingController().getCurrentSetting().focusMinutes,
+      ),
       elapsed: Duration.zero,
       timerState: TimerState.idle,
       currentTaskId: firstTask?.id,
@@ -93,7 +108,7 @@ class SessionManager {
     void Function() onSessionComplete,
   ) {
     _timer?.cancel();
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final newElapsed = session.elapsed + const Duration(seconds: 1);
 
@@ -109,7 +124,7 @@ class SessionManager {
 
       // Update elapsed time
       _focusSessionController.updateElapsed(session.id, newElapsed);
-      
+
       final updatedSession = session.copyWith(elapsed: newElapsed);
       onUpdate(updatedSession);
     });
@@ -131,7 +146,7 @@ class SessionManager {
       return await resetToFocusMode(session);
     } else {
       // Start focusing from idle
-      if (session.timerDuration.inMinutes == 5) {
+      if (_isBreakDuration(session.timerDuration)) {
         // It was a paused break, reset to focus mode
         return await resetToFocusMode(session);
       } else {
@@ -151,7 +166,7 @@ class SessionManager {
     } else {
       // Start break - reset to 5 min or resume if paused
       if (session.timerState == TimerState.idle &&
-          session.timerDuration.inMinutes == 5) {
+          _isBreakDuration(session.timerDuration)) {
         // Resume break
         await _focusSessionController.startBreak(session.id);
         return session.copyWith(timerState: TimerState.onBreak);
@@ -163,8 +178,15 @@ class SessionManager {
 
   /// Start a break session
   Future<FocusSession> startBreak(FocusSession session) async {
+    final setting = SettingController().getCurrentSetting();
+    final completedSessions = _focusSessionController.getCompleted().length;
+    final isLongBreak =
+        setting.sessionsBeforeLongBreak > 0 &&
+        completedSessions % setting.sessionsBeforeLongBreak == 0;
     final updatedSession = session.copyWith(
-      timerDuration: const Duration(minutes: 5),
+      timerDuration: Duration(
+        minutes: isLongBreak ? setting.longBreakMinutes : setting.breakMinutes,
+      ),
       elapsed: Duration.zero,
       timerState: TimerState.onBreak,
     );
@@ -173,21 +195,29 @@ class SessionManager {
     return updatedSession;
   }
 
+  bool _isBreakDuration(Duration duration) {
+    final setting = SettingController().getCurrentSetting();
+    return duration.inMinutes == setting.breakMinutes ||
+        duration.inMinutes == setting.longBreakMinutes;
+  }
+
   /// Complete the current break
   Future<FocusSession> completeBreak(FocusSession session) async {
     final updatedSession = session.copyWith(
       timerState: TimerState.idle,
       elapsed: Duration.zero,
     );
-    
+
     await _focusSessionController.update(session.id, updatedSession);
     return updatedSession;
   }
 
-  /// Reset to focus mode (25 minutes)
+  /// Reset to the configured focus duration.
   Future<FocusSession> resetToFocusMode(FocusSession session) async {
     final updatedSession = session.copyWith(
-      timerDuration: const Duration(minutes: 25),
+      timerDuration: Duration(
+        minutes: SettingController().getCurrentSetting().focusMinutes,
+      ),
       elapsed: Duration.zero,
       timerState: TimerState.focusing,
     );
@@ -197,10 +227,7 @@ class SessionManager {
   }
 
   /// Complete the current focus session
-  Future<void> completeSession(
-    FocusSession session,
-    Task? currentTask,
-  ) async {
+  Future<void> completeSession(FocusSession session, Task? currentTask) async {
     await _focusSessionController.completeSession(session.id);
 
     // Mark current task as completed if exists
@@ -214,12 +241,18 @@ class SessionManager {
 
     // Update user statistics
     await _habitAutoChecker.updateUserStats();
+    final settings = SettingController().getCurrentSetting();
+    if (settings.notificationsEnabled) {
+      await NotificationService.playCompletionSound();
+      await NotificationService.show(
+        'Focus session complete',
+        'Your focus timer has ended.',
+      );
+    }
   }
 
   /// Assign a current task to the session if none exists
-  Future<FocusSession?> assignCurrentTaskIfNeeded(
-    FocusSession session,
-  ) async {
+  Future<FocusSession?> assignCurrentTaskIfNeeded(FocusSession session) async {
     if (session.currentTaskId != null) {
       return null; // Already has a task
     }
@@ -232,7 +265,7 @@ class SessionManager {
     final currentTask = incompleteTasks.first;
     final updatedSession = session.copyWith(currentTaskId: currentTask.id);
     await _focusSessionController.update(session.id, updatedSession);
-    
+
     return updatedSession;
   }
 }

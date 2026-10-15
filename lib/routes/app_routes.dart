@@ -12,6 +12,10 @@ import '../components/screens/transfer_screen.dart';
 import '../components/screens/financial_analysis_screen.dart';
 import '../components/screens/profile_screen.dart';
 import '../components/screens/settings_screen.dart';
+import '../components/screens/onboarding_screen.dart';
+import '../components/screens/data_backup_screen.dart';
+import '../components/screens/transaction_history_screen.dart';
+import '../components/screens/location_settings_screen.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -26,6 +30,10 @@ class AppRoutes {
   static const String financialAnalysis = '/financial-analysis';
   static const String profile = '/profile';
   static const String settingsRoute = '/settings';
+  static const String onboarding = '/onboarding';
+  static const String dataBackup = '/settings/backup';
+  static const String transactionHistory = '/transactions';
+  static const String locationSettings = '/settings/location';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -48,11 +56,25 @@ class AppRoutes {
       case transfer:
         return MaterialPageRoute(builder: (_) => const TransferScreen());
       case financialAnalysis:
-        return MaterialPageRoute(builder: (_) => const FinancialAnalysisScreen());
+        return MaterialPageRoute(
+          builder: (_) => const FinancialAnalysisScreen(),
+        );
       case profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case settingsRoute:
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case onboarding:
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
+      case dataBackup:
+        return MaterialPageRoute(builder: (_) => const DataBackupScreen());
+      case transactionHistory:
+        return MaterialPageRoute(
+          builder: (_) => const TransactionHistoryScreen(),
+        );
+      case locationSettings:
+        return MaterialPageRoute(
+          builder: (_) => const LocationSettingsScreen(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

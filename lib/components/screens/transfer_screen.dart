@@ -374,113 +374,111 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Widget _buildDateAndNote() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFffffff),
-              border: Border.all(color: const Color(0xFFbfc9c1)),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A1b4332),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'DATE',
-                  style: TextStyle(
-                    fontFamily: 'JetBrains Mono',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 1.5,
-                    color: Color(0xFF404943),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime.now().add(const Duration(days: 1)),
-                    );
-                    if (picked != null) {
-                      setState(() => _selectedDate = picked);
-                    }
-                  },
-                  child: Text(
-                    '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                    style: const TextStyle(
-                      fontFamily: 'Work Sans',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0f5238),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFffffff),
+            border: Border.all(color: const Color(0xFFbfc9c1)),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0A1b4332),
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFffffff),
-              border: Border.all(color: const Color(0xFFbfc9c1)),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A1b4332),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'DATE',
+                style: TextStyle(
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 1.5,
+                  color: Color(0xFF404943),
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'NOTE (OPTIONAL)',
-                  style: TextStyle(
-                    fontFamily: 'JetBrains Mono',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 1.5,
-                    color: Color(0xFF404943),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _noteController,
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime.now().add(const Duration(days: 1)),
+                  );
+                  if (picked != null) {
+                    setState(() => _selectedDate = picked);
+                  }
+                },
+                child: Text(
+                  '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
                   style: const TextStyle(
                     fontFamily: 'Work Sans',
                     fontSize: 16,
-                    color: Color(0xFF191c1d),
-                  ),
-                  decoration: const InputDecoration(
-                    hintText: 'What is this for?',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Work Sans',
-                      fontSize: 16,
-                      color: Color(0xFFbfc9c1),
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0f5238),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFffffff),
+            border: Border.all(color: const Color(0xFFbfc9c1)),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0A1b4332),
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'NOTE (OPTIONAL)',
+                style: TextStyle(
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 1.5,
+                  color: Color(0xFF404943),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _noteController,
+                style: const TextStyle(
+                  fontFamily: 'Work Sans',
+                  fontSize: 16,
+                  color: Color(0xFF191c1d),
+                ),
+                decoration: const InputDecoration(
+                  hintText: 'What is this for?',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Work Sans',
+                    fontSize: 16,
+                    color: Color(0xFFbfc9c1),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -724,7 +722,7 @@ class _TransferScreenState extends State<TransferScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${SettingController().getCurrentSetting().defaultCurrencyFormat}${wallet.currentBalance.toStringAsFixed(2)}',
+                        '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${wallet.currentBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
                         style: const TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 28,

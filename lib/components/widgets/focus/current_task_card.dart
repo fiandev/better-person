@@ -43,21 +43,20 @@ class CurrentTaskCard extends StatelessWidget {
                 ),
               ),
               IconButton(
+                tooltip: 'Edit current task',
                 icon: Icon(
                   Icons.edit_outlined,
                   size: 18,
                   color: colorScheme.outline,
                 ),
                 onPressed: onEdit,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                splashRadius: 20,
               ),
             ],
           ),
           const SizedBox(height: 12),
-          GestureDetector(
+          InkWell(
             onTap: onToggle,
+            borderRadius: BorderRadius.circular(8),
             child: Row(
               children: [
                 Container(

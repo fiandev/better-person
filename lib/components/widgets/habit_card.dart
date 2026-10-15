@@ -30,9 +30,7 @@ class HabitCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border(
-          left: BorderSide(color: borderColor, width: 4),
-        ),
+        border: Border(left: BorderSide(color: borderColor, width: 4)),
         boxShadow: [
           BoxShadow(
             offset: const Offset(0, 4),
@@ -44,8 +42,9 @@ class HabitCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          GestureDetector(
+          InkWell(
             onTap: onToggle,
+            borderRadius: BorderRadius.circular(20),
             child: Container(
               width: 24,
               height: 24,
@@ -60,11 +59,7 @@ class HabitCard extends StatelessWidget {
                 ),
               ),
               child: isCompleted
-                  ? Icon(
-                      Icons.check,
-                      size: 14,
-                      color: colorScheme.onPrimary,
-                    )
+                  ? Icon(Icons.check, size: 14, color: colorScheme.onPrimary)
                   : null,
             ),
           ),
@@ -76,8 +71,7 @@ class HabitCard extends StatelessWidget {
                 Text(
                   title,
                   style: textTheme.bodyMedium?.copyWith(
-                    decoration:
-                        isCompleted ? TextDecoration.lineThrough : null,
+                    decoration: isCompleted ? TextDecoration.lineThrough : null,
                     color: isCompleted
                         ? colorScheme.outline
                         : colorScheme.onSurface,

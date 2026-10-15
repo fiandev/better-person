@@ -52,7 +52,25 @@ class SettingController extends BaseController<Setting> {
 
     final updated = setting.copyWith(
       defaultCurrencyFormat:
-          fields['defaultCurrencyFormat'] as String? ?? setting.defaultCurrencyFormat,
+          fields['defaultCurrencyFormat'] as String? ??
+          setting.defaultCurrencyFormat,
+      themeMode: fields['themeMode'] as String? ?? setting.themeMode,
+      localeCode: fields['localeCode'] as String? ?? setting.localeCode,
+      notificationsEnabled:
+          fields['notificationsEnabled'] as bool? ??
+          setting.notificationsEnabled,
+      focusMinutes: fields['focusMinutes'] as int? ?? setting.focusMinutes,
+      breakMinutes: fields['breakMinutes'] as int? ?? setting.breakMinutes,
+      longBreakMinutes:
+          fields['longBreakMinutes'] as int? ?? setting.longBreakMinutes,
+      sessionsBeforeLongBreak:
+          fields['sessionsBeforeLongBreak'] as int? ??
+          setting.sessionsBeforeLongBreak,
+      weeklyKindnessGoal:
+          fields['weeklyKindnessGoal'] as int? ?? setting.weeklyKindnessGoal,
+      prayerCalculationMethod:
+          fields['prayerCalculationMethod'] as String? ??
+          setting.prayerCalculationMethod,
       updatedAt: DateTime.now(),
     );
 
@@ -61,7 +79,8 @@ class SettingController extends BaseController<Setting> {
 
   @override
   Future<Map<String, Setting>> updateMany(
-      Map<String, Map<String, dynamic>> updates) async {
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     final result = <String, Setting>{};
 
     for (final entry in updates.entries) {
