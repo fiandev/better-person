@@ -70,6 +70,10 @@ class FocusSessionController extends BaseController<FocusSession> {
       completedAt: fields.containsKey('completedAt')
           ? fields['completedAt'] as DateTime?
           : session.completedAt,
+      timerStartedAt: fields['timerStartedAt'] as DateTime?,
+      clearTimerStartedAt:
+          fields.containsKey('timerStartedAt') &&
+          fields['timerStartedAt'] == null,
       isArchived: fields['isArchived'] as bool? ?? session.isArchived,
     );
 
@@ -134,17 +138,30 @@ class FocusSessionController extends BaseController<FocusSession> {
 
   /// Start focus session
   Future<FocusSession?> startFocus(String id) async {
-    return updateFields(id, {'timerState': TimerState.focusing});
+    final session = getById(id);
+    if (session == null) return null;
+    return updateFields(id, {
+      'timerState': TimerState.focusing,
+      'timerStartedAt': DateTime.now().subtract(session.elapsed),
+    });
   }
 
   /// Start break
   Future<FocusSession?> startBreak(String id) async {
-    return updateFields(id, {'timerState': TimerState.onBreak});
+    final session = getById(id);
+    if (session == null) return null;
+    return updateFields(id, {
+      'timerState': TimerState.onBreak,
+      'timerStartedAt': DateTime.now().subtract(session.elapsed),
+    });
   }
 
   /// Pause session (set to idle)
   Future<FocusSession?> pause(String id) async {
-    return updateFields(id, {'timerState': TimerState.idle});
+    return updateFields(id, {
+      'timerState': TimerState.idle,
+      'timerStartedAt': null,
+    });
   }
 
   /// Update elapsed time
@@ -157,9 +174,13 @@ class FocusSessionController extends BaseController<FocusSession> {
     return updateFields(id, {
       'timerState': TimerState.idle,
       'completedAt': DateTime.now(),
+      'timerStartedAt': null,
     });
   }
 
-  Future<FocusSession?> archive(String id) =>
-      updateFields(id, {'isArchived': true, 'timerState': TimerState.idle});
+  Future<FocusSession?> archive(String id) => updateFields(id, {
+    'isArchived': true,
+    'timerState': TimerState.idle,
+    'timerStartedAt': null,
+  });
 }

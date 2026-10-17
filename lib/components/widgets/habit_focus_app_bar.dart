@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../routes/app_routes.dart';
+import 'profile/user_avatar_button.dart';
 
 class HabitFocusAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HabitFocusAppBar({
@@ -30,22 +30,7 @@ class HabitFocusAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: false,
-      actions: [
-        IconButton(
-          tooltip: 'Open profile',
-          onPressed:
-              onProfilePressed ??
-              () => Navigator.pushNamed(context, AppRoutes.profile),
-          icon: CircleAvatar(
-            backgroundColor: colorScheme.primaryContainer,
-            child: Icon(
-              Icons.person,
-              color: colorScheme.onPrimaryContainer,
-              size: 20,
-            ),
-          ),
-        ),
-      ],
+      actions: [UserAvatarButton(onPressed: onProfilePressed)],
     );
   }
 }

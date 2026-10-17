@@ -5,6 +5,7 @@ import '../../controllers/transaction_controller.dart';
 import '../../controllers/setting_controller.dart';
 import '../../models/wallet.dart';
 import '../../models/transaction.dart';
+import '../widgets/profile/user_avatar_button.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -122,17 +123,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
         centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: const Color(0xFFe7e8e9),
-              child: const Icon(
-                Icons.person,
-                size: 20,
-                color: Color(0xFF191c1d),
-              ),
-            ),
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: UserAvatarButton(),
           ),
         ],
       ),

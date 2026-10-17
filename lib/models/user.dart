@@ -1,6 +1,8 @@
 class User {
   final String id;
   final String name;
+
+  /// Path of the avatar image inside the app's local documents storage.
   final String? avatarUrl;
   final int? avatarColorValue;
   final int streak;

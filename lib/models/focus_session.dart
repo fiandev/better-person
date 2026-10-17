@@ -11,6 +11,12 @@ class FocusSession {
   final List<String> upNextTaskIds; // ordered list of upcoming Task IDs
   final DateTime createdAt;
   final DateTime? completedAt;
+
+  /// Wall-clock instant that corresponds to [elapsed] being zero for the
+  /// current run. While the timer is active this lets elapsed time be derived
+  /// from real time, so it keeps running across navigation or app restarts.
+  /// Null when the timer is paused/idle.
+  final DateTime? timerStartedAt;
   final bool isArchived;
 
   FocusSession({
@@ -24,6 +30,7 @@ class FocusSession {
     required this.upNextTaskIds,
     required this.createdAt,
     this.completedAt,
+    this.timerStartedAt,
     this.isArchived = false,
   });
 
@@ -69,6 +76,8 @@ class FocusSession {
     List<String>? upNextTaskIds,
     DateTime? createdAt,
     DateTime? completedAt,
+    DateTime? timerStartedAt,
+    bool clearTimerStartedAt = false,
     bool? isArchived,
   }) {
     return FocusSession(
@@ -82,6 +91,9 @@ class FocusSession {
       upNextTaskIds: upNextTaskIds ?? this.upNextTaskIds,
       createdAt: createdAt ?? this.createdAt,
       completedAt: completedAt ?? this.completedAt,
+      timerStartedAt: clearTimerStartedAt
+          ? null
+          : (timerStartedAt ?? this.timerStartedAt),
       isArchived: isArchived ?? this.isArchived,
     );
   }
@@ -98,6 +110,7 @@ class FocusSession {
       'upNextTaskIds': upNextTaskIds,
       'createdAt': createdAt.toIso8601String(),
       'completedAt': completedAt?.toIso8601String(),
+      'timerStartedAt': timerStartedAt?.toIso8601String(),
       'isArchived': isArchived,
     };
   }
@@ -117,6 +130,9 @@ class FocusSession {
       createdAt: DateTime.parse(json['createdAt'] as String),
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'] as String)
+          : null,
+      timerStartedAt: json['timerStartedAt'] != null
+          ? DateTime.parse(json['timerStartedAt'] as String)
           : null,
       isArchived: json['isArchived'] as bool? ?? false,
     );

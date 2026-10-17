@@ -137,7 +137,7 @@ The wallet/finance suite (wallet, add wallet, add transaction, transfer, financi
 
 ## 8. Settings, Backup, Onboarding
 
-- ☐ Profile settings: name edit, avatar, streak/goals display
+- ✅ Profile settings: name edit, avatar, streak/goals display
 - ☐ Weekly kindness goal configurable (currently hardcoded 14 in kindness screen)
 - ☐ Data backup/restore (export all `{key}.json`, import + validation)
 - ☐ Onboarding flow for first launch (name, default habits, goals)

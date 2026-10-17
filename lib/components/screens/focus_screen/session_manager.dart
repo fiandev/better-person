@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
 import '../../../utils/habit_auto_checker.dart';
 import '../../../utils/notification_service.dart';
+import 'focus_timer.dart';
 
 /// Manages focus session lifecycle, timer, and state transitions
 class SessionManager {
@@ -12,7 +11,7 @@ class SessionManager {
   final HabitController _habitController;
   final HabitAutoChecker _habitAutoChecker;
 
-  Timer? _timer;
+  final FocusTimer _timer = FocusTimer();
 
   SessionManager({
     required FocusSessionController focusSessionController,
@@ -25,7 +24,7 @@ class SessionManager {
        _habitAutoChecker = habitAutoChecker;
 
   void dispose() {
-    _timer?.cancel();
+    _timer.stop();
   }
 
   /// Get or create an active focus session
@@ -100,47 +99,43 @@ class SessionManager {
     return await _focusSessionController.create(session);
   }
 
-  /// Start the session timer
+  /// Start the session timer.
+  ///
+  /// Elapsed time is derived from [FocusSession.timerStartedAt] and the wall
+  /// clock (see [FocusTimer]), so the timer keeps running when the screen is
+  /// left or the app is reopened.
   void startTimer(
     FocusSession session,
     void Function(FocusSession) onUpdate,
     void Function() onBreakComplete,
     void Function() onSessionComplete,
   ) {
-    _timer?.cancel();
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final newElapsed = session.elapsed + const Duration(seconds: 1);
-
-      // Check if timer completed
-      if (newElapsed >= session.timerDuration) {
-        if (session.timerState == TimerState.onBreak) {
-          onBreakComplete();
-        } else {
-          onSessionComplete();
-        }
-        return;
-      }
-
-      // Update elapsed time
-      _focusSessionController.updateElapsed(session.id, newElapsed);
-
-      final updatedSession = session.copyWith(elapsed: newElapsed);
-      onUpdate(updatedSession);
-    });
+    _timer.start(
+      session,
+      onTick: (elapsed) {
+        _focusSessionController.updateElapsed(session.id, elapsed);
+        onUpdate(session.copyWith(elapsed: elapsed));
+      },
+      onBreakComplete: onBreakComplete,
+      onSessionComplete: onSessionComplete,
+    );
   }
 
   /// Stop the current timer
   void stopTimer() {
-    _timer?.cancel();
+    _timer.stop();
   }
 
   /// Toggle focus state (start/pause)
   Future<FocusSession> toggleFocus(FocusSession session) async {
     if (session.timerState == TimerState.focusing) {
       // Pause
-      await _focusSessionController.pause(session.id);
-      return session.copyWith(timerState: TimerState.idle);
+      final paused = await _focusSessionController.pause(session.id);
+      return paused ??
+          session.copyWith(
+            timerState: TimerState.idle,
+            clearTimerStartedAt: true,
+          );
     } else if (session.timerState == TimerState.onBreak) {
       // Switching from break to focus - reset to 25 min
       return await resetToFocusMode(session);
@@ -150,9 +145,13 @@ class SessionManager {
         // It was a paused break, reset to focus mode
         return await resetToFocusMode(session);
       } else {
-        // It was a paused focus, resume
-        await _focusSessionController.startFocus(session.id);
-        return session.copyWith(timerState: TimerState.focusing);
+        // It was a paused focus, resume from the stored elapsed time
+        final resumed = await _focusSessionController.startFocus(session.id);
+        return resumed ??
+            session.copyWith(
+              timerState: TimerState.focusing,
+              timerStartedAt: DateTime.now().subtract(session.elapsed),
+            );
       }
     }
   }
@@ -161,18 +160,23 @@ class SessionManager {
   Future<FocusSession> toggleBreak(FocusSession session) async {
     if (session.timerState == TimerState.onBreak) {
       // Pause break
-      await _focusSessionController.pause(session.id);
-      return session.copyWith(timerState: TimerState.idle);
+      final paused = await _focusSessionController.pause(session.id);
+      return paused ??
+          session.copyWith(
+            timerState: TimerState.idle,
+            clearTimerStartedAt: true,
+          );
+    } else if (session.timerState == TimerState.idle &&
+        _isBreakDuration(session.timerDuration)) {
+      // Resume the paused break from the stored elapsed time
+      final resumed = await _focusSessionController.startBreak(session.id);
+      return resumed ??
+          session.copyWith(
+            timerState: TimerState.onBreak,
+            timerStartedAt: DateTime.now().subtract(session.elapsed),
+          );
     } else {
-      // Start break - reset to 5 min or resume if paused
-      if (session.timerState == TimerState.idle &&
-          _isBreakDuration(session.timerDuration)) {
-        // Resume break
-        await _focusSessionController.startBreak(session.id);
-        return session.copyWith(timerState: TimerState.onBreak);
-      } else {
-        return await startBreak(session);
-      }
+      return await startBreak(session);
     }
   }
 
@@ -189,6 +193,7 @@ class SessionManager {
       ),
       elapsed: Duration.zero,
       timerState: TimerState.onBreak,
+      timerStartedAt: DateTime.now(),
     );
 
     await _focusSessionController.update(session.id, updatedSession);
@@ -206,6 +211,7 @@ class SessionManager {
     final updatedSession = session.copyWith(
       timerState: TimerState.idle,
       elapsed: Duration.zero,
+      clearTimerStartedAt: true,
     );
 
     await _focusSessionController.update(session.id, updatedSession);
@@ -220,6 +226,7 @@ class SessionManager {
       ),
       elapsed: Duration.zero,
       timerState: TimerState.focusing,
+      timerStartedAt: DateTime.now(),
     );
 
     await _focusSessionController.update(session.id, updatedSession);

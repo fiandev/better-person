@@ -6,6 +6,7 @@ import '../../routes/app_routes.dart';
 import '../../controllers/wallet_controller.dart';
 import '../../controllers/setting_controller.dart';
 import '../../models/wallet.dart';
+import '../widgets/wallet/financial_journal_card.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -55,6 +56,14 @@ class _WalletScreenState extends State<WalletScreen> {
     Navigator.pushNamed(context, AppRoutes.financialAnalysis);
   }
 
+  void _navigateToEditWallet(Wallet wallet) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.editWallet,
+      arguments: wallet,
+    ).then((_) => _loadData());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +78,7 @@ class _WalletScreenState extends State<WalletScreen> {
             _buildTotalBalanceSection(),
             const SizedBox(height: 32), // stack-lg
             // Financial Journal Card
-            _buildFinancialJournalCard(),
+            FinancialJournalCard(onViewAnalysis: _navigateToFinancialAnalysis),
             const SizedBox(height: 32), // stack-lg
             // Your Wallets Header + Action Buttons
             _buildWalletsHeader(),
@@ -118,162 +127,6 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFinancialJournalCard() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFFf8f9fa), // surface-bright
-        border: Border.all(color: const Color(0xFFbfc9c1)), // outline-variant
-        borderRadius: BorderRadius.circular(12), // rounded-xl
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A1b4332), // rgba(27,67,50,0.04)
-            blurRadius: 24,
-            offset: Offset(0, 12),
-            spreadRadius: -8,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Financial Journal',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0f5238), // primary
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Weekly vs Monthly Insights',
-                    style: TextStyle(
-                      fontFamily: 'Work Sans',
-                      fontSize: 12,
-                      color: Color(0xFF404943), // on-surface-variant
-                    ),
-                  ),
-                ],
-              ),
-              const Icon(
-                Icons.insights,
-                color: Color(0xFF0f5238), // primary
-                size: 24,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              // Placeholder for chart - simplified
-              Expanded(
-                child: Container(
-                  height: 80,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Chart Placeholder',
-                    style: TextStyle(fontSize: 10, color: Color(0xFF404943)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'EXTREMES',
-                      style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1.2,
-                        color: Color(0xFF404943),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildProgressBar('High', 0.9, const Color(0xFF0f5238)),
-                    const SizedBox(height: 8),
-                    _buildProgressBar('Low', 0.3, const Color(0xFF3e6750)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: _navigateToFinancialAnalysis,
-            child: Container(
-              padding: const EdgeInsets.only(top: 16),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: Color(0xFFbfc9c1))),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'View Detailed Analysis',
-                    style: TextStyle(
-                      fontFamily: 'Work Sans',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0f5238),
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward, size: 16, color: Color(0xFF0f5238)),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressBar(String label, double progress, Color color) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: const Color(0xFFedeeef), // surface-container
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: progress,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: 'JetBrains Mono',
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            color: color,
-          ),
-        ),
-      ],
     );
   }
 
@@ -334,7 +187,10 @@ class _WalletScreenState extends State<WalletScreen> {
           ..._wallets.map(
             (wallet) => Padding(
               padding: const EdgeInsets.only(right: 24), // gap-gutter
-              child: _buildWalletCard(wallet),
+              child: GestureDetector(
+                onTap: () => _navigateToEditWallet(wallet),
+                child: _buildWalletCard(wallet),
+              ),
             ),
           ),
           // Transfer shortcut card

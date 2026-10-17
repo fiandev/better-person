@@ -31,6 +31,7 @@ void main() {
     await QuranSessionController().clear();
     await DzikirEntryController().clear();
     await CustomDevotionController().clear();
+    await FocusSessionController().clear();
   });
 
   test('activity dates build and reset a consecutive streak', () async {
@@ -211,6 +212,39 @@ void main() {
     );
     expect(score.scoreLabel, '75%');
     expect(score.trendLabel, '+10%');
+  });
+
+  test('focus timer anchor persists so elapsed survives resume', () async {
+    final controller = FocusSessionController();
+    final now = DateTime.now();
+    final session = FocusSession(
+      id: 'session_anchor',
+      category: 'Work Focus',
+      name: 'Deep Work',
+      timerDuration: const Duration(minutes: 25),
+      elapsed: const Duration(minutes: 5),
+      timerState: TimerState.idle,
+      upNextTaskIds: const [],
+      createdAt: now,
+    );
+    await controller.create(session);
+
+    final started = await controller.startFocus(session.id);
+    final anchor = started?.timerStartedAt;
+    expect(started?.timerState, TimerState.focusing);
+    expect(anchor, isNotNull);
+    // Anchor is rewound so that now - anchor ≈ the stored elapsed time.
+    expect(
+      DateTime.now().difference(anchor!).inMilliseconds,
+      closeTo(const Duration(minutes: 5).inMilliseconds, 1000),
+    );
+
+    // Anchor must survive an app restart (JSON round-trip).
+    final restored = FocusSession.fromJson(started!.toJson());
+    expect(restored.timerStartedAt, anchor);
+
+    final paused = await controller.pause(session.id);
+    expect(paused?.timerStartedAt, isNull);
   });
 }
 

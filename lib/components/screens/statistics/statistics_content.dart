@@ -104,17 +104,16 @@ class ConsistencyPanel extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
-                        child: Align(
+                        child: FractionallySizedBox(
                           alignment: Alignment.bottomCenter,
-                          child: FractionallySizedBox(
-                            heightFactor: ratio,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: record.isToday
-                                    ? colors.primary
-                                    : colors.primary.withValues(alpha: 0.42),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
+                          widthFactor: 1,
+                          heightFactor: ratio,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: record.isToday
+                                  ? colors.primary
+                                  : colors.primary.withValues(alpha: 0.42),
+                              borderRadius: BorderRadius.circular(4),
                             ),
                           ),
                         ),
@@ -221,4 +220,3 @@ class ActivitySummaryPanel extends StatelessWidget {
     );
   }
 }
-

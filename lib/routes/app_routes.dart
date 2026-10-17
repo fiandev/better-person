@@ -7,6 +7,7 @@ import '../components/screens/kindness_screen.dart';
 import '../components/screens/statistics_screen.dart';
 import '../components/screens/wallet_screen.dart';
 import '../components/screens/add_wallet_screen.dart';
+import '../components/screens/edit_wallet_screen.dart';
 import '../components/screens/add_transaction_screen.dart';
 import '../components/screens/transfer_screen.dart';
 import '../components/screens/financial_analysis_screen.dart';
@@ -16,6 +17,7 @@ import '../components/screens/onboarding_screen.dart';
 import '../components/screens/data_backup_screen.dart';
 import '../components/screens/transaction_history_screen.dart';
 import '../components/screens/location_settings_screen.dart';
+import '../models/wallet.dart';
 
 class AppRoutes {
   static const String home = '/';
@@ -25,6 +27,7 @@ class AppRoutes {
   static const String statistics = '/statistics';
   static const String wallet = '/wallet';
   static const String addWallet = '/add-wallet';
+  static const String editWallet = '/edit-wallet';
   static const String addTransaction = '/add-transaction';
   static const String transfer = '/transfer';
   static const String financialAnalysis = '/financial-analysis';
@@ -51,6 +54,13 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const WalletScreen());
       case addWallet:
         return MaterialPageRoute(builder: (_) => const AddWalletScreen());
+      case editWallet:
+        final arguments = settings.arguments;
+        return MaterialPageRoute(
+          builder: (_) => arguments is Wallet
+              ? EditWalletScreen(wallet: arguments)
+              : const WalletScreen(),
+        );
       case addTransaction:
         return MaterialPageRoute(builder: (_) => const AddTransactionScreen());
       case transfer:

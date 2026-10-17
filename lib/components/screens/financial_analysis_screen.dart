@@ -432,7 +432,7 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                         'Top',
                         style: TextStyle(
                           fontFamily: 'JetBrains Mono',
-                          fontSize: 10,
+                          fontSize: 9,
                           color: Color(0xFF707973),
                         ),
                       ),
@@ -440,7 +440,7 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                         topLabel,
                         style: const TextStyle(
                           fontFamily: 'Manrope',
-                          fontSize: 14,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF0f5238),
                         ),
