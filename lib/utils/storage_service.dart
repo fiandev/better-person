@@ -19,7 +19,6 @@ class StorageService {
     'spiritual_moments',
     'dzikir_entries',
     'custom_devotions',
-    'badges',
     'growth_scores',
     'activity_summaries',
     'daily_consistency_records',

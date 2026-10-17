@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
-import '../../../utils/badge_checker.dart';
-import '../../../utils/badge_feedback.dart';
 import '../../../utils/habit_auto_checker.dart';
 
 class DzikirTrackerSection extends StatefulWidget {
@@ -84,8 +82,6 @@ class _DzikirTrackerSectionState extends State<DzikirTrackerSection> {
       return;
     }
     await HabitAutoChecker().onDzikirProgressComplete();
-    final badges = await BadgeChecker.checkAndAwardBadges();
-    if (mounted) BadgeFeedback.show(context, badges);
   }
 
   Future<void> _reset(DzikirEntry entry) async {

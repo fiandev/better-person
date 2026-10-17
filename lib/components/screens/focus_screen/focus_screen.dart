@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
 import '../../../utils/habit_auto_checker.dart';
-import '../../../utils/badge_checker.dart';
-import '../../../utils/badge_feedback.dart';
 import '../../../utils/notification_service.dart';
 
 import 'session_manager.dart';
@@ -131,10 +129,8 @@ class _FocusScreenState extends State<FocusScreen> {
 
     _sessionManager.stopTimer();
     await _sessionManager.completeSession(_currentSession!, _currentTask);
-    final badges = await BadgeChecker.checkAndAwardBadges();
 
     if (mounted) {
-      BadgeFeedback.show(context, badges);
       FocusDialogs.showSessionCompleteDialog(context, _loadData);
     }
   }
@@ -191,10 +187,6 @@ class _FocusScreenState extends State<FocusScreen> {
     await _taskManager.toggleTaskCompletion(task);
     if (!wasCompleted) {
       await HabitAutoChecker().onTaskComplete(task);
-      if (mounted) {
-        final badges = await BadgeChecker.checkAndAwardBadges();
-        if (mounted) BadgeFeedback.show(context, badges);
-      }
     }
 
     if (isCurrentTask && !wasCompleted && _currentSession != null) {

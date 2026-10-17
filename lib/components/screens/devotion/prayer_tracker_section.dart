@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
-import '../../../utils/badge_checker.dart';
-import '../../../utils/badge_feedback.dart';
 import '../../../utils/habit_auto_checker.dart';
 
 class PrayerTrackerSection extends StatefulWidget {
@@ -68,9 +66,6 @@ class _PrayerTrackerSectionState extends State<PrayerTrackerSection> {
     await UserController().recordActivity();
     if (!mounted) return;
     await HabitAutoChecker().onPrayersComplete();
-    if (!mounted) return;
-    final badges = await BadgeChecker.checkAndAwardBadges();
-    if (mounted) BadgeFeedback.show(context, badges);
   }
 
   DateTime? _nextAt(Prayer? prayer) {

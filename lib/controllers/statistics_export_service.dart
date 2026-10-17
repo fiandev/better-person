@@ -37,7 +37,6 @@ class StatisticsExportService {
     'dailyConsistency': snapshot.consistency
         .map((item) => item.toJson())
         .toList(),
-    'earnedBadges': snapshot.badges.map((item) => item.toJson()).toList(),
   });
 
   static String _signedPercent(double trend) {

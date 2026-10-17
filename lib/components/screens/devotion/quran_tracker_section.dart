@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../controllers/controllers.dart';
 import '../../../models/models.dart';
-import '../../../utils/badge_checker.dart';
-import '../../../utils/badge_feedback.dart';
 import '../../../utils/habit_auto_checker.dart';
 
 class QuranTrackerSection extends StatefulWidget {
@@ -99,8 +97,6 @@ class _QuranTrackerSectionState extends State<QuranTrackerSection> {
     }
     if (updated.isCompleted && !previousCompletion) {
       await HabitAutoChecker().onQuranSessionComplete(updated);
-      final badges = await BadgeChecker.checkAndAwardBadges();
-      if (mounted) BadgeFeedback.show(context, badges);
     }
     if (saveDetails && mounted) {
       ScaffoldMessenger.of(

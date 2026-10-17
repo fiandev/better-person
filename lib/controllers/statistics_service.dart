@@ -1,6 +1,5 @@
 import '../models/statistics.dart';
 import 'activity_summary_controller.dart';
-import 'badge_controller.dart';
 import 'focus_session_controller.dart';
 import 'growth_score_controller.dart';
 import 'habit_controller.dart';
@@ -16,17 +15,14 @@ class StatisticsSnapshot {
     required this.growthScore,
     required this.consistency,
     required this.summaries,
-    required this.badges,
   });
 
   final GrowthScore growthScore;
   final List<DailyConsistencyRecord> consistency;
   final List<ActivitySummary> summaries;
-  final List<Badge> badges;
 }
 
 class StatisticsService {
-  final _badges = BadgeController();
   final _growthScores = GrowthScoreController();
   final _summaries = ActivitySummaryController();
   final _habits = HabitController();
@@ -48,12 +44,6 @@ class StatisticsService {
       growthScore: score,
       consistency: consistency,
       summaries: summaries,
-      badges: _badges.getEarned()
-        ..sort(
-          (a, b) => (b.earnedDate ?? DateTime(0)).compareTo(
-            a.earnedDate ?? DateTime(0),
-          ),
-        ),
     );
     final savedScore = _growthScores.getById(score.id);
     if (savedScore == null) {
@@ -86,8 +76,6 @@ class StatisticsService {
 
   Future<List<DailyConsistencyRecord>> calculateDailyConsistency() async =>
       _dailyConsistency(DateTime.now());
-
-  List<Badge> getBadges() => _badges.getEarned();
 
   GrowthScore _growthScoreFor(_DateRange range, _DateRange? previous) {
     final current = _score(range);

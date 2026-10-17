@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart' hide Badge;
+import 'package:flutter/material.dart';
 
 import '../../controllers/controllers.dart';
 import '../../routes/route_shell.dart';
-import '../../utils/badge_checker.dart';
-import '../../utils/badge_feedback.dart';
 import '../../utils/habit_auto_checker.dart';
 import '../theme/habit_focus_theme.dart';
 import '../widgets/habit_focus_app_bar.dart';
@@ -49,12 +47,10 @@ class _KindnessScreenState extends State<KindnessScreen> {
       }
       _reflectionController.clear();
       await _kindnessActController.clearSelection();
-      final badges = await BadgeChecker.checkAndAwardBadges();
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Kindness logged.')));
-      BadgeFeedback.show(context, badges);
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

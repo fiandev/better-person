@@ -33,7 +33,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   void _listenToSources(bool add) {
-    final method = add ? _reload : _reload;
     for (final controller in [
       HabitController(),
       FocusSessionController(),
@@ -41,16 +40,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       KindnessLogController(),
     ]) {
       if (add) {
-        controller.addListener(method);
+        controller.addListener(_reload);
       } else {
-        controller.removeListener(method);
+        controller.removeListener(_reload);
       }
     }
   }
 
   void _reload() {
     if (!mounted) return;
-    setState(() => _snapshot = _service.load(_period));
+    setState(() {
+      _snapshot = _service.load(_period);
+    });
   }
 
   void _selectPeriod(Set<StatisticsPeriod> selection) {
@@ -76,9 +77,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         : StatisticsExportService.toJson(snapshot);
     await Clipboard.setData(ClipboardData(text: content));
     if (!mounted) return;
-    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Statistics CSV copied to clipboard.')),
+      SnackBar(
+        content: Text(
+          'Statistics ${format.toUpperCase()} copied to clipboard.',
+        ),
+      ),
     );
   }
 
@@ -153,8 +157,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ConsistencyPanel(records: snapshot.consistency),
                 const SizedBox(height: HabitFocusTheme.sectionGap),
                 ActivitySummaryPanel(summaries: snapshot.summaries),
-                const SizedBox(height: HabitFocusTheme.sectionGap),
-                EarnedBadgesPanel(badges: snapshot.badges),
               ],
             );
           },
