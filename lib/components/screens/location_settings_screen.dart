@@ -17,7 +17,7 @@ class LocationSettingsScreen extends StatefulWidget {
 class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _mapController = MapController();
-  final _manualExpansionController = ExpansionTileController();
+  final _manualExpansionController = ExpansibleController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   LatLng _selectedLocation = const LatLng(0, 0);
@@ -35,6 +35,7 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   @override
   void dispose() {
     _mapController.dispose();
+    _manualExpansionController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
     super.dispose();
