@@ -1,5 +1,7 @@
 import 'package:adhan/adhan.dart' as adhan;
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../controllers/prayer_controller.dart';
 import '../../controllers/setting_controller.dart';
@@ -14,8 +16,10 @@ class LocationSettingsScreen extends StatefulWidget {
 
 class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _mapController = MapController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
+  LatLng _selectedLocation = const LatLng(0, 0);
   adhan.CalculationMethod _method = adhan.CalculationMethod.muslim_world_league;
   bool _loading = true;
   bool _saving = false;
@@ -28,6 +32,7 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
 
   @override
   void dispose() {
+    _mapController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
     super.dispose();
@@ -41,12 +46,34 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
       orElse: () => adhan.CalculationMethod.muslim_world_league,
     );
     if (!mounted) return;
+    final coords = LatLng(location.latitude, location.longitude);
     setState(() {
-      _latitudeController.text = location.latitude.toString();
-      _longitudeController.text = location.longitude.toString();
+      _selectedLocation = coords;
+      _latitudeController.text = coords.latitude.toStringAsFixed(5);
+      _longitudeController.text = coords.longitude.toStringAsFixed(5);
       _method = method;
       _loading = false;
     });
+  }
+
+  void _onMapTap(TapPosition _, LatLng point) {
+    setState(() {
+      _selectedLocation = point;
+    });
+    _latitudeController.text = point.latitude.toStringAsFixed(5);
+    _longitudeController.text = point.longitude.toStringAsFixed(5);
+  }
+
+  void _onManualCoordinateChanged() {
+    final lat = double.tryParse(_latitudeController.text.trim());
+    final lng = double.tryParse(_longitudeController.text.trim());
+    if (lat == null || lat < -90 || lat > 90) return;
+    if (lng == null || lng < -180 || lng > 180) return;
+    final next = LatLng(lat, lng);
+    setState(() {
+      _selectedLocation = next;
+    });
+    _mapController.move(next, _mapController.camera.zoom);
   }
 
   String? _coordinateValidator(String? value, double min, double max) {
@@ -58,12 +85,12 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!(_formKey.currentState?.validate() ?? true)) return;
     setState(() => _saving = true);
     try {
       await LocationService.saveLocation(
-        double.parse(_latitudeController.text.trim()),
-        double.parse(_longitudeController.text.trim()),
+        _selectedLocation.latitude,
+        _selectedLocation.longitude,
       );
       final controller = SettingController();
       await controller.ensureSettingsExist();
@@ -102,6 +129,7 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Prayer settings')),
       body: Form(
@@ -110,35 +138,88 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
           padding: const EdgeInsets.all(20),
           children: [
             const Text(
-              'Enter coordinates for the place where you pray. These stay on this device.',
+              'Tap the map to set the place where you pray. Coordinates stay on this device.',
             ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _latitudeController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 300,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: _selectedLocation,
+                    initialZoom: 13.0,
+                    onTap: _onMapTap,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.better_person',
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: _selectedLocation,
+                          width: 40,
+                          height: 40,
+                          alignment: Alignment.topCenter,
+                          child: Icon(
+                            Icons.location_on,
+                            size: 40,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              decoration: const InputDecoration(
-                labelText: 'Latitude',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) => _coordinateValidator(value, -90, 90),
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _longitudeController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              decoration: const InputDecoration(
-                labelText: 'Longitude',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) => _coordinateValidator(value, -180, 180),
+            Text(
+              'Selected: ${_selectedLocation.latitude.toStringAsFixed(5)}, '
+              '${_selectedLocation.longitude.toStringAsFixed(5)}',
+              style: theme.textTheme.bodyMedium,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
+            ExpansionTile(
+              title: const Text('Enter coordinates manually'),
+              maintainState: true,
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: const EdgeInsets.only(top: 8, bottom: 12),
+              children: [
+                TextFormField(
+                  controller: _latitudeController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Latitude',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => _coordinateValidator(value, -90, 90),
+                  onChanged: (_) => _onManualCoordinateChanged(),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _longitudeController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Longitude',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => _coordinateValidator(value, -180, 180),
+                  onChanged: (_) => _onManualCoordinateChanged(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             DropdownButtonFormField<adhan.CalculationMethod>(
               initialValue: _method,
               decoration: const InputDecoration(
