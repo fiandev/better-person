@@ -11,7 +11,7 @@ class ProfileVersionInfo extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Text(
-          'Better Person v1.0.1',
+          'Better Person v1.1.0',
           style: Theme.of(
             context,
           ).textTheme.labelSmall?.copyWith(color: colorScheme.outline),

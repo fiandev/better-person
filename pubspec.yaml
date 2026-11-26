@@ -2,7 +2,7 @@ name: "better_person"
 description: "personal habbit tracker that can help you to be a better person"
 publish_to: "none"
 
-version: 1.0.1
+version: 1.1.0
 
 environment:
   sdk: ^3.8.0
