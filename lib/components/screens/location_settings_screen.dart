@@ -17,12 +17,14 @@ class LocationSettingsScreen extends StatefulWidget {
 class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _mapController = MapController();
+  final _manualExpansionController = ExpansionTileController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   LatLng _selectedLocation = const LatLng(0, 0);
   adhan.CalculationMethod _method = adhan.CalculationMethod.muslim_world_league;
   bool _loading = true;
   bool _saving = false;
+  bool _mapReady = false;
 
   @override
   void initState() {
@@ -39,21 +41,28 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   }
 
   Future<void> _loadLocation() async {
-    final location = await LocationService.getLocation();
-    final setting = SettingController().getCurrentSetting();
-    final method = adhan.CalculationMethod.values.firstWhere(
-      (value) => value.name == setting.prayerCalculationMethod,
-      orElse: () => adhan.CalculationMethod.muslim_world_league,
-    );
-    if (!mounted) return;
-    final coords = LatLng(location.latitude, location.longitude);
-    setState(() {
-      _selectedLocation = coords;
-      _latitudeController.text = coords.latitude.toStringAsFixed(5);
-      _longitudeController.text = coords.longitude.toStringAsFixed(5);
-      _method = method;
-      _loading = false;
-    });
+    try {
+      final location = await LocationService.getLocation();
+      final setting = SettingController().getCurrentSetting();
+      final method = adhan.CalculationMethod.values.firstWhere(
+        (value) => value.name == setting.prayerCalculationMethod,
+        orElse: () => adhan.CalculationMethod.muslim_world_league,
+      );
+      if (!mounted) return;
+      final coords = LatLng(location.latitude, location.longitude);
+      setState(() {
+        _selectedLocation = coords;
+        _latitudeController.text = coords.latitude.toStringAsFixed(5);
+        _longitudeController.text = coords.longitude.toStringAsFixed(5);
+        _method = method;
+      });
+    } catch (_) {
+      // Fall back to default coordinates if loading fails.
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
   }
 
   void _onMapTap(TapPosition _, LatLng point) {
@@ -67,25 +76,35 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
   void _onManualCoordinateChanged() {
     final lat = double.tryParse(_latitudeController.text.trim());
     final lng = double.tryParse(_longitudeController.text.trim());
-    if (lat == null || lat < -90 || lat > 90) return;
-    if (lng == null || lng < -180 || lng > 180) return;
+    if (lat == null || !lat.isFinite || lat < -90 || lat > 90) return;
+    if (lng == null || !lng.isFinite || lng < -180 || lng > 180) return;
     final next = LatLng(lat, lng);
     setState(() {
       _selectedLocation = next;
     });
-    _mapController.move(next, _mapController.camera.zoom);
+    if (_mapReady) {
+      _mapController.move(next, _mapController.camera.zoom);
+    }
   }
 
   String? _coordinateValidator(String? value, double min, double max) {
     final coordinate = double.tryParse(value?.trim() ?? '');
-    if (coordinate == null || coordinate < min || coordinate > max) {
+    if (coordinate == null ||
+        !coordinate.isFinite ||
+        coordinate < min ||
+        coordinate > max) {
       return 'Enter a value from $min to $max.';
     }
     return null;
   }
 
   Future<void> _save() async {
-    if (!(_formKey.currentState?.validate() ?? true)) return;
+    if (!(_formKey.currentState?.validate() ?? true)) {
+      if (!_manualExpansionController.isExpanded) {
+        _manualExpansionController.expand();
+      }
+      return;
+    }
     setState(() => _saving = true);
     try {
       await LocationService.saveLocation(
@@ -150,6 +169,7 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
                   options: MapOptions(
                     initialCenter: _selectedLocation,
                     initialZoom: 13.0,
+                    onMapReady: () => _mapReady = true,
                     onTap: _onMapTap,
                   ),
                   children: [
@@ -185,6 +205,7 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
             ),
             const SizedBox(height: 8),
             ExpansionTile(
+              controller: _manualExpansionController,
               title: const Text('Enter coordinates manually'),
               maintainState: true,
               tilePadding: EdgeInsets.zero,

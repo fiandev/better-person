@@ -357,4 +357,86 @@ void main() {
       await tester.pump();
     },
   );
+
+  testWidgets(
+    'entering manual coordinates updates selection and persists on save',
+    (tester) async {
+      await LocationService.saveLocation(-6.2088, 106.8456);
+
+      await tester.pumpWidget(_app(const LocationSettingsScreen()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      final manualTile = find.text('Enter coordinates manually');
+      await tester.ensureVisible(manualTile);
+      await tester.tap(manualTile);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final latField = find.widgetWithText(TextFormField, 'Latitude');
+      final lngField = find.widgetWithText(TextFormField, 'Longitude');
+      await tester.ensureVisible(latField);
+      await tester.enterText(latField, '21.4225');
+      await tester.enterText(lngField, '39.8262');
+      await tester.pump();
+
+      expect(find.text('Selected: 21.42250, 39.82620'), findsOneWidget);
+
+      final saveButton = find.text('Save prayer settings');
+      await tester.ensureVisible(saveButton);
+      await tester.tap(saveButton);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final savedLocation = await LocationService.getLocation();
+      expect(savedLocation.latitude, 21.4225);
+      expect(savedLocation.longitude, 39.8262);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+    },
+  );
+
+  testWidgets(
+    'invalid coordinate expands manual section and shows validation error on save',
+    (tester) async {
+      await LocationService.saveLocation(-6.2088, 106.8456);
+
+      await tester.pumpWidget(_app(const LocationSettingsScreen()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      final manualTile = find.text('Enter coordinates manually');
+      await tester.ensureVisible(manualTile);
+      await tester.tap(manualTile);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final latField = find.widgetWithText(TextFormField, 'Latitude');
+      await tester.ensureVisible(latField);
+      await tester.enterText(latField, 'NaN');
+      await tester.pump();
+
+      // Collapse manual section before saving to verify auto-expand on error.
+      await tester.ensureVisible(manualTile);
+      await tester.tap(manualTile);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final saveButton = find.text('Save prayer settings');
+      await tester.ensureVisible(saveButton);
+      await tester.tap(saveButton);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Enter a value from -90.0 to 90.0.'), findsOneWidget);
+
+      final savedLocation = await LocationService.getLocation();
+      expect(savedLocation.latitude, -6.2088);
+      expect(savedLocation.longitude, 106.8456);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+    },
+  );
 }
