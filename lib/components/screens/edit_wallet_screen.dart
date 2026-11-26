@@ -80,8 +80,10 @@ class _EditWalletScreenState extends State<EditWalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa),
+      backgroundColor: colorScheme.surface,
       appBar: const HabitFocusAppBar(overrideTitle: 'Edit Dompet'),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -101,53 +103,58 @@ class _EditWalletScreenState extends State<EditWalletScreen> {
   }
 
   Widget _buildLabel(String text) {
+    final theme = Theme.of(context);
     return Text(
       text,
-      style: const TextStyle(
+      style: theme.textTheme.labelMedium?.copyWith(
         fontFamily: 'JetBrains Mono',
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.7,
-        color: Color(0xFF404943), // on-surface-variant
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
   }
 
   Widget _buildNameField() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff),
-        border: Border.all(color: const Color(0xFFbfc9c1)), // outline-variant
+        color: colorScheme.surfaceContainerLowest,
+        border: Border.all(color: colorScheme.outlineVariant),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Icon(
               Icons.edit_outlined,
               size: 20,
-              color: Color(0xFF707973),
+              color: colorScheme.outline,
             ),
           ),
           Expanded(
             child: TextField(
               controller: _nameController,
-              style: const TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 16,
-                color: Color(0xFF191c1d), // on-surface
+                color: colorScheme.onSurface,
               ),
               onSubmitted: (_) => _save(),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Contoh: Tabungan Liburan',
-                hintStyle: TextStyle(
+                hintStyle: textTheme.bodyMedium?.copyWith(
                   fontFamily: 'Work Sans',
                   fontSize: 16,
-                  color: Color(0xFFbfc9c1),
+                  color: colorScheme.outline,
                 ),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
           ),
@@ -159,8 +166,12 @@ class _EditWalletScreenState extends State<EditWalletScreen> {
   Widget _buildCategoryTile(
     (WalletType, WalletIcon, String, IconData) category,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final (type, icon, label, iconData) = category;
     final isSelected = _selectedType == type;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -175,11 +186,11 @@ class _EditWalletScreenState extends State<EditWalletScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFFbdeacd) // secondary-container
-                : const Color(0xFFe7e8e9), // surface-container-high
+                ? colorScheme.primaryContainer
+                : colorScheme.surfaceContainerHigh,
             border: Border.all(
               color: isSelected
-                  ? const Color(0xFF0f5238) // primary
+                  ? colorScheme.primary
                   : Colors.transparent,
               width: 2,
             ),
@@ -191,26 +202,26 @@ class _EditWalletScreenState extends State<EditWalletScreen> {
                 iconData,
                 size: 24,
                 color: isSelected
-                    ? const Color(0xFF426b54) // on-secondary-container
-                    : const Color(0xFF404943),
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 12),
               Text(
                 label,
-                style: TextStyle(
+                style: textTheme.bodyMedium?.copyWith(
                   fontFamily: 'Work Sans',
                   fontSize: 16,
                   color: isSelected
-                      ? const Color(0xFF426b54)
-                      : const Color(0xFF404943),
+                      ? colorScheme.onPrimaryContainer
+                      : colorScheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
               if (isSelected)
-                const Icon(
+                Icon(
                   Icons.check_circle,
                   size: 20,
-                  color: Color(0xFF0f5238),
+                  color: colorScheme.onPrimaryContainer,
                 ),
             ],
           ),
@@ -220,30 +231,36 @@ class _EditWalletScreenState extends State<EditWalletScreen> {
   }
 
   Widget _buildSaveButton() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isSaving ? null : _save,
         icon: _isSaving
-            ? const SizedBox(
+            ? SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    colorScheme.onPrimary,
+                  ),
                 ),
               )
             : const Icon(Icons.save_outlined, size: 20),
         label: Text(_isSaving ? 'Menyimpan...' : 'Simpan Perubahan'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0f5238), // primary
-          foregroundColor: Colors.white,
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 2,
-          textStyle: const TextStyle(
+          textStyle: textTheme.bodyLarge?.copyWith(
             fontFamily: 'Manrope',
             fontSize: 18,
             fontWeight: FontWeight.w600,

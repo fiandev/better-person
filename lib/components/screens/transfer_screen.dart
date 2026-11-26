@@ -126,23 +126,26 @@ class _TransferScreenState extends State<TransferScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa),
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFf8f9fa),
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => Navigator.pop(context),
-          color: const Color(0xFF0f5238),
+          color: colorScheme.primary,
         ),
-        title: const Text(
+        title: Text(
           'Transfer Dana',
-          style: TextStyle(
+          style: textTheme.headlineMedium?.copyWith(
             fontFamily: 'Manrope',
-            fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF0f5238),
+            color: colorScheme.primary,
           ),
         ),
         centerTitle: true,
@@ -174,6 +177,10 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Widget _buildWalletFlowSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final fromWallet = _fromWalletId != null 
         ? _walletController.getById(_fromWalletId!) 
         : null;
@@ -185,34 +192,32 @@ class _TransferScreenState extends State<TransferScreen> {
       return Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: const Color(0xFFffffff),
+          color: colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Column(
+        child: Column(
           children: [
             Icon(
               Icons.account_balance_wallet_outlined,
               size: 48,
-              color: Color(0xFF707973),
+              color: colorScheme.outline,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'Not enough wallets',
-              style: TextStyle(
+              style: textTheme.headlineMedium?.copyWith(
                 fontFamily: 'Manrope',
-                fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF707973),
+                color: colorScheme.outline,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'You need at least 2 wallets to transfer funds',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 fontFamily: 'Work Sans',
-                fontSize: 16,
-                color: Color(0xFF707973),
+                color: colorScheme.outline,
               ),
             ),
           ],
@@ -232,14 +237,14 @@ class _TransferScreenState extends State<TransferScreen> {
           child: Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
-              color: Color(0xFF0f5238),
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x141b4332),
+                  color: colorScheme.shadow.withValues(alpha: 0.08),
                   blurRadius: 24,
-                  offset: Offset(0, 8),
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
@@ -248,9 +253,9 @@ class _TransferScreenState extends State<TransferScreen> {
               child: InkWell(
                 onTap: _swapWallets,
                 borderRadius: BorderRadius.circular(24),
-                child: const Icon(
+                child: Icon(
                   Icons.swap_vert,
-                  color: Colors.white,
+                  color: colorScheme.onPrimary,
                   size: 24,
                 ),
               ),
@@ -267,30 +272,33 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Widget _buildAmountSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff),
+        color: colorScheme.surfaceContainerLowest,
         border: Border.all(
-          color: const Color(0xFFbfc9c1).withValues(alpha: 0.5),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Transfer Amount',
-            style: TextStyle(
+            style: textTheme.bodyMedium?.copyWith(
               fontFamily: 'Work Sans',
-              fontSize: 16,
-              color: Color(0xFF404943),
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
@@ -302,11 +310,10 @@ class _TransferScreenState extends State<TransferScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   SettingController().getCurrentSetting().defaultCurrencyFormat,
-                  style: const TextStyle(
+                  style: textTheme.headlineLarge?.copyWith(
                     fontFamily: 'Manrope',
-                    fontSize: 32,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF707973),
+                    color: colorScheme.outline,
                   ),
                 ),
               ),
@@ -317,21 +324,21 @@ class _TransferScreenState extends State<TransferScreen> {
                     controller: _amountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: textTheme.headlineLarge?.copyWith(
                       fontFamily: 'Manrope',
                       fontSize: 40,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.8,
-                      color: Color(0xFF191c1d),
+                      color: colorScheme.onSurface,
                     ),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: '0.00',
-                      hintStyle: TextStyle(
+                      hintStyle: textTheme.headlineLarge?.copyWith(
                         fontFamily: 'Manrope',
                         fontSize: 40,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.8,
-                        color: Color(0xFFbfc9c1),
+                        color: colorScheme.outlineVariant,
                       ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
@@ -357,7 +364,7 @@ class _TransferScreenState extends State<TransferScreen> {
           Container(
             height: 2,
             decoration: BoxDecoration(
-              color: const Color(0xFFe1e3e4),
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(1),
             ),
           ),
@@ -367,34 +374,38 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Widget _buildDateAndNote() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Column(
       children: [
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFffffff),
-            border: Border.all(color: const Color(0xFFbfc9c1)),
+            color: colorScheme.surfaceContainerLowest,
+            border: Border.all(color: colorScheme.outlineVariant),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Color(0x0A1b4332),
+                color: colorScheme.shadow.withValues(alpha: 0.04),
                 blurRadius: 12,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'DATE',
-                style: TextStyle(
+                style: textTheme.labelSmall?.copyWith(
                   fontFamily: 'JetBrains Mono',
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 1.5,
-                  color: Color(0xFF404943),
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 8),
@@ -412,11 +423,10 @@ class _TransferScreenState extends State<TransferScreen> {
                 },
                 child: Text(
                   '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                  style: const TextStyle(
+                  style: textTheme.bodyMedium?.copyWith(
                     fontFamily: 'Work Sans',
-                    fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0f5238),
+                    color: colorScheme.primary,
                   ),
                 ),
               ),
@@ -428,44 +438,42 @@ class _TransferScreenState extends State<TransferScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFffffff),
-            border: Border.all(color: const Color(0xFFbfc9c1)),
+            color: colorScheme.surfaceContainerLowest,
+            border: Border.all(color: colorScheme.outlineVariant),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Color(0x0A1b4332),
+                color: colorScheme.shadow.withValues(alpha: 0.04),
                 blurRadius: 12,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'NOTE (OPTIONAL)',
-                style: TextStyle(
+                style: textTheme.labelSmall?.copyWith(
                   fontFamily: 'JetBrains Mono',
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 1.5,
-                  color: Color(0xFF404943),
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _noteController,
-                style: const TextStyle(
+                style: textTheme.bodyMedium?.copyWith(
                   fontFamily: 'Work Sans',
-                  fontSize: 16,
-                  color: Color(0xFF191c1d),
+                  color: colorScheme.onSurface,
                 ),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'What is this for?',
-                  hintStyle: TextStyle(
+                  hintStyle: textTheme.bodyMedium?.copyWith(
                     fontFamily: 'Work Sans',
-                    fontSize: 16,
-                    color: Color(0xFFbfc9c1),
+                    color: colorScheme.outlineVariant,
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
@@ -479,31 +487,36 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Widget _buildSubmitButton() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isSaving ? null : _saveTransfer,
         icon: _isSaving
-            ? const SizedBox(
+            ? SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    colorScheme.onPrimaryContainer,
+                  ),
                 ),
               )
             : const Icon(Icons.check_circle_outlined, size: 20),
         label: Text(
           _isSaving ? 'Processing...' : 'Confirm Transfer',
-          style: const TextStyle(
+          style: textTheme.bodyLarge?.copyWith(
             fontFamily: 'Work Sans',
-            fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF2d6a4f),
-          foregroundColor: const Color(0xFFa8e7c5),
+          backgroundColor: colorScheme.primaryContainer,
+          foregroundColor: colorScheme.onPrimaryContainer,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
@@ -515,9 +528,13 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Future<void> _showWalletSelector({required bool isFromWallet}) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final result = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: const Color(0xFFf8f9fa),
+      backgroundColor: colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -533,7 +550,7 @@ class _TransferScreenState extends State<TransferScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFbfc9c1),
+                    color: colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -541,40 +558,37 @@ class _TransferScreenState extends State<TransferScreen> {
               const SizedBox(height: 16),
               Text(
                 isFromWallet ? 'Select Source Wallet' : 'Select Destination Wallet',
-                style: const TextStyle(
+                style: textTheme.headlineMedium?.copyWith(
                   fontFamily: 'Manrope',
-                  fontSize: 24,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF191c1d),
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 16),
               ..._wallets.map((wallet) => ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: const Color(0xFF2d6a4f),
+                      backgroundColor: colorScheme.primaryContainer,
                       child: Icon(
                         _getWalletIcon(wallet.icon),
-                        color: const Color(0xFFa8e7c5),
+                        color: colorScheme.onPrimaryContainer,
                         size: 20,
                       ),
                     ),
                     title: Text(
                       wallet.name,
-                      style: const TextStyle(
+                      style: textTheme.bodyMedium?.copyWith(
                         fontFamily: 'Work Sans',
-                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     subtitle: Text(
                       '${SettingController().getCurrentSetting().defaultCurrencyFormat}${wallet.currentBalance.toStringAsFixed(2)}',
-                      style: const TextStyle(
+                      style: textTheme.labelMedium?.copyWith(
                         fontFamily: 'JetBrains Mono',
-                        fontSize: 14,
                       ),
                     ),
                     trailing: wallet.id == (isFromWallet ? _fromWalletId : _toWalletId)
-                        ? const Icon(Icons.check, color: Color(0xFF0f5238))
+                        ? Icon(Icons.check, color: colorScheme.primary)
                         : null,
                     onTap: () => Navigator.pop(context, wallet.id),
                   )),
@@ -624,21 +638,25 @@ class _TransferScreenState extends State<TransferScreen> {
     required String label,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFFffffff),
+          color: colorScheme.surfaceContainerLowest,
           border: Border.all(
-            color: const Color(0xFFbfc9c1).withValues(alpha: 0.5),
+            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Color(0x0A1b4332),
+              color: colorScheme.shadow.withValues(alpha: 0.04),
               blurRadius: 12,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -647,20 +665,18 @@ class _TransferScreenState extends State<TransferScreen> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       fontFamily: 'Work Sans',
-                      fontSize: 16,
-                      color: Color(0xFF404943),
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Select Wallet',
-                    style: TextStyle(
+                    style: textTheme.headlineMedium?.copyWith(
                       fontFamily: 'Manrope',
-                      fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0f5238),
+                      color: colorScheme.primary,
                     ),
                   ),
                 ],
@@ -676,20 +692,19 @@ class _TransferScreenState extends State<TransferScreen> {
                         children: [
                           Text(
                             label,
-                            style: const TextStyle(
+                            style: textTheme.bodyMedium?.copyWith(
                               fontFamily: 'Work Sans',
-                              fontSize: 16,
-                              color: Color(0xFF404943),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             wallet.name,
-                            style: const TextStyle(
+                            style: textTheme.titleLarge?.copyWith(
                               fontFamily: 'Manrope',
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF0f5238),
+                              color: colorScheme.primary,
                             ),
                           ),
                         ],
@@ -697,17 +712,17 @@ class _TransferScreenState extends State<TransferScreen> {
                       Icon(
                         _getWalletIcon(wallet.icon),
                         size: 32,
-                        color: const Color(0xFF0f5238),
+                        color: colorScheme.primary,
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   Text(
                     label.contains('From') ? 'Available Balance' : 'Current Balance',
-                    style: const TextStyle(
+                    style: textTheme.labelMedium?.copyWith(
                       fontFamily: 'Work Sans',
-                      fontSize: 14,
-                      color: Color(0xFF404943),
+                      fontWeight: FontWeight.w400,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -716,22 +731,21 @@ class _TransferScreenState extends State<TransferScreen> {
                     children: [
                       Text(
                         '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${wallet.currentBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
-                        style: const TextStyle(
+                        style: textTheme.headlineMedium?.copyWith(
                           fontFamily: 'Manrope',
                           fontSize: 28,
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.56,
-                          color: Color(0xFF191c1d),
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       Text(
                         wallet.accountNumber,
-                        style: const TextStyle(
+                        style: textTheme.labelMedium?.copyWith(
                           fontFamily: 'JetBrains Mono',
-                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.7,
-                          color: Color(0xFF707973),
+                          color: colorScheme.outline,
                         ),
                       ),
                     ],

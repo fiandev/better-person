@@ -66,8 +66,10 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa), // surface
+      backgroundColor: colorScheme.surface,
       appBar: const HabitFocusAppBar(overrideTitle: 'Finance'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -90,39 +92,40 @@ class _WalletScreenState extends State<WalletScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddTransaction,
-        backgroundColor: const Color(0xFF2d6a4f), // primary-container
-        child: const Icon(
-          Icons.add,
-          size: 28,
-          color: Colors.white, // on-primary
-        ),
+        backgroundColor: colorScheme.primaryContainer,
+        foregroundColor: colorScheme.onPrimaryContainer,
+        child: const Icon(Icons.add, size: 28),
       ),
       bottomNavigationBar: RouteShell.bottomNav(context, currentIndex: 3),
     );
   }
 
   Widget _buildTotalBalanceSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Center(
       child: Column(
         children: [
-          const Text(
+          Text(
             'Total Balance',
-            style: TextStyle(
+            style: textTheme.bodyMedium?.copyWith(
               fontFamily: 'Work Sans',
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF404943), // on-surface-variant
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${_totalBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
-            style: const TextStyle(
+            style: textTheme.headlineLarge?.copyWith(
               fontFamily: 'Manrope',
               fontSize: 40,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.8,
-              color: Color(0xFF0f5238), // primary
+              color: colorScheme.primary,
             ),
           ),
         ],
@@ -131,38 +134,39 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   Widget _buildWalletsHeader() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'Your Wallets',
-          style: TextStyle(
+          style: textTheme.headlineMedium?.copyWith(
             fontFamily: 'Manrope',
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF191c1d), // on-surface
+            color: colorScheme.onSurface,
           ),
         ),
         Row(
           children: [
             const SizedBox(width: 8),
-            // Add Wallet button: bg-secondary-container text-on-secondary-container rounded-full
             ElevatedButton.icon(
               onPressed: _navigateToAddWallet,
               icon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
-              label: const Text(
+              label: Text(
                 'Add Wallet',
-                style: TextStyle(
+                style: textTheme.labelMedium?.copyWith(
                   fontFamily: 'Work Sans',
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFbdeacd), // secondary-container
-                foregroundColor: const Color(
-                  0xFF426b54,
-                ), // on-secondary-container
+                backgroundColor: colorScheme.primaryContainer,
+                foregroundColor: colorScheme.onPrimaryContainer,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
@@ -207,6 +211,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
   // Wallet card: bg-gradient-to-br from-primary to-tertiary, rounded-xl, text-on-primary
   Widget _buildWalletCard(Wallet wallet) {
+    final colorScheme = Theme.of(context).colorScheme;
     final gradients = _walletGradients(wallet.icon);
 
     return Container(
@@ -219,11 +224,11 @@ class _WalletScreenState extends State<WalletScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12), // rounded-xl
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.08),
             blurRadius: 24,
-            offset: Offset(0, 12),
+            offset: const Offset(0, 12),
             spreadRadius: -8,
           ),
         ],
@@ -316,45 +321,53 @@ class _WalletScreenState extends State<WalletScreen> {
 
   // Transfer shortcut card: bg-primary-container rounded-xl
   Widget _buildTransferShortcutCard() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return GestureDetector(
       onTap: _navigateToTransfer,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.82,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF2d6a4f), // primary-container
+          color: colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Color(0x0A1b4332),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 24,
-              offset: Offset(0, 12),
+              offset: const Offset(0, 12),
               spreadRadius: -8,
             ),
           ],
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.swap_horiz, size: 40, color: Colors.white),
-            SizedBox(height: 8),
+            Icon(
+              Icons.swap_horiz,
+              size: 40,
+              color: colorScheme.onPrimaryContainer,
+            ),
+            const SizedBox(height: 8),
             Text(
               'Transfer',
-              style: TextStyle(
+              style: textTheme.bodyLarge?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Move funds between wallets',
-              style: TextStyle(
+              style: textTheme.labelSmall?.copyWith(
                 fontFamily: 'JetBrains Mono',
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
-                color: Colors.white70,
+                color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -363,36 +376,40 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
-  // Add new wallet card: border-dashed border-primary-fixed-dim
+  // Add new wallet card
   Widget _buildAddWalletCard() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return GestureDetector(
       onTap: _navigateToAddWallet,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.82,
         decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerLowest,
           border: Border.all(
-            color: const Color(0xFF95d4b3), // primary-fixed-dim
+            color: colorScheme.outlineVariant,
             width: 2,
-            // Flutter doesn't support dashed borders natively, we style it similarly
           ),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.add_circle_outline,
               size: 40,
-              color: Color(0xFF2d6a4f),
-            ), // primary-container
-            SizedBox(height: 8),
+              color: colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
             Text(
               'Add New Wallet',
-              style: TextStyle(
+              style: textTheme.bodyLarge?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF2d6a4f),
+                color: colorScheme.primary,
               ),
             ),
           ],

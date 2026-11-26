@@ -99,6 +99,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   Future<void> _delete(Transaction item) async {
+    final colorScheme = Theme.of(context).colorScheme;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -112,6 +113,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             child: const Text('Cancel'),
           ),
           FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+            ),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),
@@ -256,21 +261,33 @@ class _TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     final amountColor = transaction.type == TransactionType.income
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.onSurface;
+        ? colorScheme.primary
+        : transaction.type == TransactionType.expense
+        ? colorScheme.error
+        : colorScheme.onSurface;
     final sign = transaction.type == TransactionType.income ? '+' : '-';
     return ListTile(
-      title: Text(transaction.getCategoryLabel()),
+      title: Text(
+        transaction.getCategoryLabel(),
+        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+      ),
       subtitle: Text(
         '${wallet?.name ?? 'Unknown wallet'} • ${transaction.date.toLocal().toString().split(' ').first}',
+        style: textTheme.labelSmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             '$sign${transaction.amount.toStringAsFixed(2)}',
-            style: TextStyle(color: amountColor),
+            style: textTheme.labelLarge?.copyWith(color: amountColor),
           ),
           PopupMenuButton<String>(
             tooltip: 'Transaction actions',

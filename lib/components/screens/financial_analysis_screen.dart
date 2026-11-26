@@ -163,40 +163,47 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     }
   }
 
-  Color _getCategoryColor(TransactionCategory category, int index) {
-    const colors = [
-      Color(0xFF2d6a4f), // primary-container
-      Color(0xFF3e6750), // secondary
-      Color(0xFF95d4b3), // inverse-primary
-      Color(0xFFbdeacd), // secondary-container
-      Color(0xFF3f6754), // tertiary-container
-      Color(0xFF0f5238), // primary
-    ];
+  List<Color> _categoryPalette(ColorScheme colorScheme) => [
+    colorScheme.primary,
+    colorScheme.secondary,
+    colorScheme.tertiary,
+    colorScheme.primaryContainer,
+    colorScheme.secondaryContainer,
+    colorScheme.tertiaryContainer,
+  ];
+
+  Color _getCategoryColor(
+    TransactionCategory category,
+    int index,
+    ColorScheme colorScheme,
+  ) {
+    final colors = _categoryPalette(colorScheme);
     return colors[index % colors.length];
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final sortedCategories = _categoryTotals.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa),
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFf8f9fa),
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
-          color: const Color(0xFF404943),
+          color: colorScheme.onSurfaceVariant,
         ),
-        title: const Text(
+        title: Text(
           'Analisis Keuangan',
-          style: TextStyle(
+          style: textTheme.headlineMedium?.copyWith(
             fontFamily: 'Manrope',
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF0f5238),
+            color: colorScheme.primary,
           ),
         ),
         centerTitle: false,
@@ -206,11 +213,11 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDateRangeAndSummary(),
+            _buildDateRangeAndSummary(colorScheme, textTheme),
             const SizedBox(height: 32),
-            _buildChartsSection(),
+            _buildChartsSection(colorScheme, textTheme),
             const SizedBox(height: 32),
-            _buildCategoryBreakdown(sortedCategories),
+            _buildCategoryBreakdown(sortedCategories, colorScheme, textTheme),
             const SizedBox(height: 32),
           ],
         ),
@@ -219,7 +226,10 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     );
   }
 
-  Widget _buildDateRangeAndSummary() {
+  Widget _buildDateRangeAndSummary(
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     return Column(
       children: [
         Row(
@@ -238,41 +248,40 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFffffff),
+                  color: colorScheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Color(0x0A1b4332),
+                      color: colorScheme.shadow.withValues(alpha: 0.04),
                       blurRadius: 12,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                   border: Border.all(
-                    color: const Color(0xFFbfc9c1).withValues(alpha: 0.3),
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.calendar_month,
-                      color: Color(0xFF0f5238),
+                      color: colorScheme.primary,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       _getMonthLabel(),
-                      style: const TextStyle(
+                      style: textTheme.labelLarge?.copyWith(
                         fontFamily: 'JetBrains Mono',
-                        fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF191c1d),
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(
+                    Icon(
                       Icons.expand_more,
-                      color: Color(0xFF707973),
+                      color: colorScheme.onSurfaceVariant,
                       size: 20,
                     ),
                   ],
@@ -288,43 +297,47 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text('${_monthTransactions.length} transactions this month'),
+          child: Text(
+            '${_monthTransactions.length} transactions this month',
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF2d6a4f),
+            color: colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Color(0x0A1b4332),
+                color: colorScheme.shadow.withValues(alpha: 0.04),
                 blurRadius: 12,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Total Pengeluaran',
-                style: TextStyle(
+                style: textTheme.labelLarge?.copyWith(
                   fontFamily: 'Work Sans',
-                  fontSize: 14,
-                  color: Color(0xFFa8e7c5),
+                  fontWeight: FontWeight.w400,
+                  color: colorScheme.onPrimaryContainer,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${_totalExpenses.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
-                style: const TextStyle(
+                style: textTheme.headlineMedium?.copyWith(
                   fontFamily: 'Manrope',
-                  fontSize: 24,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
-                  color: Colors.white,
+                  color: colorScheme.onPrimaryContainer,
                 ),
               ),
             ],
@@ -347,18 +360,24 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     );
   }
 
-  Widget _buildChartsSection() {
+  Widget _buildChartsSection(ColorScheme colorScheme, TextTheme textTheme) {
     return Wrap(
       spacing: 16,
       runSpacing: 16,
       children: [
-        SizedBox(width: double.infinity, child: _buildPieChartCard()),
-        SizedBox(width: double.infinity, child: _buildBarChartCard()),
+        SizedBox(
+          width: double.infinity,
+          child: _buildPieChartCard(colorScheme, textTheme),
+        ),
+        SizedBox(
+          width: double.infinity,
+          child: _buildBarChartCard(colorScheme, textTheme),
+        ),
       ],
     );
   }
 
-  Widget _buildPieChartCard() {
+  Widget _buildPieChartCard(ColorScheme colorScheme, TextTheme textTheme) {
     final sortedCategories = _categoryTotals.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
@@ -380,17 +399,17 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff),
+        color: colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: const Color(0xFFbfc9c1).withValues(alpha: 0.1),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -398,16 +417,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.pie_chart, color: Color(0xFF3e6750), size: 20),
+              Icon(Icons.pie_chart, color: colorScheme.secondary, size: 20),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   'Komposisi Pengeluaran',
-                  style: const TextStyle(
+                  style: textTheme.titleMedium?.copyWith(
                     fontFamily: 'Manrope',
-                    fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF191c1d),
+                    color: colorScheme.onSurface,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -423,26 +441,29 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                 painter: _PieChartPainter(
                   categoryTotals: _categoryTotals,
                   totalExpenses: _totalExpenses,
+                  palette: _categoryPalette(colorScheme),
+                  trackColor: colorScheme.surfaceContainerHighest,
+                  centerColor: colorScheme.surfaceContainerLowest,
                 ),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                      Text(
                         'Top',
-                        style: TextStyle(
+                        style: textTheme.labelSmall?.copyWith(
                           fontFamily: 'JetBrains Mono',
                           fontSize: 9,
-                          color: Color(0xFF707973),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       Text(
                         topLabel,
-                        style: const TextStyle(
+                        style: textTheme.labelSmall?.copyWith(
                           fontFamily: 'Manrope',
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF0f5238),
+                          color: colorScheme.primary,
                         ),
                       ),
                     ],
@@ -468,7 +489,11 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                         width: 12,
                         height: 12,
                         decoration: BoxDecoration(
-                          color: _getCategoryColor(entry.key, index),
+                          color: _getCategoryColor(
+                            entry.key,
+                            index,
+                            colorScheme,
+                          ),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -483,21 +508,20 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                           date: DateTime.now(),
                           createdAt: DateTime.now(),
                         ).getCategoryLabel(),
-                        style: const TextStyle(
+                        style: textTheme.bodyMedium?.copyWith(
                           fontFamily: 'Work Sans',
                           fontSize: 14,
-                          color: Color(0xFF191c1d),
+                          color: colorScheme.onSurface,
                         ),
                       ),
                     ],
                   ),
                   Text(
                     '$percent%',
-                    style: const TextStyle(
+                    style: textTheme.labelLarge?.copyWith(
                       fontFamily: 'JetBrains Mono',
-                      fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF191c1d),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -509,7 +533,7 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     );
   }
 
-  Widget _buildBarChartCard() {
+  Widget _buildBarChartCard(ColorScheme colorScheme, TextTheme textTheme) {
     final maxAmount = _weeklyData.isNotEmpty
         ? _weeklyData.map((w) => w.amount).reduce((a, b) => a > b ? a : b)
         : 1.0;
@@ -517,17 +541,17 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff),
+        color: colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: const Color(0xFFbfc9c1).withValues(alpha: 0.1),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -535,16 +559,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.bar_chart, color: Color(0xFF3e6750), size: 20),
+              Icon(Icons.bar_chart, color: colorScheme.secondary, size: 20),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   'Tren Pengeluaran Mingguan',
-                  style: const TextStyle(
+                  style: textTheme.titleMedium?.copyWith(
                     fontFamily: 'Manrope',
-                    fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF191c1d),
+                    color: colorScheme.onSurface,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -555,13 +578,13 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
           SizedBox(
             height: 160,
             child: _weeklyData.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'Belum ada data',
-                      style: TextStyle(
+                      style: textTheme.bodyMedium?.copyWith(
                         fontFamily: 'Work Sans',
                         fontSize: 14,
-                        color: Color(0xFF707973),
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   )
@@ -576,26 +599,26 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                           children: [
                             Text(
                               _formatCurrency(maxAmount),
-                              style: const TextStyle(
+                              style: textTheme.labelSmall?.copyWith(
                                 fontFamily: 'JetBrains Mono',
                                 fontSize: 10,
-                                color: Color(0xFF707973),
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                             Text(
                               _formatCurrency(maxAmount * 0.5),
-                              style: const TextStyle(
+                              style: textTheme.labelSmall?.copyWith(
                                 fontFamily: 'JetBrains Mono',
                                 fontSize: 10,
-                                color: Color(0xFF707973),
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            const Text(
+                            Text(
                               '0',
-                              style: TextStyle(
+                              style: textTheme.labelSmall?.copyWith(
                                 fontFamily: 'JetBrains Mono',
                                 fontSize: 10,
-                                color: Color(0xFF707973),
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -610,13 +633,19 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                                 children: [
                                   CustomPaint(
                                     size: Size.infinite,
-                                    painter: _GridPainter(),
+                                    painter: _GridPainter(
+                                      lineColor: colorScheme.outlineVariant
+                                          .withValues(alpha: 0.3),
+                                    ),
                                   ),
                                   CustomPaint(
                                     size: Size.infinite,
                                     painter: _BarChartPainter(
                                       weeklyData: _weeklyData,
                                       maxAmount: maxAmount,
+                                      activeColor: colorScheme.primary,
+                                      inactiveColor: colorScheme.primary
+                                          .withValues(alpha: 0.35),
                                     ),
                                   ),
                                 ],
@@ -628,15 +657,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                               children: _weeklyData.map((w) {
                                 return Text(
                                   w.label,
-                                  style: TextStyle(
+                                  style: textTheme.labelSmall?.copyWith(
                                     fontFamily: 'JetBrains Mono',
                                     fontSize: 10,
                                     fontWeight: w.isCurrentWeek
                                         ? FontWeight.bold
                                         : FontWeight.normal,
                                     color: w.isCurrentWeek
-                                        ? const Color(0xFF0f5238)
-                                        : const Color(0xFF404943),
+                                        ? colorScheme.primary
+                                        : colorScheme.onSurfaceVariant,
                                   ),
                                 );
                               }).toList(),
@@ -663,21 +692,23 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
 
   Widget _buildCategoryBreakdown(
     List<MapEntry<TransactionCategory, double>> sortedCategories,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
   ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff),
+        color: colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: const Color(0xFFbfc9c1).withValues(alpha: 0.1),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -685,16 +716,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.list_alt, color: Color(0xFF3e6750), size: 20),
+              Icon(Icons.list_alt, color: colorScheme.secondary, size: 20),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   'Rincian per Kategori',
-                  style: const TextStyle(
+                  style: textTheme.titleMedium?.copyWith(
                     fontFamily: 'Manrope',
-                    fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF191c1d),
+                    color: colorScheme.onSurface,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -703,15 +733,15 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
           ),
           const SizedBox(height: 16),
           if (sortedCategories.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(32),
+                padding: const EdgeInsets.all(32),
                 child: Text(
                   'Belum ada transaksi',
-                  style: TextStyle(
+                  style: textTheme.bodyMedium?.copyWith(
                     fontFamily: 'Work Sans',
                     fontSize: 14,
-                    color: Color(0xFF707973),
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -723,7 +753,11 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
               final percent = _totalExpenses > 0
                   ? (catEntry.value / _totalExpenses * 100).round()
                   : 0;
-              final color = _getCategoryColor(catEntry.key, index);
+              final color = _getCategoryColor(
+                catEntry.key,
+                index,
+                colorScheme,
+              );
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -761,11 +795,10 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                                     date: DateTime.now(),
                                     createdAt: DateTime.now(),
                                   ).getCategoryLabel(),
-                                  style: const TextStyle(
+                                  style: textTheme.labelLarge?.copyWith(
                                     fontFamily: 'Work Sans',
-                                    fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF191c1d),
+                                    color: colorScheme.onSurface,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -773,11 +806,10 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 '${SettingController().getCurrentSetting().defaultCurrencyFormat} ${catEntry.value.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
-                                style: const TextStyle(
+                                style: textTheme.labelLarge?.copyWith(
                                   fontFamily: 'JetBrains Mono',
-                                  fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF191c1d),
+                                  color: colorScheme.onSurface,
                                 ),
                               ),
                             ],
@@ -787,7 +819,8 @@ class _FinancialAnalysisScreenState extends State<FinancialAnalysisScreen> {
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: percent / 100,
-                              backgroundColor: const Color(0xFFe1e3e4),
+                              backgroundColor:
+                                  colorScheme.surfaceContainerHighest,
                               valueColor: AlwaysStoppedAnimation<Color>(color),
                               minHeight: 8,
                             ),
@@ -820,8 +853,17 @@ class _WeeklyData {
 class _PieChartPainter extends CustomPainter {
   final Map<TransactionCategory, double> categoryTotals;
   final double totalExpenses;
+  final List<Color> palette;
+  final Color trackColor;
+  final Color centerColor;
 
-  _PieChartPainter({required this.categoryTotals, required this.totalExpenses});
+  _PieChartPainter({
+    required this.categoryTotals,
+    required this.totalExpenses,
+    required this.palette,
+    required this.trackColor,
+    required this.centerColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -831,21 +873,12 @@ class _PieChartPainter extends CustomPainter {
 
     if (totalExpenses == 0 || categoryTotals.isEmpty) {
       final paint = Paint()
-        ..color = const Color(0xFFe1e3e4)
+        ..color = trackColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = 32;
       canvas.drawCircle(center, radius - 16, paint);
       return;
     }
-
-    const colors = [
-      Color(0xFF2d6a4f),
-      Color(0xFF3e6750),
-      Color(0xFF95d4b3),
-      Color(0xFFbdeacd),
-      Color(0xFF3f6754),
-      Color(0xFF0f5238),
-    ];
 
     final sortedEntries = categoryTotals.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
@@ -856,7 +889,7 @@ class _PieChartPainter extends CustomPainter {
     for (final entry in sortedEntries) {
       final sweepAngle = (entry.value / totalExpenses) * 2 * 3.14159;
       final paint = Paint()
-        ..color = colors[colorIndex % colors.length]
+        ..color = palette[colorIndex % palette.length]
         ..style = PaintingStyle.stroke
         ..strokeWidth = 32
         ..strokeCap = StrokeCap.butt;
@@ -875,20 +908,29 @@ class _PieChartPainter extends CustomPainter {
 
     // Inner circle (donut hole)
     final innerPaint = Paint()
-      ..color = const Color(0xFFffffff)
+      ..color = centerColor
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, innerRadius, innerPaint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _PieChartPainter oldDelegate) =>
+      oldDelegate.categoryTotals != categoryTotals ||
+      oldDelegate.totalExpenses != totalExpenses ||
+      oldDelegate.palette != palette ||
+      oldDelegate.trackColor != trackColor ||
+      oldDelegate.centerColor != centerColor;
 }
 
 class _GridPainter extends CustomPainter {
+  final Color lineColor;
+
+  _GridPainter({required this.lineColor});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFbfc9c1).withValues(alpha: 0.3)
+      ..color = lineColor
       ..strokeWidth = 1;
 
     for (int i = 0; i < 4; i++) {
@@ -898,14 +940,22 @@ class _GridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _GridPainter oldDelegate) =>
+      oldDelegate.lineColor != lineColor;
 }
 
 class _BarChartPainter extends CustomPainter {
   final List<_WeeklyData> weeklyData;
   final double maxAmount;
+  final Color activeColor;
+  final Color inactiveColor;
 
-  _BarChartPainter({required this.weeklyData, required this.maxAmount});
+  _BarChartPainter({
+    required this.weeklyData,
+    required this.maxAmount,
+    required this.activeColor,
+    required this.inactiveColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -926,9 +976,7 @@ class _BarChartPainter extends CustomPainter {
       final y = maxHeight - barHeight;
 
       final paint = Paint()
-        ..color = data.isCurrentWeek
-            ? const Color(0xFF0f5238)
-            : const Color(0xFF95d4b3)
+        ..color = data.isCurrentWeek ? activeColor : inactiveColor
         ..style = PaintingStyle.fill;
 
       final rrect = RRect.fromRectAndRadius(
@@ -940,7 +988,11 @@ class _BarChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _BarChartPainter oldDelegate) =>
+      oldDelegate.weeklyData != weeklyData ||
+      oldDelegate.maxAmount != maxAmount ||
+      oldDelegate.activeColor != activeColor ||
+      oldDelegate.inactiveColor != inactiveColor;
 }
 
 class _MonthPickerDialog extends StatefulWidget {
@@ -967,6 +1019,9 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     const months = [
       'Jan',
       'Feb',
@@ -983,7 +1038,7 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
     ];
 
     return Dialog(
-      backgroundColor: const Color(0xFFffffff),
+      backgroundColor: colorScheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -994,9 +1049,9 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.chevron_left,
-                    color: Color(0xFF404943),
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   onPressed: () => setState(
                     () => _currentYear = DateTime(_currentYear.year - 1),
@@ -1004,17 +1059,16 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                 ),
                 Text(
                   '${_currentYear.year}',
-                  style: const TextStyle(
+                  style: textTheme.titleLarge?.copyWith(
                     fontFamily: 'Manrope',
-                    fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF191c1d),
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.chevron_right,
-                    color: Color(0xFF404943),
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   onPressed: () => setState(
                     () => _currentYear = DateTime(_currentYear.year + 1),
@@ -1056,31 +1110,30 @@ class _MonthPickerDialogState extends State<_MonthPickerDialog> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF0f5238)
+                          ? colorScheme.primary
                           : isFuture
-                          ? const Color(0xFFf8f9fa)
-                          : const Color(0xFFffffff),
+                          ? colorScheme.surfaceContainer
+                          : colorScheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF0f5238)
-                            : const Color(0xFFbfc9c1),
+                            ? colorScheme.primary
+                            : colorScheme.outlineVariant,
                       ),
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       months[index],
-                      style: TextStyle(
+                      style: textTheme.labelLarge?.copyWith(
                         fontFamily: 'Work Sans',
-                        fontSize: 14,
                         fontWeight: isSelected
                             ? FontWeight.w600
                             : FontWeight.w400,
                         color: isFuture
-                            ? const Color(0xFFbfc9c1)
+                            ? colorScheme.outline
                             : isSelected
-                            ? Colors.white
-                            : const Color(0xFF191c1d),
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurface,
                       ),
                     ),
                   ),

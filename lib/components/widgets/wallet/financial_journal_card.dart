@@ -17,12 +17,6 @@ class FinancialJournalCard extends StatefulWidget {
 }
 
 class _FinancialJournalCardState extends State<FinancialJournalCard> {
-  static const _palette = [
-    Color(0xFF2d6a4f),
-    Color(0xFF3e6750),
-    Color(0xFF95d4b3),
-  ];
-
   final _transactions = TransactionController();
 
   @override
@@ -43,18 +37,21 @@ class _FinancialJournalCardState extends State<FinancialJournalCard> {
 
   @override
   Widget build(BuildContext context) {
-    final data = _buildData();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final data = _buildData(colorScheme);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFf8f9fa), // surface-bright
-        border: Border.all(color: const Color(0xFFbfc9c1)), // outline-variant
-        borderRadius: BorderRadius.circular(12), // rounded-xl
-        boxShadow: const [
+        color: colorScheme.surfaceContainerLowest,
+        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 24,
-            offset: Offset(0, 12),
+            offset: const Offset(0, 12),
             spreadRadius: -8,
           ),
         ],
@@ -65,14 +62,14 @@ class _FinancialJournalCardState extends State<FinancialJournalCard> {
           const _JournalHeader(),
           const SizedBox(height: 16),
           if (!data.hasData)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
                 'No spending recorded this month yet.',
-                style: TextStyle(
+                style: textTheme.labelSmall?.copyWith(
                   fontFamily: 'Work Sans',
-                  fontSize: 12,
-                  color: Color(0xFF404943), // on-surface-variant
+                  fontWeight: FontWeight.w400,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             )
@@ -99,7 +96,7 @@ class _FinancialJournalCardState extends State<FinancialJournalCard> {
     );
   }
 
-  _JournalData _buildData() {
+  _JournalData _buildData(ColorScheme colorScheme) {
     final now = DateTime.now();
     final monthStart = DateTime(now.year, now.month, 1);
     final nextMonth = DateTime(now.year, now.month + 1, 1);
@@ -121,6 +118,12 @@ class _FinancialJournalCardState extends State<FinancialJournalCard> {
     );
     if (total <= 0) return const _JournalData.empty();
 
+    final palette = [
+      colorScheme.primary,
+      colorScheme.secondary,
+      colorScheme.tertiary,
+    ];
+
     final categoryTotals = <TransactionCategory, double>{};
     for (final transaction in expenses) {
       categoryTotals[transaction.category] =
@@ -131,10 +134,10 @@ class _FinancialJournalCardState extends State<FinancialJournalCard> {
     final slices = [
       for (
         var index = 0;
-        index < sorted.length && index < _palette.length;
+        index < sorted.length && index < palette.length;
         index++
       )
-        _CategorySlice(amount: sorted[index].value, color: _palette[index]),
+        _CategorySlice(amount: sorted[index].value, color: palette[index]),
     ];
 
     final weeks = _weeklyTotals(expenses, monthStart, now);
@@ -180,33 +183,34 @@ class _JournalHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
+      children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Financial Journal',
-              style: TextStyle(
+              style: textTheme.headlineMedium?.copyWith(
                 fontFamily: 'Manrope',
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF0f5238), // primary
+                color: colorScheme.primary,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Weekly vs Monthly Insights',
-              style: TextStyle(
+              style: textTheme.labelSmall?.copyWith(
                 fontFamily: 'Work Sans',
-                fontSize: 12,
-                color: Color(0xFF404943), // on-surface-variant
+                fontWeight: FontWeight.w400,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],
         ),
-        Icon(Icons.insights, color: Color(0xFF0f5238), size: 24),
+        Icon(Icons.insights, color: colorScheme.primary, size: 24),
       ],
     );
   }
@@ -220,31 +224,37 @@ class _SpendingMix extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Column(
       children: [
         SizedBox(
           width: 88,
           height: 88,
           child: CustomPaint(
-            painter: _DonutPainter(slices: slices, total: total),
-            child: const Center(
+            painter: _DonutPainter(
+              slices: slices,
+              total: total,
+              trackColor: colorScheme.surfaceContainer,
+            ),
+            child: Center(
               child: Icon(
                 Icons.pie_chart_outline,
                 size: 22,
-                color: Color(0xFF404943), // on-surface-variant
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Spending Mix',
-          style: TextStyle(
+          style: textTheme.labelSmall?.copyWith(
             fontFamily: 'JetBrains Mono',
             fontSize: 10,
-            fontWeight: FontWeight.w500,
             letterSpacing: 1.2,
-            color: Color(0xFF404943), // on-surface-variant
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -265,30 +275,32 @@ class _ExtremesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'EXTREMES',
-          style: TextStyle(
+          style: textTheme.labelSmall?.copyWith(
             fontFamily: 'JetBrains Mono',
             fontSize: 10,
-            fontWeight: FontWeight.w500,
             letterSpacing: 1.2,
-            color: Color(0xFF404943), // on-surface-variant
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 8),
         _ExtremeBar(
           label: 'High',
           progress: _share(high),
-          color: const Color(0xFF0f5238), // primary
+          color: colorScheme.primary,
         ),
         const SizedBox(height: 8),
         _ExtremeBar(
           label: 'Low',
           progress: _share(low),
-          color: const Color(0xFF3e6750), // secondary
+          color: colorScheme.secondary,
         ),
       ],
     );
@@ -311,13 +323,16 @@ class _ExtremeBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return Row(
       children: [
         Expanded(
           child: Container(
             height: 8,
             decoration: BoxDecoration(
-              color: const Color(0xFFedeeef), // surface-container
+              color: colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(4),
             ),
             child: FractionallySizedBox(
@@ -335,10 +350,9 @@ class _ExtremeBar extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           '$label ${(progress * 100).round()}%',
-          style: TextStyle(
+          style: textTheme.labelSmall?.copyWith(
             fontFamily: 'JetBrains Mono',
             fontSize: 10,
-            fontWeight: FontWeight.w500,
             color: color,
           ),
         ),
@@ -354,26 +368,28 @@ class _ViewAnalysisLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.only(top: 16),
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Color(0xFFbfc9c1))),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'View Detailed Analysis',
-              style: TextStyle(
+              style: textTheme.labelSmall?.copyWith(
                 fontFamily: 'Work Sans',
-                fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0f5238),
+                color: colorScheme.primary,
               ),
             ),
-            Icon(Icons.arrow_forward, size: 16, color: Color(0xFF0f5238)),
+            Icon(Icons.arrow_forward, size: 16, color: colorScheme.primary),
           ],
         ),
       ),
@@ -382,10 +398,15 @@ class _ViewAnalysisLink extends StatelessWidget {
 }
 
 class _DonutPainter extends CustomPainter {
-  const _DonutPainter({required this.slices, required this.total});
+  const _DonutPainter({
+    required this.slices,
+    required this.total,
+    required this.trackColor,
+  });
 
   final List<_CategorySlice> slices;
   final double total;
+  final Color trackColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -398,7 +419,7 @@ class _DonutPainter extends CustomPainter {
     final rect = Rect.fromCircle(center: center, radius: radius);
 
     if (slices.isEmpty || total <= 0) {
-      paint.color = const Color(0xFFedeeef); // surface-container
+      paint.color = trackColor;
       canvas.drawCircle(center, radius, paint);
       return;
     }
@@ -414,7 +435,9 @@ class _DonutPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DonutPainter oldDelegate) =>
-      oldDelegate.slices != slices || oldDelegate.total != total;
+      oldDelegate.slices != slices ||
+      oldDelegate.total != total ||
+      oldDelegate.trackColor != trackColor;
 }
 
 class _CategorySlice {

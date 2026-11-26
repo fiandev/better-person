@@ -83,23 +83,27 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFf8f9fa), // background
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFf8f9fa),
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
-          color: const Color(0xFF404943), // on-surface-variant
+          color: colorScheme.onSurfaceVariant,
         ),
-        title: const Text(
+        title: Text(
           'Tambah Dompet',
-          style: TextStyle(
+          style: textTheme.headlineMedium?.copyWith(
             fontFamily: 'Manrope',
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF0f5238), // primary
+            color: colorScheme.primary,
           ),
         ),
         centerTitle: true,
@@ -124,23 +128,25 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildPreviewCard() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
+            Color(0xFF0f5238),
             Color(0xFF2d6a4f),
-            Color(0xFF3f6754),
-          ], // primary-container to tertiary-container
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12), // rounded-xl
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x141b4332), // rgba(27,67,50,0.08)
+            color: colorScheme.shadow.withValues(alpha: 0.08),
             blurRadius: 24,
-            offset: Offset(0, 12),
+            offset: const Offset(0, 12),
           ),
         ],
       ),
@@ -228,16 +234,18 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildFormSection() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFf8f9fa), // surface-bright
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A1b4332),
+            color: colorScheme.shadow.withValues(alpha: 0.04),
             blurRadius: 12,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -270,33 +278,38 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildLabel(String text) {
+    final theme = Theme.of(context);
     return Text(
       text,
-      style: const TextStyle(
+      style: theme.textTheme.labelMedium?.copyWith(
         fontFamily: 'JetBrains Mono',
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.7,
-        color: Color(0xFF404943), // on-surface-variant
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
   }
 
   Widget _buildNameField() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff), // surface-container-lowest
-        border: Border.all(color: const Color(0xFFbfc9c1)), // outline-variant
+        color: colorScheme.surfaceContainerLowest,
+        border: Border.all(color: colorScheme.outlineVariant),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Icon(
               Icons.edit_outlined,
               size: 20,
-              color: Color(0xFF707973), // outline
+              color: colorScheme.outline,
             ),
           ),
           Expanded(
@@ -305,20 +318,20 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
               onChanged: (value) => setState(() {
                 _previewName = value.isEmpty ? 'Dompet Baru' : value;
               }),
-              style: const TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 16,
-                color: Color(0xFF191c1d), // on-surface
+                color: colorScheme.onSurface,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Contoh: Tabungan Liburan',
-                hintStyle: TextStyle(
+                hintStyle: textTheme.bodyMedium?.copyWith(
                   fontFamily: 'Work Sans',
                   fontSize: 16,
-                  color: Color(0xFFbfc9c1),
+                  color: colorScheme.outline,
                 ),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
+                contentPadding: const EdgeInsets.symmetric(
                   vertical: 14,
                   horizontal: 0,
                 ),
@@ -334,10 +347,14 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildBalanceField() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFffffff),
-        border: Border.all(color: const Color(0xFFbfc9c1)),
+        color: colorScheme.surfaceContainerLowest,
+        border: Border.all(color: colorScheme.outlineVariant),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -346,11 +363,11 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               SettingController().getCurrentSetting().defaultCurrencyFormat,
-              style: const TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF707973), // outline
+                color: colorScheme.outline,
               ),
             ),
           ),
@@ -363,20 +380,20 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
               onChanged: (value) => setState(() {
                 _previewBalance = double.tryParse(value) ?? 0.0;
               }),
-              style: const TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 16,
-                color: Color(0xFF191c1d),
+                color: colorScheme.onSurface,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '0',
-                hintStyle: TextStyle(
+                hintStyle: textTheme.bodyMedium?.copyWith(
                   fontFamily: 'Work Sans',
                   fontSize: 16,
-                  color: Color(0xFFbfc9c1),
+                  color: colorScheme.outline,
                 ),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
           ),
@@ -386,27 +403,29 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildWarningBox() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(
-          0xFFffdad6,
-        ).withValues(alpha: 0.3), // error-container with opacity
-        border: Border.all(color: const Color(0xFFffdad6)),
+        color: colorScheme.errorContainer.withValues(alpha: 0.4),
+        border: Border.all(color: colorScheme.errorContainer),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Icon(Icons.info_outline, color: Color(0xFFba1a1a), size: 16), // error
-          SizedBox(width: 8),
+        children: [
+          Icon(Icons.info_outline, color: colorScheme.error, size: 16),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               'Saldo awal bersifat permanen dan tidak dapat diubah setelah dompet dibuat. Pastikan jumlahnya benar.',
-              style: TextStyle(
+              style: textTheme.bodySmall?.copyWith(
                 fontFamily: 'Work Sans',
                 fontSize: 13,
-                color: Color(0xFF404943),
+                color: colorScheme.onErrorContainer,
               ),
             ),
           ),
@@ -416,6 +435,10 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildIconSelector() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Column(
       children: _iconOptions.map((option) {
         final isSelected = _selectedIcon == option.$1;
@@ -430,11 +453,11 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFFbdeacd) // secondary-container
-                    : const Color(0xFFe7e8e9), // surface-container-high
+                    ? colorScheme.primaryContainer
+                    : colorScheme.surfaceContainerHigh,
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xFF0f5238) // primary
+                      ? colorScheme.primary
                       : Colors.transparent,
                   width: 2,
                 ),
@@ -445,19 +468,19 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                   Icon(
                     _getIconData(option.$1),
                     color: isSelected
-                        ? const Color(0xFF426b54) // on-secondary-container
-                        : const Color(0xFF404943),
+                        ? colorScheme.onPrimaryContainer
+                        : colorScheme.onSurfaceVariant,
                     size: 24,
                   ),
                   const SizedBox(width: 12),
                   Text(
                     option.$3,
-                    style: TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       fontFamily: 'Work Sans',
                       fontSize: 16,
                       color: isSelected
-                          ? const Color(0xFF426b54)
-                          : const Color(0xFF404943),
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -470,31 +493,38 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Widget _buildSaveButton() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isSaving ? null : _saveWallet,
         icon: _isSaving
-            ? const SizedBox(
+            ? SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    colorScheme.onPrimary,
+                  ),
                 ),
               )
             : const Icon(Icons.save_outlined, size: 20),
         label: Text(
           _isSaving ? 'Menyimpan...' : 'Simpan Dompet',
-          style: const TextStyle(
+          style: textTheme.headlineMedium?.copyWith(
             fontFamily: 'Manrope',
             fontSize: 24,
             fontWeight: FontWeight.w600,
+            color: colorScheme.onPrimary,
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0f5238), // primary
-          foregroundColor: Colors.white, // on-primary
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
