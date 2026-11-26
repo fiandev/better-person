@@ -333,16 +333,24 @@ void main() {
       await tester.ensureVisible(dropdown);
       await tester.tap(dropdown);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pump(const Duration(milliseconds: 350));
 
       await tester.tap(find.text('Egyptian').last);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pump(const Duration(milliseconds: 350));
 
       final saveButton = find.text('Save prayer settings');
       await tester.ensureVisible(saveButton);
       await tester.tap(saveButton);
       await tester.pump();
+      for (var i = 0; i < 20; i++) {
+        if (find.byType(LocationSettingsScreen).evaluate().isEmpty) break;
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 20)),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
+      }
       await tester.pump(const Duration(milliseconds: 300));
 
       final savedLocation = await LocationService.getLocation();
