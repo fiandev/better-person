@@ -10,7 +10,8 @@ class AppLocalizations {
   static const supportedLocales = [Locale('en'), Locale('id')];
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
-  static const localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = [
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
