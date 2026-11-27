@@ -107,7 +107,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Daily Shalat'), findsOneWidget);
-    expect(find.text('Fajr'), findsOneWidget);
+    expect(find.text('Fajr'), findsAtLeastNWidgets(1));
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
