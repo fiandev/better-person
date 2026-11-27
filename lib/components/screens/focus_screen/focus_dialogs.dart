@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Dialogs for focus session completion and break completion
 class FocusDialogs {

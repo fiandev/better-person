@@ -1,5 +1,5 @@
 import 'package:better_person/components/widgets/habit_focus_app_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../routes/route_shell.dart';
 import '../../routes/app_routes.dart';

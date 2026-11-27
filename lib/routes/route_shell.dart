@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../components/widgets/habit_focus_bottom_nav.dart';
 import 'app_routes.dart';

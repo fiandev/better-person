@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../components/screens/focus_screen/focus_screen.dart';
 import '../components/screens/home_screen.dart';

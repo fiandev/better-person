@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Build/version label shown at the bottom of the profile screen.
 class ProfileVersionInfo extends StatelessWidget {
